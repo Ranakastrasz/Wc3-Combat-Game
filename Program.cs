@@ -11,6 +11,9 @@ namespace Wc3_Combat_Game
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+
+            new GameManager();
+
             Application.Run(new MainGameWindow());
         }
     }
