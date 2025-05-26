@@ -1,32 +1,33 @@
 ﻿using System;
 using System.Numerics;
 using System.Drawing;
+using System.Collections;
 
-namespace Wc3_Combat_Game
+namespace Wc3_Combat_Game.Util
 {
-    public static class GeometryUtil
+    public static partial class GeometryUtil
     {
-
 
         // Hit Testing / Containment
         // Simplified checks for mouse/UI interaction:
         public static Vector2 Clamp(this Vector2 value, Vector2 min, Vector2 max)
         {
-            if (max.X-min.X < 0 || max.Y - min.Y < 0)
+            if (max.X - min.X < 0 || max.Y - min.Y < 0)
                 throw new ArgumentException("Bounds rectangle must have non-negative size");
             return new Vector2(
                 MathF.Max(min.X, MathF.Min(max.X, value.X)),
                 MathF.Max(min.Y, MathF.Min(max.Y, value.Y))
             );
         }
+
         #region VectorManipulation
-        public static Vector2 NormalizeAndScale(this Vector2 vector, float scale) =>
+        public static Vector2 NormalizeAndScale(Vector2 vector, float scale) =>
             vector == Vector2.Zero ? Vector2.Zero : Vector2.Normalize(vector) * scale;
 
-        public static float DistanceTo(this Vector2 from, Vector2 to) =>
+        public static float DistanceTo(Vector2 from, Vector2 to) =>
             Vector2.Distance(from, to);
 
-        public static float AngleTo(this Vector2 from, Vector2 to) =>
+        public static float AngleTo(Vector2 from, Vector2 to) =>
             MathF.Atan2(to.Y - from.Y, to.X - from.X);
         #endregion
 

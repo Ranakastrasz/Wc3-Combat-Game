@@ -9,4 +9,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\Corwin Slater\source\repos\Wc3 Combat Game\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\Corwin Slater\source\repos\Wc3 Combat Game\.editorconfig" />
+  </ItemGroup>
+
 </Project>

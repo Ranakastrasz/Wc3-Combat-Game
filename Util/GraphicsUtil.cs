@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wc3_Combat_Game
+namespace Wc3_Combat_Game.Util
 {
     public static class GraphicsUtil
     {
