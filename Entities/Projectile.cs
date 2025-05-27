@@ -26,8 +26,11 @@ namespace Wc3_Combat_Game.Entities
 
         public override void Update()
         {
-            _position += _velocity * FixedDeltaTime;
-            _timeToLive -= FixedDeltaTime;
+            _position += _velocity * FIXED_DELTA_TIME;
+
+            _timeToLive -= FIXED_DELTA_TIME;
+            IsAlive = _timeToLive < 0 ? false : IsAlive;
+
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Wc3_Combat_Game.Util
 {
-    public static class GraphicsUtil
+    public static class GraphicsUtils
     {
         #region Conversions
         // Not all of these are likely to be useful.

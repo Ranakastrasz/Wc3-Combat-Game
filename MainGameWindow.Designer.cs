@@ -34,7 +34,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1182, 553);
             Name = "MainGameWindow";
             Text = "Wc3 combat Game";
             ResumeLayout(false);

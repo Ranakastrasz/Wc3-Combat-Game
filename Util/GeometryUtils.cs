@@ -5,8 +5,10 @@ using System.Collections;
 
 namespace Wc3_Combat_Game.Util
 {
-    public static partial class GeometryUtil
+    public static partial class GeometryUtils
     {
+        public static RectangleF RectFromCenter(Vector2 center, Vector2 size) =>
+            new(center.X - size.X / 2, center.Y - size.Y / 2, size.X, size.Y);
 
         // Hit Testing / Containment
         // Simplified checks for mouse/UI interaction:
@@ -18,6 +20,11 @@ namespace Wc3_Combat_Game.Util
                 MathF.Max(min.X, MathF.Min(max.X, value.X)),
                 MathF.Max(min.Y, MathF.Min(max.Y, value.Y))
             );
+        }
+        public static PointF Center(this RectangleF rect)
+        {
+            return new PointF(rect.Left + rect.Width / 2,
+                             rect.Top + rect.Height / 2);
         }
 
         #region VectorManipulation
