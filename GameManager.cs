@@ -14,6 +14,8 @@ namespace Wc3_Combat_Game
     internal class GameManager
     {
         private static GameManager? s_Instance;
+
+        public float GlobalTime { get; private set; } = 0f;
         public static GameManager Instance
         {
             get
@@ -31,11 +33,14 @@ namespace Wc3_Combat_Game
         public List<Projectile> Projectiles { get; private set; } = [];
 
         public HashSet<Keys> KeysDown { get; set; } = [];
+        public bool IsMouseDown { get; set; } = false;
         public bool MouseClicked { get; set; } = false;
         public Point MouseClickedPoint { get; set; } = new(0, 0);
         public List<Enemy> Enemies { get; set; } = [];
+        public Vector2 CurrentMousePosition { get; internal set; }
 
-        private float _enemySpawnTimer = ENEMY_SPAWN_TIMER;
+        private float _lastEnemySpawned = 0f;
+        private static readonly float ENEMY_SPAWN_COOLDOWN = 0.5f;
 
         public GameManager()
         {
@@ -48,9 +53,11 @@ namespace Wc3_Combat_Game
             );
 
         }
-        
+
         public void Update()
         {
+            GlobalTime += FIXED_DELTA_TIME;
+
             Vector2 move = Vector2.Zero;
             if (KeysDown.Contains(Keys.W)) move.Y -= 1;
             if (KeysDown.Contains(Keys.S)) move.Y += 1;
@@ -65,26 +72,22 @@ namespace Wc3_Combat_Game
 
             if (MouseClicked)
             {
-                Vector2 velocity = Vector2.Normalize(MouseClickedPoint.ToVector2() - MainPlayer.Position) * PROJECTILE_SPEED;
+                // Consume the click
+                MouseClicked = false;
 
-
-                Projectile projectile = new((Vector2)PROJECTILE_SIZE,
-                    MainPlayer.Position,
-                    PROJECTILE_COLOR,
-                    velocity,
-                    PROJECTILE_LIFESPAN);
-
-                // add to the list
-                Projectiles.Add(projectile);
-
-                MouseClicked = false; // Consume Mouseclick.
-                
+                // Shoot once at clicked point
+                MainPlayer.TryShoot(MouseClickedPoint.ToVector2());
+            }
+            else if (IsMouseDown)
+            {
+                // Shoot repeatedly at current mouse position while held (if cooldown allows)
+                MainPlayer.TryShoot(CurrentMousePosition);
             }
 
-            _enemySpawnTimer -= FIXED_DELTA_TIME;
-            if (_enemySpawnTimer < 0)
+
+            if (GlobalTime > _lastEnemySpawned + ENEMY_SPAWN_COOLDOWN)
             {
-                _enemySpawnTimer = ENEMY_SPAWN_TIMER;
+                _lastEnemySpawned = GlobalTime;
                 Enemies.Add(new(
                     (Vector2)ENEMY_SIZE,
                     (Vector2)RandomUtils.RandomPointBorder(GameConstants.SPAWN_BOUNDS),
@@ -103,38 +106,54 @@ namespace Wc3_Combat_Game
             CheckCollision();
 
             // Cleanup dead entities.
-            Projectiles.RemoveAll(p => !p.IsAlive);
-            Enemies.RemoveAll(p => !p.IsAlive);
+            Projectiles.RemoveAll(p => p.ToRemove);
+            Enemies.RemoveAll(p => p.ToRemove);
 
             // End Logic
         }
 
         private void CheckCollision()
         { 
-            foreach (Projectile projectile in  Projectiles) 
+            foreach (Projectile projectile in  Projectiles.Where(p => p.IsAlive)) 
             {
-                foreach (Enemy enemy in Enemies)
-                { 
+                foreach (Enemy enemy in Enemies.Where(p => p.IsAlive))
+                {
                     if (projectile.Intersects(enemy))
                     {
                         projectile.Die();
-                        enemy.Die();
+                        enemy.Damage(50f);
                     }
                 }
             }
 
-            foreach (Enemy enemy in Enemies)
+            foreach (Enemy enemy in Enemies.Where(p => p.IsAlive))
             {
                 // Check collision with player.
                 if (enemy.Intersects(MainPlayer))
                 {
                     // Collision occured.
+                    enemy.Die();
+                    MainPlayer.Damage(10f);
                 }
             }
 
             foreach (Projectile projectile in Projectiles)
             {
-                // Check out of bounds
+                if (!projectile.BoundingBox.IntersectsWith(GAME_BOUNDS))
+                {
+                    projectile.Die();
+                }
+            }
+
+            if (!GameConstants.GAME_BOUNDS.Contains(MainPlayer.BoundingBox))
+            {
+                var bounds = GameConstants.GAME_BOUNDS;
+                var halfSize = new SizeF(MainPlayer.Size.X / 2f, MainPlayer.Size.Y / 2f);
+
+                MainPlayer.Position = new Vector2(
+                    Math.Clamp(MainPlayer.Position.X, bounds.Left + halfSize.Width, bounds.Right - halfSize.Width),
+                    Math.Clamp(MainPlayer.Position.Y, bounds.Top + halfSize.Height, bounds.Bottom - halfSize.Height)
+                );
             }
         }
 

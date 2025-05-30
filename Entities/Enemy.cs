@@ -9,21 +9,29 @@ using static Wc3_Combat_Game.GameConstants;
 
 namespace Wc3_Combat_Game.Entities
 {
-    internal class Enemy : Entity
+    /// <summary>
+    /// AI-controlled enemy unit with behavior logic.
+    /// Inherits from Unit.
+    /// </summary>
+    internal class Enemy : Unit
     {
         private Vector2 _velocity = Vector2.Zero;
         private Player _target; // Technically only 1 player atm, but will change.
         private float _speed;
 
+
         public Enemy(Vector2 size, Vector2 position, Brush brush, Player target, float speed) : base(size, position, brush)
         {
             _target = target;
             _speed = speed;
+
+            _health = 100f;
         }
         public Vector2 Velocity { get => _velocity; set => _velocity = value; }
 
         public override void Update()
         {
+            if (!IsAlive) return;
             // Target player. Calculate distnace/angle crap, then set velocity to close distance.
             // _velocity = normalizeAndScale(Line between _position and player._position
 

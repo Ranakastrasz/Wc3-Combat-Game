@@ -34,7 +34,7 @@ namespace Wc3_Combat_Game
         public const float ENEMY_SPAWN_TIMER = 0.25f;
         public const float ENEMY_SPAWN_PADDING = 50f;
 
-        public const float CULL_PADDING = 100f;
+        //public const float CULL_PADDING = 100f;
 
 #if DEBUG
         public static readonly Size DEBUG_PADDING = new(120, 120);
@@ -45,8 +45,8 @@ namespace Wc3_Combat_Game
 
         public static readonly Rectangle CLIENT_SIZE = new Rectangle(new(0, 0), WINDOW_CLIENT_SIZE);
         public static readonly RectangleF GAME_BOUNDS = RectangleF.Inflate(CLIENT_SIZE, -DEBUG_PADDING.Width, -DEBUG_PADDING.Height); // or dynamically from Form.Size
-        public static readonly RectangleF PLAYER_BOUNDS = RectangleF.Inflate(GAME_BOUNDS, -PLAYER_SIZE.Width / 2f, -PLAYER_SIZE.Height / 2f);
-        public static readonly RectangleF CULL_BOUNDS = RectangleF.Inflate(GAME_BOUNDS, CULL_PADDING, CULL_PADDING);
+        //public static readonly RectangleF PLAYER_BOUNDS = RectangleF.Inflate(GAME_BOUNDS, -PLAYER_SIZE.Width / 2f, -PLAYER_SIZE.Height / 2f);
+        //public static readonly RectangleF CULL_BOUNDS = RectangleF.Inflate(GAME_BOUNDS, CULL_PADDING, CULL_PADDING);
 
         public static readonly RectangleF SPAWN_BOUNDS = RectangleF.Inflate(GAME_BOUNDS, ENEMY_SPAWN_PADDING, ENEMY_SPAWN_PADDING);
 

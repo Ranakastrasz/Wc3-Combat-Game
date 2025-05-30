@@ -7,6 +7,13 @@ namespace Wc3_Combat_Game.Util
 {
     public static partial class GeometryUtils
     {
+
+        public static Vector2 GetPosition(this RectangleF rect) =>
+            new Vector2(rect.X, rect.Y);
+
+        public static Vector2 GetSize(this RectangleF rect) =>
+            new Vector2(rect.Width, rect.Height);
+        
         public static RectangleF RectFromCenter(Vector2 center, Vector2 size) =>
             new(center.X - size.X / 2, center.Y - size.Y / 2, size.X, size.Y);
 

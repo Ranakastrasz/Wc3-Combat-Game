@@ -28,8 +28,9 @@ namespace Wc3_Combat_Game
 
             this.KeyDown += MainGameWindow_KeyDown;
             this.KeyUp += MainGameWindow_KeyUp;
+
             this.MouseDown += MainGameWindow_MouseDown;
-            this.MouseUp += MainGameWindow_MouseUp; //Later, for holding the button to repeat fire.
+            this.MouseUp += MainGameWindow_MouseUp;
 
             // Setup game loop timer
             _gameLoopTimer = new() { Interval = GameConstants.TICK_DURATION_MS };
@@ -66,20 +67,18 @@ namespace Wc3_Combat_Game
         {
             if (e.Button == MouseButtons.Left)
             {
-                // Left button pressed at e.Location
+                GameManager.Instance.IsMouseDown = true;
                 GameManager.Instance.MouseClicked = true;
                 GameManager.Instance.MouseClickedPoint = e.Location;
             }
         }
+
         private void MainGameWindow_MouseUp(object? sender, MouseEventArgs e)
         {
-            // Not yet implemented.
-            //if (e.Button == MouseButtons.Left)
-            //{
-            //    // Left button pressed at e.Location
-            //    _mouseClicked = true;
-            //    _mouseClickedPoint = e.Location;
-            //}
+            if (e.Button == MouseButtons.Left)
+            {
+                GameManager.Instance.IsMouseDown = false;
+            }
         }
         #endregion
 
@@ -89,7 +88,10 @@ namespace Wc3_Combat_Game
         private void GameLoopTimer_Tick(object? sender, EventArgs e)
         {
             // Capture keys/mouse state, and pass input into the gameManager.Update ?
-            
+
+            Point clientPos = this.PointToClient(Control.MousePosition);
+            GameManager.Instance.CurrentMousePosition = clientPos.ToVector2();
+
             GameManager.Instance.Update();
 
 
@@ -100,10 +102,10 @@ namespace Wc3_Combat_Game
             Graphics g = e.Graphics;
             g.Clear(Color.Black);
 
-            g.DrawRectangle(Pens.Green, GameConstants.PLAYER_BOUNDS);
-            g.DrawRectangle(Pens.Red, GameConstants.CULL_BOUNDS);
+#if DEBUG
             g.DrawRectangle(Pens.White, GameConstants.GAME_BOUNDS);
             g.DrawRectangle(Pens.Blue, GameConstants.SPAWN_BOUNDS);
+#endif
 
             GameManager.Instance.MainPlayer.Draw(g);
             GameManager.Instance.Projectiles.ForEach(p => p.Draw(g));

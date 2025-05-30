@@ -9,7 +9,10 @@ using static Wc3_Combat_Game.GameConstants;
 
 namespace Wc3_Combat_Game.Entities
 {
-    // Projectiles have a rect, general speed, plus their current velocity.
+    /// <summary>
+    /// Projectile object representing bullets, missiles, or other fired entities.
+    /// Inherits from Entity.
+    /// </summary>
     public class Projectile : Entity
     {
         private Vector2 _velocity;
