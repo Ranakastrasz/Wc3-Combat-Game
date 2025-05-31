@@ -9,29 +9,31 @@ namespace Wc3_Combat_Game
     /// Player-controlled unit with input handling and player-specific behavior.
     /// Inherits from Unit.
     /// </summary>
-    public class Player : Unit
+    internal class Player : Unit
     {
-        Vector2 _velocity = Vector2.Zero;
         private static readonly float MAX_HEALTH = 100f;
 
         static readonly float COOLDOWN = 0.35f;
-        float _lastShot = 0f;
+        float _lastShotTime = float.NegativeInfinity;
 
         
 
         public Player(Vector2 size, Vector2 position, Brush brush) : base(size, position, brush)
         {
-            _health = MAX_HEALTH;
+            Health = MAX_HEALTH;
         }
 
         internal void InputMove(Vector2 move)
         {
-            _velocity = move;
+            _moveVector = move;
         }
 
-        public bool TryShoot(Vector2 target)
+        // Horrifically temperary, because passing that container is VERY wrong.
+        public bool TryShoot(Vector2 target, float currentTime, EntityManager<Projectile> Projectiles)
         {
-            if (GameManager.Instance.GlobalTime >= (_lastShot + COOLDOWN))
+
+
+            if (currentTime >= (_lastShotTime + COOLDOWN))
             {
                 Vector2 velocity = Vector2.Normalize(target - this.Position) * PROJECTILE_SPEED;
 
@@ -44,28 +46,29 @@ namespace Wc3_Combat_Game
 
                 // add to the list
                 // This should be a function. Intrusive.
-                GameManager.Instance.Projectiles.Add(projectile);
+                Projectiles.Add(projectile);
 
-                _lastShot = GameManager.Instance.GlobalTime; // Set Cooldown.
+                _lastShotTime = currentTime; // Set Cooldown.
                 return true;
             }
             return false;
         }
 
 
-        public override void Update()
+        public override void Update(float deltaTime, float currentTime)
         {
-            _position += _velocity * FIXED_DELTA_TIME;
-            _velocity = Vector2.Zero; // No inertia for now
+            if (!IsAlive) return;
+            _position += _moveVector * FIXED_DELTA_TIME;
+            _moveVector = Vector2.Zero; // No inertia for now
 
             //_health += Math.Min(1f * FIXED_DELTA_TIME, _maxhealth); // Regen
         }
 
-        public override void Draw(Graphics g)
+        public override void Draw(Graphics g, float currentTime)
         {
             //if (!IsAlive) return;
 
-            base.Draw(g);
+            base.Draw(g, currentTime);
             Rectangle entityRect = _position.RectFromCenter(_size);
 
             // Bar dimensions
@@ -82,7 +85,7 @@ namespace Wc3_Combat_Game
 
             g.FillRectangle(Brushes.DarkGray, healthBarBackgroundRect);
 
-            float healthRatio = (float)_health / MAX_HEALTH;
+            float healthRatio = (float)Health / MAX_HEALTH;
             int healthFillWidth = (int)(entityRect.Width * healthRatio);
 
             Rectangle healthFillRect = new Rectangle(
@@ -104,7 +107,7 @@ namespace Wc3_Combat_Game
 
             g.FillRectangle(Brushes.DarkGray, manaBarBackgroundRect);
 
-            float manaRatio = (float)Math.Min(1f, (GameManager.Instance.GlobalTime - _lastShot) / COOLDOWN);
+            float manaRatio = (float)Math.Min(1f, (currentTime - _lastShotTime) / COOLDOWN);
             int manaFillWidth = (int)(entityRect.Width * manaRatio);
 
             Rectangle manaFillRect = new Rectangle(

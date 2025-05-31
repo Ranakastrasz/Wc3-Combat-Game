@@ -14,47 +14,47 @@ namespace Wc3_Combat_Game.Entities
     /// Represents a living or interactive game unit with health and actions.
     /// Inherits from Entity.
     /// </summary>
-    public abstract class Unit : Entity
+    internal class Unit : IEntity
     {
-        public float _health {  get; protected set; }
+        public float Health {  get; protected set; }
 
         float _lastDamaged = float.NegativeInfinity;
-        static float _DamageFlashTime = GameConstants.FIXED_DELTA_TIME;
+        static float s_DamageFlashTime = GameConstants.FIXED_DELTA_TIME;
+        protected Vector2 _moveVector = Vector2.Zero;
 
         public Unit(Vector2 size, Vector2 position, Brush brush) : base(size, position, brush)
         {
-            _removalDelay = 1f; 
+            _despawnDelay = 1f; 
         }
 
-        public override void Draw(Graphics g)
+        public override void Draw(Graphics g, float currentTime)
         {
-            float GlobalTime = GameManager.Instance.GlobalTime;
             Rectangle entityRect = _position.RectFromCenter(_size);
 
 
 
-            if (GlobalTime < _lastDamaged + _DamageFlashTime)
+            if (currentTime < _lastDamaged + s_DamageFlashTime)
             {
-                g.FillRectangle(Brushes.White, entityRect);
+                g.FillEllipse(Brushes.White, entityRect);
             }
             else if (IsAlive)
             {
-                g.FillRectangle(_brush, entityRect);
+                g.FillEllipse(_fillBrush, entityRect);
             }
             else
             {
-                g.FillRectangle(Brushes.Gray, entityRect);
+                g.FillEllipse(Brushes.Gray, entityRect);
             }
         }
 
-        public void Damage(float amount)
+        public void Damage(float amount, float currentTime)
         {
-            _health -= amount;
-            _lastDamaged = GameManager.Instance.GlobalTime;
-            if (_health <= 0f)
+            Health -= amount;
+            _lastDamaged = currentTime;
+            if (Health <= 0f)
             {
-                _health = 0;
-                Die();
+                Health = 0;
+                Die(currentTime);
             }
         }
     }

@@ -7,22 +7,22 @@ namespace Wc3_Combat_Game.Entities
     /// <summary>
     /// Base class representing any game object with a position and size.
     /// </summary>
-    public abstract class Entity
+    internal abstract class IEntity
     {
         protected Vector2 _size;
         protected Vector2 _position;
-        protected Brush _brush;
-        private bool isAlive = true;
+        protected Brush _fillBrush;
+        private bool _isAlive = true;
         float _lastKilled = float.NegativeInfinity;
-        protected float _removalDelay = GameConstants.FIXED_DELTA_TIME;
+        protected float _despawnDelay = GameConstants.FIXED_DELTA_TIME;
 
         public RectangleF BoundingBox { get => _position.RectFromCenter(_size); }
 
-        public Entity(Vector2 size, Vector2 position, Brush brush)
+        public IEntity(Vector2 size, Vector2 position, Brush brush)
         {
             _size = size;
             _position = position;
-            _brush = brush;
+            _fillBrush = brush;
         }
 
 
@@ -30,40 +30,44 @@ namespace Wc3_Combat_Game.Entities
         // Later
         public Vector2 Size { get => _size; set => _size = value; }
         public Vector2 Position { get => _position; set => _position = value; }
-        public bool IsAlive { get => isAlive; set => isAlive = value; }
+        public bool IsAlive { get => _isAlive; set => _isAlive = value; }
 
-        public bool ToRemove { get => !isAlive && GameManager.Instance.GlobalTime > _lastKilled + _removalDelay; }
+        public bool IsExpired(double currentTime) => !_isAlive && currentTime > _lastKilled + _despawnDelay;
 
-        public virtual void Draw(Graphics g)
+        public virtual void Draw(Graphics g, float currentTime)
         {
             if (!IsAlive) return;
-            g.FillRectangle(_brush, _position.RectFromCenter(_size));
+            Rectangle entityRect = _position.RectFromCenter(_size);
+            g.FillEllipse(_fillBrush, entityRect);
+            //g.FillRectangle(_fillBrush, _position.RectFromCenter(_size));
         }
 
-        public virtual void Update()
+        public virtual void Update(float deltaTime, float currentTime)
         { 
             
         }
 
-        public void Die()
+        public void Die(float currentTime)
         {
-            isAlive = false;
-            _lastKilled = GameManager.Instance.GlobalTime;
+            if (!IsAlive) return;
+
+            _isAlive = false;
+            _lastKilled = currentTime;
         }
 
-        public bool Intersects(Entity other)
+        public bool Intersects(IEntity other)
         {
             RectangleF rect = new((PointF)_position, (SizeF)_size);
             RectangleF otherRect = new((PointF)other._position, (SizeF)other._size);
             return rect.IntersectsWith(otherRect);
         }
 
-        public float DistanceTo(Entity other)
+        public float DistanceTo(IEntity other)
         {
             Vector2 between = other.Position - _position;
             return between.Length();
         }
-        public float DistanceSquaredTo(Entity other)
+        public float DistanceSquaredTo(IEntity other)
         {
             Vector2 between = other.Position - _position;
             return between.LengthSquared();

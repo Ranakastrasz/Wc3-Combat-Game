@@ -16,20 +16,20 @@ namespace Wc3_Combat_Game.Entities
     internal class Enemy : Unit
     {
         private Vector2 _velocity = Vector2.Zero;
-        private Player _target; // Technically only 1 player atm, but will change.
+        private Unit _target; // Technically only 1 player atm, but will change.
         private float _speed;
 
 
-        public Enemy(Vector2 size, Vector2 position, Brush brush, Player target, float speed) : base(size, position, brush)
+        public Enemy(Vector2 size, Vector2 position, Brush brush, Unit target, float speed) : base(size, position, brush)
         {
             _target = target;
             _speed = speed;
 
-            _health = 100f;
+            Health = 100f;
         }
         public Vector2 Velocity { get => _velocity; set => _velocity = value; }
 
-        public override void Update()
+        public override void Update(float deltaTime, float currentTime)
         {
             if (!IsAlive) return;
             // Target player. Calculate distnace/angle crap, then set velocity to close distance.

@@ -13,7 +13,7 @@ namespace Wc3_Combat_Game.Entities
     /// Projectile object representing bullets, missiles, or other fired entities.
     /// Inherits from Entity.
     /// </summary>
-    public class Projectile : Entity
+    internal class Projectile : IEntity
     {
         private Vector2 _velocity;
         private float _timeToLive;
@@ -27,13 +27,22 @@ namespace Wc3_Combat_Game.Entities
         public Vector2 Velocity { get => _velocity; set => _velocity = value; }
         public float TimeToLive { get => _timeToLive; set => _timeToLive = value; }
 
-        public override void Update()
+        public override void Update(float deltaTime, float currentTime)
         {
-            _position += _velocity * FIXED_DELTA_TIME;
+            if (IsAlive)
+            {
+                _position += _velocity * FIXED_DELTA_TIME;
 
-            _timeToLive -= FIXED_DELTA_TIME;
-            IsAlive = _timeToLive < 0 ? false : IsAlive;
+                _timeToLive -= FIXED_DELTA_TIME;
 
+                if (_timeToLive <= 0)
+                    Die(currentTime);
+            }
+        }
+
+        public override void Draw(Graphics g, float currentTime)
+        {
+            base.Draw(g, currentTime);
         }
     }
 }

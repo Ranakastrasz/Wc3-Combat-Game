@@ -1,6 +1,6 @@
 ﻿namespace Wc3_Combat_Game
 {
-    partial class MainGameWindow
+    partial class GameView
     {
         /// <summary>
         ///  Required designer variable.
@@ -15,6 +15,7 @@
         {
             if (disposing && (components != null))
             {
+                DisposeCustomResources();
                 components.Dispose();
             }
             base.Dispose(disposing);

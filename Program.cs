@@ -12,9 +12,18 @@ namespace Wc3_Combat_Game
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            new GameManager();
+            GameController game = new GameController();
 
-            Application.Run(new MainGameWindow());
+            //game.View = new GameView(game);
+            game.CreateSession();
+            
+            game.SyncDrawables();
+
+
+            game.StartGame();
+
+            game.StartTimer();
+            Application.Run(game.View);
         }
     }
 }

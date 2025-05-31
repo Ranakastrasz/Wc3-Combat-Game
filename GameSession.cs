@@ -11,58 +11,60 @@ using static Wc3_Combat_Game.GameConstants;
 
 namespace Wc3_Combat_Game
 {
-    internal class GameManager
+    internal class GameSession
     {
-        private static GameManager? s_Instance;
+        private readonly GameController _controller;
 
-        public float GlobalTime { get; private set; } = 0f;
-        public static GameManager Instance
-        {
-            get
-            {
-                s_Instance ??= new GameManager();
-                return s_Instance;
-            }
-        }
+        public float CurrentTime { get; private set; } = 0f;
 
 
-
+        // Entities.
         public Player MainPlayer { get; private set; }
 
+        public EntityManager<Projectile> Projectiles { get; private set; } = new();
+        public EntityManager<Enemy> Enemies { get; private set; } = new();
 
-        public List<Projectile> Projectiles { get; private set; } = [];
-
-        public HashSet<Keys> KeysDown { get; set; } = [];
-        public bool IsMouseDown { get; set; } = false;
-        public bool MouseClicked { get; set; } = false;
-        public Point MouseClickedPoint { get; set; } = new(0, 0);
-        public List<Enemy> Enemies { get; set; } = [];
-        public Vector2 CurrentMousePosition { get; internal set; }
 
         private float _lastEnemySpawned = 0f;
-        private static readonly float ENEMY_SPAWN_COOLDOWN = 0.5f;
 
-        public GameManager()
+
+        public GameSession(GameController controller)
         {
+            _controller = controller;
 
             // Init player
             MainPlayer = new Player(
                 (Vector2)PLAYER_SIZE,
                 (Vector2)GAME_BOUNDS.Center(),
                 Brushes.Green
+
             );
+
 
         }
 
-        public void Update()
+
+
+
+        private void CheckGameOverCondition(float currentTime)
         {
-            GlobalTime += FIXED_DELTA_TIME;
+            if (MainPlayer.IsExpired(currentTime))
+            {
+                _controller.OnGameOver();
+            }
+        }
+
+        public void Update(float deltaTime)
+        {
+            CurrentTime += deltaTime;
+            InputManager input = _controller.Input;
+
 
             Vector2 move = Vector2.Zero;
-            if (KeysDown.Contains(Keys.W)) move.Y -= 1;
-            if (KeysDown.Contains(Keys.S)) move.Y += 1;
-            if (KeysDown.Contains(Keys.A)) move.X -= 1;
-            if (KeysDown.Contains(Keys.D)) move.X += 1;
+            if (input.IsKeyDown(Keys.W)) move.Y -= 1;
+            if (input.IsKeyDown(Keys.S)) move.Y += 1;
+            if (input.IsKeyDown(Keys.A)) move.X -= 1;
+            if (input.IsKeyDown(Keys.D)) move.X += 1;
             if (move != Vector2.Zero)
             {
                 move = GeometryUtils.NormalizeAndScale(move, GameConstants.PLAYER_SPEED);
@@ -70,24 +72,22 @@ namespace Wc3_Combat_Game
             }
             //Point mousePoint = this.PointToClient(Cursor.Position);
 
-            if (MouseClicked)
+            if (input.IsMouseClicked())
             {
-                // Consume the click
-                MouseClicked = false;
 
                 // Shoot once at clicked point
-                MainPlayer.TryShoot(MouseClickedPoint.ToVector2());
+                MainPlayer.TryShoot(input.MouseClickedPosition, CurrentTime, Projectiles);
             }
-            else if (IsMouseDown)
+            else if (input.IsMouseDown())
             {
                 // Shoot repeatedly at current mouse position while held (if cooldown allows)
-                MainPlayer.TryShoot(CurrentMousePosition);
+                MainPlayer.TryShoot(input.CurrentMousePosition, CurrentTime, Projectiles);
             }
 
 
-            if (GlobalTime > _lastEnemySpawned + ENEMY_SPAWN_COOLDOWN)
+            if (CurrentTime > _lastEnemySpawned + ENEMY_SPAWN_COOLDOWN)
             {
-                _lastEnemySpawned = GlobalTime;
+                _lastEnemySpawned = CurrentTime;
                 Enemies.Add(new(
                     (Vector2)ENEMY_SIZE,
                     (Vector2)RandomUtils.RandomPointBorder(GameConstants.SPAWN_BOUNDS),
@@ -98,50 +98,52 @@ namespace Wc3_Combat_Game
 
             // Update Entities.
 
-            MainPlayer.Update();
-            Projectiles.ForEach(p => p.Update());
-            Enemies.ForEach(p => p.Update());
+            MainPlayer.Update(deltaTime, CurrentTime);
+            Projectiles.UpdateAll(deltaTime, CurrentTime);
+            Enemies.UpdateAll(deltaTime, CurrentTime);
 
+            CheckCollision(deltaTime);
 
-            CheckCollision();
 
             // Cleanup dead entities.
-            Projectiles.RemoveAll(p => p.ToRemove);
-            Enemies.RemoveAll(p => p.ToRemove);
+            Projectiles.RemoveExpired(CurrentTime);
+            Enemies.RemoveExpired(CurrentTime);
 
+
+            CheckGameOverCondition(CurrentTime);
             // End Logic
         }
 
-        private void CheckCollision()
+        private void CheckCollision(float deltaTime)
         { 
-            foreach (Projectile projectile in  Projectiles.Where(p => p.IsAlive)) 
+            foreach (Projectile projectile in  Projectiles.Entities.Where(p => p.IsAlive)) 
             {
-                foreach (Enemy enemy in Enemies.Where(p => p.IsAlive))
+                foreach (Enemy enemy in Enemies.Entities.Where(p => p.IsAlive))
                 {
                     if (projectile.Intersects(enemy))
                     {
-                        projectile.Die();
-                        enemy.Damage(50f);
+                        projectile.Die(CurrentTime);
+                        enemy.Damage(50f, CurrentTime);
                     }
                 }
             }
 
-            foreach (Enemy enemy in Enemies.Where(p => p.IsAlive))
+            foreach (Enemy enemy in Enemies.Entities.Where(p => p.IsAlive))
             {
                 // Check collision with player.
                 if (enemy.Intersects(MainPlayer))
                 {
                     // Collision occured.
-                    enemy.Die();
-                    MainPlayer.Damage(10f);
+                    enemy.Die(CurrentTime);
+                    MainPlayer.Damage(50f, CurrentTime);
                 }
             }
 
-            foreach (Projectile projectile in Projectiles)
+            foreach (Projectile projectile in Projectiles.Entities)
             {
                 if (!projectile.BoundingBox.IntersectsWith(GAME_BOUNDS))
                 {
-                    projectile.Die();
+                    projectile.Die(CurrentTime);
                 }
             }
 
