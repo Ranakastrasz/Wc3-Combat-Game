@@ -5,6 +5,8 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Wc3_Combat_Game.Util;
+using Wc3_Combat_Game.Effects;
+using Wc3_Combat_Game.Prototypes;
 using static Wc3_Combat_Game.GameConstants;
 
 namespace Wc3_Combat_Game.Entities
@@ -17,12 +19,24 @@ namespace Wc3_Combat_Game.Entities
     {
         private Vector2 _velocity;
         private float _timeToLive;
+        //private ProjectilePrototype _prototype;
+        public Effect ImpactEffect;
+        public IEntity Caster;
 
-        public Projectile(Vector2 size, Vector2 position, Brush brush, Vector2 velocity, float timeToLive) : base(size,position,brush)
+        public Projectile(IEntity caster, Vector2 position, Vector2 size, Brush brush, Vector2 velocity, float timeToLive, Effect impactEffect) : base(size,position,brush)
         {
+            Caster = caster;
             _velocity = velocity;
             _timeToLive = timeToLive;
+            ImpactEffect = impactEffect;
         }
+
+        //public Projectile(Vector2 position, Vector2 direction, ProjectilePrototype prototype) : base(position, prototype.size, prototype.brush)
+        //{
+        //    //_velocity = prototype 
+        //    _position = position;
+        //    _prototype = prototype;
+        //}
 
         public Vector2 Velocity { get => _velocity; set => _velocity = value; }
         public float TimeToLive { get => _timeToLive; set => _timeToLive = value; }

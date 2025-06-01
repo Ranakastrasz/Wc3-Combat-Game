@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wc3_Combat_Game.Entities
+namespace Wc3_Combat_Game.Prototypes
 {
     /// <summary>
     /// Represents a Prefab for a living or interactive game unit with health and actions.

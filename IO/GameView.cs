@@ -14,9 +14,8 @@ namespace Wc3_Combat_Game
 
 
 
-        private Player? _mainPlayer;
         private EntityManager<Projectile>? _projectiles;
-        private EntityManager<Enemy>? _enemies;
+        private EntityManager<Unit>? _units;
 
         private float _currentTime;
 
@@ -52,11 +51,10 @@ namespace Wc3_Combat_Game
             Input.OnMouseMove(e.Location.ToVector2());
         }
 
-        internal void SetDrawables(Player player, EntityManager<Projectile> projectiles, EntityManager<Enemy> enemies)
+        internal void SetDrawables(EntityManager<Projectile> projectiles, EntityManager<Unit> enemies)
         {
-            _mainPlayer = player;
             _projectiles = projectiles;
-            _enemies = enemies;
+            _units = enemies;
         }
 
         internal GameView(GameController controller)
@@ -87,10 +85,6 @@ namespace Wc3_Combat_Game
         {
             _currentTime = _controller.CurrentTime;
 
-            Point clientPos = this.PointToClient(Control.MousePosition);
-            
-
-
             this.Invalidate();
         }
         protected override void OnPaint(PaintEventArgs e)
@@ -103,10 +97,8 @@ namespace Wc3_Combat_Game
             g.DrawRectangle(Pens.Blue, GameConstants.SPAWN_BOUNDS);
 #endif
 
-            _mainPlayer?.Draw(g,_currentTime);
-            
             _projectiles?.ForEach(p => p.Draw(g, _currentTime));
-            _enemies?.ForEach(p => p.Draw(g, _currentTime));
+            _units?.ForEach(p => p.Draw(g, _currentTime));
 
             if (_controller.CurrentState == GameState.GameOver)
             {

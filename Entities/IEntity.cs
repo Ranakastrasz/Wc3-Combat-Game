@@ -16,6 +16,11 @@ namespace Wc3_Combat_Game.Entities
         float _lastKilled = float.NegativeInfinity;
         protected float _despawnDelay = GameConstants.FIXED_DELTA_TIME;
 
+        public TeamType Team;
+
+
+
+
         public RectangleF BoundingBox { get => _position.RectFromCenter(_size); }
 
         public IEntity(Vector2 size, Vector2 position, Brush brush)
@@ -23,6 +28,7 @@ namespace Wc3_Combat_Game.Entities
             _size = size;
             _position = position;
             _fillBrush = brush;
+            Team = TeamType.Neutral;
         }
 
 
@@ -38,14 +44,10 @@ namespace Wc3_Combat_Game.Entities
         {
             if (!IsAlive) return;
             Rectangle entityRect = _position.RectFromCenter(_size);
-            g.FillEllipse(_fillBrush, entityRect);
-            //g.FillRectangle(_fillBrush, _position.RectFromCenter(_size));
+            g.FillRectangle(_fillBrush, entityRect);
         }
 
-        public virtual void Update(float deltaTime, float currentTime)
-        { 
-            
-        }
+        public abstract void Update(float deltaTime, float currentTime);
 
         public void Die(float currentTime)
         {

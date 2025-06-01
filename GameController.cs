@@ -98,7 +98,7 @@ namespace Wc3_Combat_Game
         {
             if (View != null && Session != null)
             {
-                View?.SetDrawables(Session.MainPlayer, Session.Projectiles, Session.Enemies);
+                View?.SetDrawables(Session.Projectiles, Session.Units);
 
             }
 

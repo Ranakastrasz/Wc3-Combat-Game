@@ -5,9 +5,13 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.Prototypes;
 using Wc3_Combat_Game.Util;
+using Wc3_Combat_Game.Effects;
 using Timer = System.Windows.Forms.Timer;
 using static Wc3_Combat_Game.GameConstants;
+using Wc3_Combat_Game.IO;
+using Wc3_Combat_Game.Interface;
 
 namespace Wc3_Combat_Game
 {
@@ -19,10 +23,10 @@ namespace Wc3_Combat_Game
 
 
         // Entities.
-        public Player MainPlayer { get; private set; }
+        public Unit MainPlayer { get; private set; }
 
         public EntityManager<Projectile> Projectiles { get; private set; } = new();
-        public EntityManager<Enemy> Enemies { get; private set; } = new();
+        public EntityManager<Unit> Units { get; private set; } = new();
 
 
         private float _lastEnemySpawned = 0f;
@@ -33,13 +37,20 @@ namespace Wc3_Combat_Game
             _controller = controller;
 
             // Init player
-            MainPlayer = new Player(
+            MainPlayer = new(
                 (Vector2)PLAYER_SIZE,
                 (Vector2)GAME_BOUNDS.Center(),
+                100f,
+                GameConstants.PLAYER_SPEED,
                 Brushes.Green
 
-            );
-
+            )
+            {
+                Controller = new IPlayerController(controller.Input),
+                Weapon = new IBasicWeapon(new EffectProjectile(PrototypeDefines.PLAYER_PROJECTILE, Projectiles),GameConstants.PLAYER_COOLDOWN, float.PositiveInfinity),
+                Team = TeamType.Ally                
+            };
+            Units.Add(MainPlayer);
 
         }
 
@@ -57,57 +68,42 @@ namespace Wc3_Combat_Game
         public void Update(float deltaTime)
         {
             CurrentTime += deltaTime;
-            InputManager input = _controller.Input;
-
-
-            Vector2 move = Vector2.Zero;
-            if (input.IsKeyDown(Keys.W)) move.Y -= 1;
-            if (input.IsKeyDown(Keys.S)) move.Y += 1;
-            if (input.IsKeyDown(Keys.A)) move.X -= 1;
-            if (input.IsKeyDown(Keys.D)) move.X += 1;
-            if (move != Vector2.Zero)
-            {
-                move = GeometryUtils.NormalizeAndScale(move, GameConstants.PLAYER_SPEED);
-                MainPlayer.InputMove(move);
-            }
-            //Point mousePoint = this.PointToClient(Cursor.Position);
-
-            if (input.IsMouseClicked())
-            {
-
-                // Shoot once at clicked point
-                MainPlayer.TryShoot(input.MouseClickedPosition, CurrentTime, Projectiles);
-            }
-            else if (input.IsMouseDown())
-            {
-                // Shoot repeatedly at current mouse position while held (if cooldown allows)
-                MainPlayer.TryShoot(input.CurrentMousePosition, CurrentTime, Projectiles);
-            }
-
+            
 
             if (CurrentTime > _lastEnemySpawned + ENEMY_SPAWN_COOLDOWN)
             {
                 _lastEnemySpawned = CurrentTime;
-                Enemies.Add(new(
+                Unit unit = new(
                     (Vector2)ENEMY_SIZE,
                     (Vector2)RandomUtils.RandomPointBorder(GameConstants.SPAWN_BOUNDS),
-                    ENEMY_COLOR,
-                    MainPlayer,
-                    ENEMY_SPEED));
+
+                    10f,
+                    GameConstants.ENEMY_SPEED,
+                    ENEMY_COLOR)
+                {
+                    Target = MainPlayer,
+                    Controller = new IBasicAIController(),
+                    Weapon = new IBasicWeapon(new EffectProjectile(PrototypeDefines.ENEMY_PROJECTILE, Projectiles),1f,100f),
+                    Team = TeamType.Enemy
+                };
+
+                Units.Add(unit);
+
+                
             }
 
             // Update Entities.
 
             MainPlayer.Update(deltaTime, CurrentTime);
             Projectiles.UpdateAll(deltaTime, CurrentTime);
-            Enemies.UpdateAll(deltaTime, CurrentTime);
+            Units.UpdateAll(deltaTime, CurrentTime);
 
             CheckCollision(deltaTime);
 
 
             // Cleanup dead entities.
             Projectiles.RemoveExpired(CurrentTime);
-            Enemies.RemoveExpired(CurrentTime);
+            Units.RemoveExpired(CurrentTime);
 
 
             CheckGameOverCondition(CurrentTime);
@@ -115,27 +111,18 @@ namespace Wc3_Combat_Game
         }
 
         private void CheckCollision(float deltaTime)
-        { 
-            foreach (Projectile projectile in  Projectiles.Entities.Where(p => p.IsAlive)) 
+        {
+            foreach (Projectile projectile in Projectiles.Entities.Where(p => p.IsAlive))
             {
-                foreach (Enemy enemy in Enemies.Entities.Where(p => p.IsAlive))
+                foreach (Unit unit in Units.Entities.Where(p => p.IsAlive && p.Team.IsHostileTo(projectile.Team)))
                 {
-                    if (projectile.Intersects(enemy))
+                    if (projectile.Intersects(unit))
                     {
                         projectile.Die(CurrentTime);
-                        enemy.Damage(50f, CurrentTime);
-                    }
-                }
-            }
+                        projectile.ImpactEffect.ApplyToEntity(projectile.Caster, projectile, unit, CurrentTime);
 
-            foreach (Enemy enemy in Enemies.Entities.Where(p => p.IsAlive))
-            {
-                // Check collision with player.
-                if (enemy.Intersects(MainPlayer))
-                {
-                    // Collision occured.
-                    enemy.Die(CurrentTime);
-                    MainPlayer.Damage(50f, CurrentTime);
+                        break;
+                    }
                 }
             }
 
