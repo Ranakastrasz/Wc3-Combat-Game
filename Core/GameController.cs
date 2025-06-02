@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
 using Timer = System.Windows.Forms.Timer;
 
 
-namespace Wc3_Combat_Game
+namespace Wc3_Combat_Game.Core
 {
-    internal class GameController
+    public class GameController
     {
 
         public enum GameState
@@ -22,7 +18,7 @@ namespace Wc3_Combat_Game
 
         public GameState CurrentState;
 
-        public GameSession? Session { get; set; }
+        public GameBoard? Session { get; set; }
         public readonly GameView View;
 
 
@@ -65,12 +61,12 @@ namespace Wc3_Combat_Game
                 if (View != null && Session != null)
                 {
                     Session.Update(deltaTime);
-                    View.Update(deltaTime);
+                    View.Update(deltaTime, Session.BoardContext);
                 }
             }
             else if (CurrentState == GameState.GameOver)
             {
-                if (GlobalTime >= _gameOverTime + GameConstants.GAME_RESTART_DELAY)
+                if (TimeUtils.HasElapsed(GlobalTime, _gameOverTime, GameConstants.GAME_RESTART_DELAY))
                 {
                     CreateSession();
                     SyncDrawables();
@@ -83,7 +79,7 @@ namespace Wc3_Combat_Game
 
         public void CreateSession()
         {
-            Session = new GameSession(this);
+            Session = new GameBoard(this);
         }
 
         internal void StartGame()

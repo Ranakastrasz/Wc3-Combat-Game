@@ -1,13 +1,9 @@
-﻿using Accessibility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Wc3_Combat_Game.Prototypes;
-using Wc3_Combat_Game.IO;
+﻿using System.Numerics;
+using Wc3_Combat_Game.Prototype;
 using Wc3_Combat_Game.Util;
+using Wc3_Combat_Game.Interface.Controllers;
+using Wc3_Combat_Game.Interface.Weapons;
+using Wc3_Combat_Game.Core;
 
 
 namespace Wc3_Combat_Game.Entities
@@ -16,13 +12,13 @@ namespace Wc3_Combat_Game.Entities
     /// Represents a living or interactive game unit with health and actions.
     /// Inherits from Entity.
     /// </summary>
-    internal class Unit : IEntity
+    public class Unit : IEntity
     {
 
         public IUnitController? Controller = null;
         public Unit? Target { get; set; }
 
-        public IWeapon Weapon;
+        public IWeapon Weapon; // needs to be a weapon list instead.
 
         public float MaxHealth { get; protected set; }
         public float Health { get; protected set; }
@@ -33,7 +29,7 @@ namespace Wc3_Combat_Game.Entities
         protected Vector2 _moveVector = Vector2.Zero;
         public float Speed { get; set; }
 
-        public Unit(Vector2 size, Vector2 position, float health, float speed,  Brush brush) : base(size, position, brush)
+        public Unit(float size, Vector2 position, float health, float speed,  Brush brush) : base(size, position, brush)
         {
             Health = health;
             MaxHealth = health;
@@ -43,10 +39,10 @@ namespace Wc3_Combat_Game.Entities
         }
 
 
-        public override void Update(float deltaTime, float currentTime)
+        public override void Update(float deltaTime, BoardContext context)
         {
 
-            Controller?.Update(this, deltaTime, currentTime);
+            Controller?.Update(this, deltaTime, context);
 
             _position += _moveVector * deltaTime;
             _moveVector = Vector2.Zero;
@@ -54,15 +50,15 @@ namespace Wc3_Combat_Game.Entities
 
         internal void Move(Vector2 moveVector)
         {
-            _moveVector = moveVector;
+            _moveVector = GeometryUtils.NormalizeAndScale(moveVector,Speed);
         }
 
 
-        public override void Draw(Graphics g, float currentTime)
+        public override void Draw(Graphics g, BoardContext context)
         {
-            Rectangle entityRect = _position.RectFromCenter(_size);
+            Rectangle entityRect = _position.RectFromCenter(_sizeVector);
 
-            if (currentTime < _lastDamaged + s_DamageFlashTime)
+            if (!TimeUtils.HasElapsed(context.CurrentTime,_lastDamaged,s_DamageFlashTime))
             {
                 g.FillEllipse(Brushes.White, entityRect);
             }
@@ -114,7 +110,7 @@ namespace Wc3_Combat_Game.Entities
 
                 g.FillRectangle(Brushes.DarkGray, manaBarBackgroundRect);
 
-                float manaRatio = (float)Math.Min(1f, Weapon.GetTimeSinceLastShot(currentTime) / Weapon.GetCooldown());
+                float manaRatio = (float)Math.Min(1f, Weapon.GetTimeSinceLastShot(context) / Weapon.GetCooldown());
                 int manaFillWidth = (int)(entityRect.Width * manaRatio);
 
                 Rectangle manaFillRect = new Rectangle(
@@ -128,15 +124,27 @@ namespace Wc3_Combat_Game.Entities
 
         }
 
-        public void Damage(float amount, float currentTime)
+        public void Damage(float amount, BoardContext context)
         {
             Health -= amount;
-            _lastDamaged = currentTime;
+            _lastDamaged = context.CurrentTime;
             if (Health <= 0f)
             {
                 Health = 0;
-                Die(currentTime);
+                Die(context);
             }
+        }
+    }
+    static class UnitFactory
+    {
+        public static Unit SpawnUnit(UnitPrototype prototype, Vector2 position, IUnitController controller, TeamType team)
+        {
+            Unit unit = new Unit(prototype.Size, position, prototype.MaxHealth, prototype.Speed, prototype.FillBrush)
+            {
+                Controller = controller,
+                Team = team
+            };
+            return unit;
         }
     }
 }

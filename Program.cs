@@ -1,3 +1,5 @@
+using Wc3_Combat_Game.Core;
+
 namespace Wc3_Combat_Game
 {
     internal static class Program

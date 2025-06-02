@@ -4,14 +4,15 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Util;
 
-namespace Wc3_Combat_Game.IO
+namespace Wc3_Combat_Game.Interface.Controllers
 {
     class IBasicAIController : IUnitController
     {
-        public void Update(Unit unit, float deltaTime, float currentTime)
+        public void Update(Unit unit, float deltaTime, BoardContext context)
         {
             // Example: move toward nearest enemy
             //Unit target = FindNearestEnemy(unit);
@@ -24,7 +25,7 @@ namespace Wc3_Combat_Game.IO
                 {
                     if (distSqrt <= unit.Weapon.GetAttackRangeSqr())
                     {
-                        unit.Weapon.TryShoot(unit, target.Position, currentTime);
+                        unit.Weapon.TryShootEntity(unit, target, context);
                         return;
                     }
                 }

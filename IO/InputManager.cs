@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using Wc3_Combat_Game.Util;
 
-namespace Wc3_Combat_Game
+namespace Wc3_Combat_Game.IO
 {
     public class InputManager
     {

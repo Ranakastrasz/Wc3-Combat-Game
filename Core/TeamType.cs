@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wc3_Combat_Game
+namespace Wc3_Combat_Game.Core
 {
     public enum TeamType
     {

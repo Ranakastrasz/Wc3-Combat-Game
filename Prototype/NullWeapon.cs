@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
+using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.Interface.Weapons;
 
-namespace Wc3_Combat_Game.Prototypes
+namespace Wc3_Combat_Game.Prototype
 {
     internal class NullWeapon : IWeapon
     {
@@ -20,11 +17,11 @@ namespace Wc3_Combat_Game.Prototypes
 
         private NullWeapon() { }
 
-        public bool TryShoot(Unit unit, Vector2 target, float currentTime) => false;
+        public bool TryShootPoint(Unit unit, Vector2 target, BoardContext context) => false;
 
         public float GetCooldown() => float.PositiveInfinity;
 
-        public float GetTimeSinceLastShot(float currentTime) => float.PositiveInfinity;
+        public float GetTimeSinceLastShot(BoardContext context) => float.PositiveInfinity;
         public float GetAttackRange() => 0f;
     }
 }

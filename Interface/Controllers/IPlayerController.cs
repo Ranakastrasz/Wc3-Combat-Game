@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
+using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
 
-namespace Wc3_Combat_Game.IO
+namespace Wc3_Combat_Game.Interface.Controllers
 {
     class IPlayerController : IUnitController
     {
@@ -18,7 +15,7 @@ namespace Wc3_Combat_Game.IO
             _input = input;
         }
 
-        public void Update(Unit unit, float deltaTime, float currentTime)
+        public void Update(Unit unit, float deltaTime, BoardContext context)
         {
             if (!unit.IsAlive) return;
 
@@ -29,17 +26,16 @@ namespace Wc3_Combat_Game.IO
             if (_input.IsKeyDown(Keys.D)) move.X += 1;
 
             if (move != Vector2.Zero)
-                move = GeometryUtils.NormalizeAndScale(move, GameConstants.PLAYER_SPEED);
+                unit.Move(move);
 
-            unit.Move(move);
 
             if (unit.Weapon != null)
             {
                 if (_input.IsMouseClicked())
-                    unit.Weapon.TryShoot(unit, _input.MouseClickedPosition, currentTime);
+                    unit.Weapon.TryShootPoint(unit, _input.MouseClickedPosition, context);
 
                 else if (_input.IsMouseDown())
-                    unit.Weapon.TryShoot(unit, _input.CurrentMousePosition, currentTime);
+                    unit.Weapon.TryShootPoint(unit, _input.CurrentMousePosition, context);
             }
         }
 

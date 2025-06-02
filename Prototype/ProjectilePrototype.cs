@@ -5,17 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Wc3_Combat_Game.Effects;
 
-namespace Wc3_Combat_Game.Prototypes
+namespace Wc3_Combat_Game.Prototype
 {
-    internal class ProjectilePrototype
+    public class ProjectilePrototype
     {
-        internal float Size;
-        internal float Speed;
-        internal float Lifespan;
-        internal Effect ImpactEffect;
-        internal Brush FillBrush;
+        public float Size;
+        public float Speed;
+        public float Lifespan;
+        public Effect? ImpactEffect;
+        public Brush FillBrush;
 
-        public ProjectilePrototype(float size, float speed, float lifespan, Effect impactEffect, Brush brush)
+        public ProjectilePrototype(float size, float speed, float lifespan, Effect? impactEffect, Brush brush)
         { 
             Size = size;
             Speed = speed;

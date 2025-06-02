@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using Wc3_Combat_Game.Util;
 using Wc3_Combat_Game.Effects;
-using Wc3_Combat_Game.Prototypes;
-using static Wc3_Combat_Game.GameConstants;
+using Wc3_Combat_Game.Prototype;
+using static Wc3_Combat_Game.Core.GameConstants;
+using Wc3_Combat_Game.Core;
 
 namespace Wc3_Combat_Game.Entities
 {
@@ -15,33 +11,28 @@ namespace Wc3_Combat_Game.Entities
     /// Projectile object representing bullets, missiles, or other fired entities.
     /// Inherits from Entity.
     /// </summary>
-    internal class Projectile : IEntity
+    public class Projectile : IEntity
     {
         private Vector2 _velocity;
         private float _timeToLive;
-        //private ProjectilePrototype _prototype;
-        public Effect ImpactEffect;
-        public IEntity Caster;
+        private ProjectilePrototype _prototype;
+        public Effect? ImpactEffect => _prototype.ImpactEffect;
+        public IEntity? Caster;
 
-        public Projectile(IEntity caster, Vector2 position, Vector2 size, Brush brush, Vector2 velocity, float timeToLive, Effect impactEffect) : base(size,position,brush)
+
+        public Projectile(ProjectilePrototype prototype, IEntity? caster, Vector2 position, Vector2 direction): base(prototype.Size, position, prototype.FillBrush)
         {
+            _prototype = prototype;
             Caster = caster;
-            _velocity = velocity;
-            _timeToLive = timeToLive;
-            ImpactEffect = impactEffect;
-        }
+            _velocity = GeometryUtils.NormalizeAndScale(direction,prototype.Speed);
+            _timeToLive = prototype.Lifespan;
 
-        //public Projectile(Vector2 position, Vector2 direction, ProjectilePrototype prototype) : base(position, prototype.size, prototype.brush)
-        //{
-        //    //_velocity = prototype 
-        //    _position = position;
-        //    _prototype = prototype;
-        //}
+        }
 
         public Vector2 Velocity { get => _velocity; set => _velocity = value; }
         public float TimeToLive { get => _timeToLive; set => _timeToLive = value; }
 
-        public override void Update(float deltaTime, float currentTime)
+        public override void Update(float deltaTime, BoardContext context)
         {
             if (IsAlive)
             {
@@ -50,13 +41,13 @@ namespace Wc3_Combat_Game.Entities
                 _timeToLive -= FIXED_DELTA_TIME;
 
                 if (_timeToLive <= 0)
-                    Die(currentTime);
+                    Die(context);
             }
         }
 
-        public override void Draw(Graphics g, float currentTime)
+        public override void Draw(Graphics g, BoardContext context)
         {
-            base.Draw(g, currentTime);
+            base.Draw(g, context);
         }
     }
 }

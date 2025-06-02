@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wc3_Combat_Game.Prototypes
+namespace Wc3_Combat_Game.Prototype
 {
     /// <summary>
     /// Represents a Prefab for a living or interactive game unit with health and actions.
@@ -13,6 +13,7 @@ namespace Wc3_Combat_Game.Prototypes
     internal struct UnitPrototype
     {
         public float MaxHealth { get; set; }
+        public float HealthRegen {  get; set; }
         public float Size { get; set; }
         public float Speed { get; set; }
         public Brush FillBrush { get; set; }
@@ -23,10 +24,11 @@ namespace Wc3_Combat_Game.Prototypes
         }
         public DrawShape Shape { get; set; }
 
-        public UnitPrototype(float _maxHealth, float _size, float speed, Brush fillBrush, DrawShape shape)
+        public UnitPrototype(float maxHealth, float healthRegen, float size, float speed, Brush fillBrush, DrawShape shape)
         {
-            MaxHealth = _maxHealth;
-            Size = _size;
+            MaxHealth = maxHealth;
+            HealthRegen = healthRegen;
+            Size = size;
             Speed = speed;
             Shape = shape;
             FillBrush = fillBrush;

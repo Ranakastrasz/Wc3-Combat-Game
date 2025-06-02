@@ -1,9 +1,10 @@
 using System.Drawing;
 using System.Numerics;
+using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
-using static Wc3_Combat_Game.GameController;
-using Timer = System.Windows.Forms.Timer;
+using static Wc3_Combat_Game.Core.GameController;
 
 namespace Wc3_Combat_Game
 {
@@ -17,7 +18,7 @@ namespace Wc3_Combat_Game
         private EntityManager<Projectile>? _projectiles;
         private EntityManager<Unit>? _units;
 
-        private float _currentTime;
+        private BoardContext? _context;
 
         private Font _gameOverFont = new Font("Arial", 24, FontStyle.Bold);
 
@@ -81,9 +82,9 @@ namespace Wc3_Combat_Game
         }
 
 
-        public void Update(float deltaTime)
+        public void Update(float deltaTime, BoardContext context)
         {
-            _currentTime = _controller.CurrentTime;
+            _context = context;
 
             this.Invalidate();
         }
@@ -96,10 +97,11 @@ namespace Wc3_Combat_Game
             g.DrawRectangle(Pens.White, GameConstants.GAME_BOUNDS);
             g.DrawRectangle(Pens.Blue, GameConstants.SPAWN_BOUNDS);
 #endif
-
-            _projectiles?.ForEach(p => p.Draw(g, _currentTime));
-            _units?.ForEach(p => p.Draw(g, _currentTime));
-
+            if (_context != null)
+            {
+                _projectiles?.ForEach(p => p.Draw(g, _context));
+                _units?.ForEach(p => p.Draw(g, _context));
+            }
             if (_controller.CurrentState == GameState.GameOver)
             {
                 g.DrawString("Game Over", _gameOverFont, Brushes.White, ClientSize.Width/2, ClientSize.Height/2);
