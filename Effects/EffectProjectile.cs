@@ -14,9 +14,9 @@ namespace Wc3_Combat_Game.Effects
 {
     internal class EffectProjectile : Effect
     {
-        public ProjectilePrototype Prototype;
+        public PrototypeProjectile Prototype;
 
-        public EffectProjectile(ProjectilePrototype prototype)
+        public EffectProjectile(PrototypeProjectile prototype)
         {
             Prototype = prototype;
         }

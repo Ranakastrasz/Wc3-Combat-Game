@@ -18,7 +18,7 @@ namespace Wc3_Combat_Game.Entities
         public IUnitController? Controller = null;
         public Unit? Target { get; set; }
 
-        public IWeapon Weapon; // needs to be a weapon list instead.
+        public IWeapon? Weapon; // needs to be a weapon list instead.
 
         public float MaxHealth { get; protected set; }
         public float Health { get; protected set; }
@@ -29,12 +29,15 @@ namespace Wc3_Combat_Game.Entities
         protected Vector2 _moveVector = Vector2.Zero;
         public float Speed { get; set; }
 
-        public Unit(float size, Vector2 position, float health, float speed,  Brush brush) : base(size, position, brush)
+        public Unit(PrototypeUnit prototype, Vector2 position) : base(prototype.Size, position, prototype.FillColor)
         {
-            Health = health;
-            MaxHealth = health;
-            Speed = speed;
-            Weapon = NullWeapon.INSTANCE;
+            Health = prototype.MaxHealth;
+            MaxHealth = prototype.MaxHealth;
+            Speed = prototype.Speed;
+            if (prototype.Weapon is PrototypeWeaponBasic basic)
+            {
+                Weapon = new IWeaponBasic(basic);
+            }
             _despawnDelay = 1f; // For units specifically.
         }
 
@@ -64,7 +67,8 @@ namespace Wc3_Combat_Game.Entities
             }
             else if (IsAlive)
             {
-                g.FillEllipse(_fillBrush, entityRect);
+                using var brush = new SolidBrush(_fillColor);
+                g.FillEllipse(brush, entityRect);
             }
             else
             {
@@ -76,50 +80,56 @@ namespace Wc3_Combat_Game.Entities
             int barOffset = 4; // gap below entity rect
             int barSpacing = 2; // gap between bars
 
-            // --- Health Bar ---
-            Rectangle healthBarBackgroundRect = new Rectangle(
-                entityRect.X,
-                entityRect.Bottom + barOffset,
-                entityRect.Width,
-                barHeight);
-
-            g.FillRectangle(Brushes.DarkGray, healthBarBackgroundRect);
-
-            float healthRatio = (float)Health / MaxHealth;
-            int healthFillWidth = (int)(entityRect.Width * healthRatio);
-
-            Rectangle healthFillRect = new Rectangle(
-                entityRect.X,
-                entityRect.Bottom + barOffset,
-                healthFillWidth,
-                barHeight);
-
-            g.FillRectangle(Brushes.Red, healthFillRect);
-
-            // --- Mana Bar (below health) ---
-
-            if (Weapon != null)
+            if (Health < MaxHealth && Health > 0)
             {
-                int manaBarY = entityRect.Bottom + barOffset + barHeight + barSpacing;
-
-                Rectangle manaBarBackgroundRect = new Rectangle(
+                // --- Health Bar ---
+                Rectangle healthBarBackgroundRect = new Rectangle(
                     entityRect.X,
-                    manaBarY,
+                    entityRect.Bottom + barOffset,
                     entityRect.Width,
                     barHeight);
 
-                g.FillRectangle(Brushes.DarkGray, manaBarBackgroundRect);
+                g.FillRectangle(Brushes.DarkGray, healthBarBackgroundRect);
 
-                float manaRatio = (float)Math.Min(1f, Weapon.GetTimeSinceLastShot(context) / Weapon.GetCooldown());
-                int manaFillWidth = (int)(entityRect.Width * manaRatio);
+                float healthRatio = (float)Health / MaxHealth;
+                int healthFillWidth = (int)(entityRect.Width * healthRatio);
 
-                Rectangle manaFillRect = new Rectangle(
+                Rectangle healthFillRect = new Rectangle(
                     entityRect.X,
-                    manaBarY,
-                    manaFillWidth,
+                    entityRect.Bottom + barOffset,
+                    healthFillWidth,
                     barHeight);
 
-                g.FillRectangle(Brushes.Blue, manaFillRect);
+                g.FillRectangle(Brushes.Red, healthFillRect);
+
+            }
+            // --- Mana Bar (below health) ---
+            // --- More of a cooldown bar. For player only.
+            if (Team == TeamType.Ally)
+            {
+                if (Weapon != null)
+                {
+                    int manaBarY = entityRect.Bottom + barOffset + barHeight + barSpacing;
+
+                    Rectangle manaBarBackgroundRect = new Rectangle(
+                        entityRect.X,
+                        manaBarY,
+                        entityRect.Width,
+                        barHeight);
+
+                    g.FillRectangle(Brushes.DarkGray, manaBarBackgroundRect);
+
+                    float manaRatio = (float)Math.Min(1f, Weapon.GetTimeSinceLastShot(context) / Weapon.GetCooldown());
+                    int manaFillWidth = (int)(entityRect.Width * manaRatio);
+
+                    Rectangle manaFillRect = new Rectangle(
+                        entityRect.X,
+                        manaBarY,
+                        manaFillWidth,
+                        barHeight);
+
+                    g.FillRectangle(Brushes.Blue, manaFillRect);
+                }
             }
 
         }
@@ -137,9 +147,9 @@ namespace Wc3_Combat_Game.Entities
     }
     static class UnitFactory
     {
-        public static Unit SpawnUnit(UnitPrototype prototype, Vector2 position, IUnitController controller, TeamType team)
+        public static Unit SpawnUnit(PrototypeUnit prototype, Vector2 position, IUnitController controller, TeamType team)
         {
-            Unit unit = new Unit(prototype.Size, position, prototype.MaxHealth, prototype.Speed, prototype.FillBrush)
+            Unit unit = new Unit(prototype, position)
             {
                 Controller = controller,
                 Team = team

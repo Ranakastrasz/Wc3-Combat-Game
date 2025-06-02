@@ -15,12 +15,12 @@ namespace Wc3_Combat_Game.Entities
     {
         private Vector2 _velocity;
         private float _timeToLive;
-        private ProjectilePrototype _prototype;
+        private PrototypeProjectile _prototype;
         public Effect? ImpactEffect => _prototype.ImpactEffect;
         public IEntity? Caster;
 
 
-        public Projectile(ProjectilePrototype prototype, IEntity? caster, Vector2 position, Vector2 direction): base(prototype.Size, position, prototype.FillBrush)
+        public Projectile(PrototypeProjectile prototype, IEntity? caster, Vector2 position, Vector2 direction): base(prototype.Size, position, prototype.FillColor)
         {
             _prototype = prototype;
             Caster = caster;

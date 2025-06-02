@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wc3_Combat_Game.Interface.Weapons;
 
 namespace Wc3_Combat_Game.Prototype
 {
@@ -10,29 +11,30 @@ namespace Wc3_Combat_Game.Prototype
     /// Represents a Prefab for a living or interactive game unit with health and actions.
     /// 
     /// </summary>
-    internal struct UnitPrototype
+    public readonly struct PrototypeUnit
     {
-        public float MaxHealth { get; set; }
-        public float HealthRegen {  get; set; }
-        public float Size { get; set; }
-        public float Speed { get; set; }
-        public Brush FillBrush { get; set; }
+        public readonly float MaxHealth;
+        public readonly float HealthRegen;
+        public readonly float Size;
+        public readonly float Speed;
+        public readonly Color FillColor;
+        public readonly PrototypeWeapon Weapon;
         public enum DrawShape // Probably don't want it here specificially.
         {
             Square,
             Circle
         }
-        public DrawShape Shape { get; set; }
+        public readonly DrawShape Shape;
 
-        public UnitPrototype(float maxHealth, float healthRegen, float size, float speed, Brush fillBrush, DrawShape shape)
+        public PrototypeUnit(PrototypeWeapon weapon, float maxHealth, float healthRegen, float size, float speed, Color fillColor, DrawShape shape)
         {
+            Weapon = weapon;
             MaxHealth = maxHealth;
             HealthRegen = healthRegen;
             Size = size;
             Speed = speed;
             Shape = shape;
-            FillBrush = fillBrush;
+            FillColor = fillColor;
         }
-
     }
 }

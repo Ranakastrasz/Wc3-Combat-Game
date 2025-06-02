@@ -16,8 +16,7 @@ namespace Wc3_Combat_Game.Core
 
         public float CurrentTime { get; private set; } = 0f;
 
-        private List<UnitPrototype> _waveUnits = new();
-        private List<BasicWeaponPrototype> _waveUnitWeapons = new();
+        private List<PrototypeUnit> _waveUnits = new();
         private List<int> _waveUnitCounts = new();
         private int _waveCurrent;
         private int _waveSpawnsRemaining;
@@ -41,73 +40,50 @@ namespace Wc3_Combat_Game.Core
 
 
             // Init player
-            UnitPrototype playerUnit = new(100f, 0.1f, 50f, 300f, Brushes.Green, UnitPrototype.DrawShape.Circle);
+            PrototypeWeaponBasic weapon = new PrototypeWeaponBasic(new EffectProjectile(new PrototypeProjectile(5f,
+            600f,
+            2f,
+            new EffectDamage(10f),
+            Color.Blue)),
+            0.20f,
+            float.PositiveInfinity);
+
+
+            PrototypeUnit playerUnit = new((PrototypeWeapon)weapon, 100f, 0.1f, 10f, 150f, Color.Green, PrototypeUnit.DrawShape.Circle);
 
             MainPlayer = UnitFactory.SpawnUnit(playerUnit, (Vector2)GAME_BOUNDS.Center(), new IPlayerController(controller.Input), TeamType.Ally);
 
-            IWeapon weapon = new IBasicWeapon(new EffectProjectile(new ProjectilePrototype
-            (10f,
-            1200f,
-            0.25f,
-            new EffectDamage(10f),
-            Brushes.Blue)),
-            0.15f,
-            float.PositiveInfinity);
-            MainPlayer.Weapon = weapon;
+            
 
             BoardContext.AddUnit(MainPlayer);
 
 
-            BasicWeaponPrototype meleeWeaponBase = new BasicWeaponPrototype(
-                new Effect(),
+            var meleeWeaponBase = new PrototypeWeaponBasic(new Effect(), 1f, 20f);
+            var weapon5Damage = meleeWeaponBase.SetDamage(5f);
+            var weapon10Damage = meleeWeaponBase.SetDamage(10f);
+            var weapon25Damage = meleeWeaponBase.SetDamage(25f);
+            var weapon200Damage = meleeWeaponBase.SetDamage(200f);
+
+            var rangedWeaponBase = new PrototypeWeaponBasic(
+                new EffectProjectile(new PrototypeProjectile(5, 450f, 2f, null, Color.Cyan)),
                 1f,
-                40f
-                );
-            BasicWeaponPrototype rangedWeaponBase = new BasicWeaponPrototype(
-                new EffectProjectile(new ProjectilePrototype(
-                    10,
-                    900f,
-                    (300f / 900f),
-                    null,
-                    Brushes.Cyan
-                    )),
-                1f,
-                300f
-                );
+                150f);
 
-            _waveUnits.Add(new(  10f, 2f  ,  20f, 125f, Brushes.Brown    , UnitPrototype.DrawShape.Circle));
-            _waveUnits.Add(new(  20f, 0.1f,  30f, 200f, Brushes.Red    , UnitPrototype.DrawShape.Circle));
-            _waveUnits.Add(new(  30f, 0.1f,  30f, 100f, Brushes.Orange , UnitPrototype.DrawShape.Square));
-            _waveUnits.Add(new(  80f, 2f  ,  50f, 150f, Brushes.Red    , UnitPrototype.DrawShape.Square));
-            _waveUnits.Add(new( 200f, 0f  , 100f, 175f, Brushes.DarkRed, UnitPrototype.DrawShape.Square));
+            var weapon10DamageRanged = rangedWeaponBase.SetDamage(10f);
 
-            BasicWeaponPrototype weaponPrototype;
 
-            weaponPrototype = (BasicWeaponPrototype)meleeWeaponBase.Clone();
-            weaponPrototype.CastEffect = new EffectDamage(5f);
-            _waveUnitWeapons.Add(weaponPrototype);
+            _waveUnits.Add(new(weapon5Damage,       10f, 2f  ,  10f, 75f, Color.Brown  , PrototypeUnit.DrawShape.Circle));
+            _waveUnits.Add(new(weapon10Damage,      20f, 0.1f,  15f, 100f, Color.Red    , PrototypeUnit.DrawShape.Circle));
+            _waveUnits.Add(new(weapon10DamageRanged,30f, 0.1f,  15f, 50f, Color.Orange , PrototypeUnit.DrawShape.Square));
+            _waveUnits.Add(new(weapon25Damage,      80f, 2f  ,  25f, 750f, Color.Red    , PrototypeUnit.DrawShape.Square));
+            _waveUnits.Add(new(weapon200Damage,     2000f,0f  , 50f,125f, Color.DarkRed, PrototypeUnit.DrawShape.Square));
 
-            weaponPrototype = (BasicWeaponPrototype)meleeWeaponBase.Clone();
-            weaponPrototype.CastEffect = new EffectDamage(10f);
-            _waveUnitWeapons.Add(weaponPrototype);
 
-            weaponPrototype = (BasicWeaponPrototype)rangedWeaponBase.Clone();
-            EffectProjectile effectProjectile = (EffectProjectile)weaponPrototype.CastEffect;
-            effectProjectile.Prototype.ImpactEffect = new EffectDamage(10f);
-            _waveUnitWeapons.Add(weaponPrototype);
 
-            weaponPrototype = (BasicWeaponPrototype)meleeWeaponBase.Clone();
-            weaponPrototype.CastEffect = new EffectDamage(25f);
-            _waveUnitWeapons.Add(weaponPrototype);
-
-            weaponPrototype = (BasicWeaponPrototype)meleeWeaponBase.Clone();
-            weaponPrototype.CastEffect = new EffectDamage(200f);
-            _waveUnitWeapons.Add(weaponPrototype);
-
+            _waveUnitCounts.Add(64);
+            _waveUnitCounts.Add(64);
+            _waveUnitCounts.Add(32);
             _waveUnitCounts.Add(16);
-            _waveUnitCounts.Add(16);
-            _waveUnitCounts.Add(8);
-            _waveUnitCounts.Add(4);
             _waveUnitCounts.Add(1);
 
             _waveCurrent = -1;
@@ -158,19 +134,32 @@ namespace Wc3_Combat_Game.Core
                     _waveSpawnsRemaining--;
                     Unit unit = UnitFactory.SpawnUnit(_waveUnits[_waveCurrent], (Vector2)RandomUtils.RandomPointBorder(SPAWN_BOUNDS), new IBasicAIController(), TeamType.Enemy);
                     unit.Target = MainPlayer;
-                    unit.Weapon = new IBasicWeapon(_waveUnitWeapons[_waveCurrent]);
                     BoardContext.AddUnit(unit);
+                    // Elite
+                    if (_waveSpawnsRemaining > 0 && _waveSpawnsRemaining == _waveUnitCounts[_waveCurrent])
+                    {
+                        // unit.MaxHealth *= 4;
+                        // unit.Health *= 4;
+                        // unit.Speed += 25;
+                        // unit.Damage *= 4;
+                        // I probably need to... Do something to register untis as unique.
+                        // I can't just set these values.
+
+                    }
                 }
                 else if (!Units.Entities.Any(s => s.IsAlive && s.Team == TeamType.Enemy))
                 {
                     // New Wave
-                    if (_waveCurrent < 5)
+                    if (_waveCurrent < _waveUnits.Count)
                     {
                         _waveCurrent++;
-                        _waveSpawnsRemaining = _waveSpawnsRemaining = _waveUnitCounts[_waveCurrent];
+                        _waveSpawnsRemaining = _waveUnitCounts[_waveCurrent];
+
                     }
                     else
                     {
+                        // Loop it, XD
+                        _waveCurrent = 0;
                         //CheckGameOverCondition();
                     }
                 }

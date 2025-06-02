@@ -13,7 +13,7 @@ namespace Wc3_Combat_Game.Entities
         protected float _size;
         protected Vector2 _sizeVector => new Vector2(_size, _size);
         protected Vector2 _position;
-        protected Brush _fillBrush;
+        protected Color _fillColor;
         private bool _isAlive = true;
         float _lastKilled = float.NegativeInfinity;
         protected float _despawnDelay = GameConstants.FIXED_DELTA_TIME;
@@ -25,11 +25,11 @@ namespace Wc3_Combat_Game.Entities
 
         public RectangleF BoundingBox { get => _position.RectFromCenter(_sizeVector); }
 
-        public IEntity(float size, Vector2 position, Brush brush)
+        public IEntity(float size, Vector2 position, Color color)
         {
             _size = size;
             _position = position;
-            _fillBrush = brush;
+            _fillColor = color;
             Team = TeamType.Neutral;
         }
 
@@ -46,7 +46,8 @@ namespace Wc3_Combat_Game.Entities
         {
             if (!IsAlive) return;
             Rectangle entityRect = _position.RectFromCenter(_sizeVector);
-            g.FillRectangle(_fillBrush, entityRect);
+            using var brush = new SolidBrush(_fillColor);
+            g.FillRectangle(brush, entityRect);
         }
 
         public abstract void Update(float deltaTime, BoardContext context);
