@@ -11,10 +11,10 @@ namespace Wc3_Combat_Game.Entities
     public class EntityManager<T> where T : IEntity
     {
         private readonly List<T> _entities = new List<T>();
-        public void UpdateAll(float deltaTime, BoardContext context)
+        public void UpdateAll(float deltaTime, IBoardContext context)
             { foreach (var e in _entities) e.Update(deltaTime,context); }
         public void Add(T entity) { _entities.Add(entity); }
-        public void RemoveExpired(BoardContext context)
+        public void RemoveExpired(IBoardContext context)
         {
             _entities.RemoveAll(e => e.IsExpired(context));
         }

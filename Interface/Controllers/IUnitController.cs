@@ -10,6 +10,6 @@ namespace Wc3_Combat_Game.Interface.Controllers
 {
     public interface IUnitController
     {
-        void Update(Unit unit, float deltaTime, BoardContext context);
+        void Update(Unit unit, float deltaTime, IBoardContext context);
     }
 }

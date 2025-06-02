@@ -116,6 +116,18 @@ namespace Wc3_Combat_Game.Util
                 (int)Math.Ceiling(size.Y)
              );
         }
+        public static RectangleF RectFFromCenter(this Vector2 center, Vector2 size)
+        {
+            if (size.X < 0 || size.Y < 0)
+                throw new ArgumentException("Size must have non-negative dimensions", nameof(size));
+
+            return new(
+                center.X - size.X / 2,
+                center.Y - size.Y / 2,
+                size.X,
+                size.Y
+             );
+        }
 
         public static Rectangle RectFromBottomCenter(this Vector2 bottomCenter, Vector2 size)
         {

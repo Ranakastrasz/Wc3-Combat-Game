@@ -21,17 +21,17 @@ namespace Wc3_Combat_Game.Effects
             Prototype = prototype;
         }
 
-        protected override void Execute(IEntity? Source, BoardContext context)
+        protected override void Execute(IEntity? Source, IBoardContext context)
         {
             // Maybe launch from source facing?
 
         }
-        public override void ApplyToEntity(IEntity? Caster, IEntity? Emitter, IEntity Target, BoardContext context)
+        public override void ApplyToEntity(IEntity? Caster, IEntity? Emitter, IEntity Target, IBoardContext context)
         {
             ApplyToPoint(Caster,Emitter,Target.Position, context);
         }
 
-        public override void ApplyToPoint(IEntity? Caster, IEntity? Emitter, Vector2 TargetPoint, BoardContext context)
+        public override void ApplyToPoint(IEntity? Caster, IEntity? Emitter, Vector2 TargetPoint, IBoardContext context)
         {
             //Projectile projectile = new Projectile(Caster.Position, Prototype);
             // Hardcode requirements for now

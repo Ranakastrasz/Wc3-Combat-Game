@@ -12,7 +12,7 @@ namespace Wc3_Combat_Game.Interface.Controllers
 {
     class IBasicAIController : IUnitController
     {
-        public void Update(Unit unit, float deltaTime, BoardContext context)
+        public void Update(Unit unit, float deltaTime, IBoardContext context)
         {
             // Example: move toward nearest enemy
             //Unit target = FindNearestEnemy(unit);

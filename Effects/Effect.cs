@@ -19,13 +19,13 @@ namespace Wc3_Combat_Game.Effects
         //    TOWER
         //}
 
-        protected virtual void Execute(IEntity? Source, BoardContext context)
+        protected virtual void Execute(IEntity? Source, IBoardContext context)
         { }
 
-        public virtual void ApplyToEntity(IEntity? Caster, IEntity? Emitter, IEntity Target, BoardContext context)
+        public virtual void ApplyToEntity(IEntity? Caster, IEntity? Emitter, IEntity Target, IBoardContext context)
         { }
 
-        public virtual void ApplyToPoint(IEntity? Caster, IEntity? Emitter, Vector2 TargetPoint, BoardContext context)
+        public virtual void ApplyToPoint(IEntity? Caster, IEntity? Emitter, Vector2 TargetPoint, IBoardContext context)
         { }
 
         //protected static bool validateTarget(TARGET iType, Entity iTarget)

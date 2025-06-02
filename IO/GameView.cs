@@ -3,6 +3,7 @@ using System.Numerics;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.IO;
+using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
 using static Wc3_Combat_Game.Core.GameController;
 
@@ -13,15 +14,15 @@ namespace Wc3_Combat_Game
     {
         internal readonly GameController _controller;
 
+        private Camera _camera;
 
 
         private EntityManager<Projectile>? _projectiles;
         private EntityManager<Unit>? _units;
 
-        private BoardContext? _context;
+        private IDrawContext? _drawContext;
 
-        private Font _gameOverFont = new Font("Arial", 24, FontStyle.Bold);
-
+        private Font? _gridFont;
 
         public InputManager Input { get; private set; } = new InputManager();
 
@@ -38,7 +39,7 @@ namespace Wc3_Combat_Game
         private void MainGameWindow_MouseDown(object? sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
-                Input.OnMouseDown(e.Location);
+                Input.OnMouseDown(ScreenToWorld(e.Location));
         }
 
         private void MainGameWindow_MouseUp(object? sender, MouseEventArgs e)
@@ -49,11 +50,20 @@ namespace Wc3_Combat_Game
 
         private void MainGameWindow_MouseMove(object? sender, MouseEventArgs e)
         {
-            Input.OnMouseMove(e.Location.ToVector2());
+            Input.OnMouseMove(ScreenToWorld(e.Location));
+        }
+
+        public Vector2 ScreenToWorld(Point screenPos)
+        {
+            var matrix = _camera.GetTransform();
+            matrix.Invert();
+            var points = new PointF[] { new PointF(screenPos.X, screenPos.Y) };
+            matrix.TransformPoints(points);
+            return new Vector2(points[0].X, points[0].Y);
         }
 
         internal void SetDrawables(EntityManager<Projectile> projectiles, EntityManager<Unit> enemies)
-        {
+        { // Could be another context if I wanted. I think.
             _projectiles = projectiles;
             _units = enemies;
         }
@@ -64,7 +74,12 @@ namespace Wc3_Combat_Game
             
             _controller = controller;
 
-            this.ClientSize = GameConstants.CLIENT_SIZE.Size;
+            this.ClientSize = GameConstants.CAMERA_BOUNDS.Size.ToSize();
+            this._camera = new Camera();
+            _camera.LerpFactor = 10f;
+            _camera.Zoom = 2;
+            _camera.Width = GameConstants.CAMERA_BOUNDS.Width;
+            _camera.Height = GameConstants.CAMERA_BOUNDS.Height;
 
             this.DoubleBuffered = true;
             this.KeyPreview = true;  // Form gets key events even if controls are focused
@@ -79,12 +94,15 @@ namespace Wc3_Combat_Game
             this.MouseMove += MainGameWindow_MouseMove;
 
 
+            _gridFont = null;
         }
 
 
-        public void Update(float deltaTime, BoardContext context)
+        public void Update(float deltaTime, IDrawContext context)
         {
-            _context = context;
+            _drawContext = context;
+
+            _camera.UpdateFollow(_drawContext.PlayerUnit.Position, deltaTime);
 
             this.Invalidate();
         }
@@ -93,24 +111,63 @@ namespace Wc3_Combat_Game
             Graphics g = e.Graphics;
             g.Clear(Color.Black);
 
+
+            // Apply camera transform
+            using var transform = _camera.GetTransform();
+            g.Transform = transform;
+
+
+            // Draw Map.
+            if (_drawContext != null)
+            {
+                Tile[,] grid = _drawContext.TileGrid;
+
+                //_gridFont ??= FontUtils.FitFontToTile(g, "Consolas", 32f, FontStyle.Regular, GraphicsUnit.Pixel);//new Font("Consolas", 32f, FontStyle.Regular, GraphicsUnit.Pixel);
+                
+                
+                int tileSize = 32;
+
+                for (int y = 0; y < grid.GetLength(0); y++)
+                {
+                    for (int x = 0; x < grid.GetLength(1); x++)
+                    {
+                        Tile tile = grid[x, y];
+                        Brush brush = new SolidBrush(tile.Color); // optionally cache these
+
+                        g.FillRectangle(brush,x*tileSize,y*tileSize,tileSize,tileSize);
+                        //g.DrawString(
+                        //    tile.Ascii.ToString(),
+                        //    _gridFont,
+                        //    brush,
+                        //    x * tileSize,
+                        //    y * tileSize
+                        //);
+
+                        brush.Dispose(); // only if not cached
+                    }
+                }
+
+            }
+
 #if DEBUG
             g.DrawRectangle(Pens.White, GameConstants.GAME_BOUNDS);
             g.DrawRectangle(Pens.Blue, GameConstants.SPAWN_BOUNDS);
 #endif
-            if (_context != null)
+            if (_drawContext != null)
             {
-                _projectiles?.ForEach(p => p.Draw(g, _context));
-                _units?.ForEach(p => p.Draw(g, _context));
+                _projectiles?.ForEach(p => p.Draw(g, _drawContext));
+                _units?.ForEach(p => p.Draw(g, _drawContext));
             }
+
+
             if (_controller.CurrentState == GameState.GameOver)
             {
-                g.DrawString("Game Over", _gameOverFont, Brushes.White, ClientSize.Width/2, ClientSize.Height/2);
+                g.ResetTransform();
+                using var gameOverFont = new Font("Arial", 24, FontStyle.Bold);
+                g.DrawString("Game Over", gameOverFont, Brushes.White, ClientSize.Width / 2, ClientSize.Height / 2);
             }
         }
-        protected void DisposeCustomResources()
-        {
-            _gameOverFont?.Dispose();
-        }
 
+        private void DisposeCustomResources() => _gridFont?.Dispose();
     }
 }

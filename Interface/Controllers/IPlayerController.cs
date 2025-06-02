@@ -15,7 +15,7 @@ namespace Wc3_Combat_Game.Interface.Controllers
             _input = input;
         }
 
-        public void Update(Unit unit, float deltaTime, BoardContext context)
+        public void Update(Unit unit, float deltaTime, IBoardContext context)
         {
             if (!unit.IsAlive) return;
 

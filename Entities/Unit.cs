@@ -42,7 +42,7 @@ namespace Wc3_Combat_Game.Entities
         }
 
 
-        public override void Update(float deltaTime, BoardContext context)
+        public override void Update(float deltaTime, IBoardContext context)
         {
 
             Controller?.Update(this, deltaTime, context);
@@ -57,9 +57,9 @@ namespace Wc3_Combat_Game.Entities
         }
 
 
-        public override void Draw(Graphics g, BoardContext context)
+        public override void Draw(Graphics g, IDrawContext context)
         {
-            Rectangle entityRect = _position.RectFromCenter(_sizeVector);
+            RectangleF entityRect = _position.RectFFromCenter(_sizeVector);
 
             if (!TimeUtils.HasElapsed(context.CurrentTime,_lastDamaged,s_DamageFlashTime))
             {
@@ -83,7 +83,7 @@ namespace Wc3_Combat_Game.Entities
             if (Health < MaxHealth && Health > 0)
             {
                 // --- Health Bar ---
-                Rectangle healthBarBackgroundRect = new Rectangle(
+                RectangleF healthBarBackgroundRect = new RectangleF(
                     entityRect.X,
                     entityRect.Bottom + barOffset,
                     entityRect.Width,
@@ -94,7 +94,7 @@ namespace Wc3_Combat_Game.Entities
                 float healthRatio = (float)Health / MaxHealth;
                 int healthFillWidth = (int)(entityRect.Width * healthRatio);
 
-                Rectangle healthFillRect = new Rectangle(
+                RectangleF healthFillRect = new RectangleF(
                     entityRect.X,
                     entityRect.Bottom + barOffset,
                     healthFillWidth,
@@ -109,9 +109,9 @@ namespace Wc3_Combat_Game.Entities
             {
                 if (Weapon != null)
                 {
-                    int manaBarY = entityRect.Bottom + barOffset + barHeight + barSpacing;
+                    float manaBarY = entityRect.Bottom + barOffset + barHeight + barSpacing;
 
-                    Rectangle manaBarBackgroundRect = new Rectangle(
+                    RectangleF manaBarBackgroundRect = new RectangleF(
                         entityRect.X,
                         manaBarY,
                         entityRect.Width,
@@ -122,7 +122,7 @@ namespace Wc3_Combat_Game.Entities
                     float manaRatio = (float)Math.Min(1f, Weapon.GetTimeSinceLastShot(context) / Weapon.GetCooldown());
                     int manaFillWidth = (int)(entityRect.Width * manaRatio);
 
-                    Rectangle manaFillRect = new Rectangle(
+                    RectangleF manaFillRect = new RectangleF(
                         entityRect.X,
                         manaBarY,
                         manaFillWidth,
@@ -134,7 +134,7 @@ namespace Wc3_Combat_Game.Entities
 
         }
 
-        public void Damage(float amount, BoardContext context)
+        public void Damage(float amount, IBoardContext context)
         {
             Health -= amount;
             _lastDamaged = context.CurrentTime;

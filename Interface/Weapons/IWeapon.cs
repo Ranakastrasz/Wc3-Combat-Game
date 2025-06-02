@@ -11,10 +11,10 @@ namespace Wc3_Combat_Game.Interface.Weapons
         float GetAttackRange(); // For AI mostly.
         float GetAttackRangeSqr() => GetAttackRange() * GetAttackRange(); // For AI mostly.
 
-        bool TryShootEntity(Unit unit, IEntity target, BoardContext context) { return false; }
-        bool TryShootPoint(Unit unit, Vector2 target, BoardContext context) { return false; }
+        bool TryShootEntity(Unit unit, IEntity target, IBoardContext context) { return false; }
+        bool TryShootPoint(Unit unit, Vector2 target, IBoardContext context) { return false; }
         float GetCooldown();             // For display
-        float GetTimeSinceLastShot(BoardContext context); // For display
+        float GetTimeSinceLastShot(IDrawContext context); // For display
 
     }
 

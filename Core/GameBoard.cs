@@ -6,13 +6,13 @@ using static Wc3_Combat_Game.Core.GameConstants;
 using Wc3_Combat_Game.Interface.Weapons;
 using Wc3_Combat_Game.Interface.Controllers;
 using Wc3_Combat_Game.Prototype;
+using Wc3_Combat_Game.Terrain;
 
 namespace Wc3_Combat_Game.Core
 {
-    public class GameBoard : IBoardContext
+    public class GameBoard : IBoardContext, IDrawContext
     {
         private readonly GameController _controller;
-        public BoardContext BoardContext;
 
         public float CurrentTime { get; private set; } = 0f;
 
@@ -23,12 +23,12 @@ namespace Wc3_Combat_Game.Core
 
 
         // Entities.
-        internal Unit MainPlayer { get; private set; }
+        public Unit PlayerUnit { get; private set; }
 
         internal EntityManager<Projectile> Projectiles { get; private set; } = new();
         internal EntityManager<Unit> Units { get; private set; } = new();
 
-        float IBoardContext.CurrentTime => throw new NotImplementedException();
+        public Tile[,] TileGrid { get; private set; }
 
         private float _lastEnemySpawned = 0f;
 
@@ -36,7 +36,6 @@ namespace Wc3_Combat_Game.Core
         public GameBoard(GameController controller)
         {
             _controller = controller;
-            BoardContext = new BoardContext(this);
 
 
             // Init player
@@ -51,11 +50,11 @@ namespace Wc3_Combat_Game.Core
 
             PrototypeUnit playerUnit = new((PrototypeWeapon)weapon, 100f, 0.1f, 10f, 150f, Color.Green, PrototypeUnit.DrawShape.Circle);
 
-            MainPlayer = UnitFactory.SpawnUnit(playerUnit, (Vector2)GAME_BOUNDS.Center(), new IPlayerController(controller.Input), TeamType.Ally);
+            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)GAME_BOUNDS.Center(), new IPlayerController(controller.Input), TeamType.Ally);
 
             
 
-            BoardContext.AddUnit(MainPlayer);
+            AddUnit(PlayerUnit);
 
 
             var meleeWeaponBase = new PrototypeWeaponBasic(new Effect(), 1f, 20f);
@@ -89,33 +88,26 @@ namespace Wc3_Combat_Game.Core
             _waveCurrent = -1;
             _waveSpawnsRemaining = 0;
 
-            //
-            //public static UnitPrototype ENEMY_SWARMER_LIGHT   = new(   5f, 2f  ,  20f, 125f, Brushes.Red, UnitPrototype.DrawShape.Circle);
-            //public static UnitPrototype ENEMY_SWARMER         = new(  10f, 0.1f,  30f, 150f, Brushes.Red, UnitPrototype.DrawShape.Circle);
-            //public static UnitPrototype ENEMY_CASTER          = new(  30f, 0.1f,  30f, 100f, Brushes.Orange, UnitPrototype.DrawShape.Square);
-            //public static UnitPrototype ENEMY_BRUTE           = new(  80f, 2f  ,  50f, 125f, Brushes.Red, UnitPrototype.DrawShape.Square);
-            //public static UnitPrototype ENEMY_BRUTE_BOSS      = new(1000f, 0f  , 100f, 125f, Brushes.DarkRed, UnitPrototype.DrawShape.Square);
+            // ParseMap
+            string[] map = Map.map1;
+            TileGrid = new Tile[map[0].Length, map.Length];
+            for (int y = 0; y < map.Length; y++)
+            {
+                for (int x = 0; x < map[y].Length; x++)
+                {
+                    char c = Map.map1[y][x];
+                    TileGrid[x, y] = Tile.CharToTile(c);
+                }
+            }
 
-            //Unit              Type    HP      Dmg     Qty      Notes
-            //Zombie	        Swarmer  5	    5-10    64       1 regen, trivial
-            //Ghoul	            Swarmer 10	    10-20   64       Common
-            //Acolyte	        Caster  30	    10-15   32       10 dmg spellbolt
-            //Abomination	    Brute   80	    25-30   16       2 regen, ~25 dmg, elite 1-shots
-            //Meat Golem	    Boss    2000    200     1        Berserk + haste, health degenerates when low
-
-            //Skeleton Warrior	Swarmer 20	    10-15   128      Swarm type
-            //Skeleton Archer   Caster  25	    10-15   64       25 dmg spellbolt, elite 1-shots
-            //Skeleton Ork      Brute   100	    30-40   16       Tough brawler
-            //Skeleton Mage	    Caster  320	    25-30   8        Rare, 100 dmg bolt + snare, hitscan
-            //Lich Boss	        Boss    4000	200     1        Fan of 5 × 100 dmg bolts, snare, summon units
         }
 
 
 
 
-        private void CheckGameOverCondition(BoardContext context)
+        private void CheckGameOverCondition(IBoardContext context)
         {
-            if (MainPlayer.IsExpired(context))
+            if (PlayerUnit.IsExpired(context))
             {
                 _controller.OnGameOver();
             }
@@ -126,15 +118,15 @@ namespace Wc3_Combat_Game.Core
             CurrentTime += deltaTime;
 
 
-            if (TimeUtils.HasElapsed(BoardContext.CurrentTime,_lastEnemySpawned,ENEMY_SPAWN_COOLDOWN))
+            if (TimeUtils.HasElapsed(CurrentTime,_lastEnemySpawned,ENEMY_SPAWN_COOLDOWN))
             {
                 if (_waveSpawnsRemaining > 0)
                 {
-                    _lastEnemySpawned = BoardContext.CurrentTime;
+                    _lastEnemySpawned = CurrentTime;
                     _waveSpawnsRemaining--;
                     Unit unit = UnitFactory.SpawnUnit(_waveUnits[_waveCurrent], (Vector2)RandomUtils.RandomPointBorder(SPAWN_BOUNDS), new IBasicAIController(), TeamType.Enemy);
-                    unit.Target = MainPlayer;
-                    BoardContext.AddUnit(unit);
+                    unit.Target = PlayerUnit;
+                    AddUnit(unit);
                     // Elite
                     if (_waveSpawnsRemaining > 0 && _waveSpawnsRemaining == _waveUnitCounts[_waveCurrent])
                     {
@@ -169,19 +161,19 @@ namespace Wc3_Combat_Game.Core
 
             // Update Entities.
 
-            MainPlayer.Update(deltaTime, BoardContext);
-            Projectiles.UpdateAll(deltaTime, BoardContext);
-            Units.UpdateAll(deltaTime, BoardContext);
+            PlayerUnit.Update(deltaTime, this);
+            Projectiles.UpdateAll(deltaTime, this);
+            Units.UpdateAll(deltaTime, this);
 
             CheckCollision(deltaTime);
 
 
             // Cleanup dead entities.
-            Projectiles.RemoveExpired(BoardContext);
-            Units.RemoveExpired(BoardContext);
+            Projectiles.RemoveExpired(this);
+            Units.RemoveExpired(this);
 
 
-            CheckGameOverCondition(BoardContext);
+            CheckGameOverCondition(this);
             // End Logic
         }
 
@@ -193,8 +185,8 @@ namespace Wc3_Combat_Game.Core
                 {
                     if (projectile.Intersects(unit))
                     {
-                        projectile.Die(BoardContext);
-                        projectile.ImpactEffect?.ApplyToEntity(projectile.Caster, projectile, unit, BoardContext);
+                        projectile.Die(this);
+                        projectile.ImpactEffect?.ApplyToEntity(projectile.Caster, projectile, unit, this);
 
                         break;
                     }
@@ -205,30 +197,31 @@ namespace Wc3_Combat_Game.Core
             {
                 if (!projectile.BoundingBox.IntersectsWith(GAME_BOUNDS))
                 {
-                    projectile.Die(BoardContext);
+                    projectile.Die(this);
                 }
             }
 
-            if (!GAME_BOUNDS.Contains(MainPlayer.BoundingBox))
+            if (!GAME_BOUNDS.Contains(PlayerUnit.BoundingBox))
             {
                 var bounds = GAME_BOUNDS;
-                var halfSize = new SizeF(MainPlayer.Size / 2f, MainPlayer.Size / 2f);
+                var halfSize = new SizeF(PlayerUnit.Size / 2f, PlayerUnit.Size / 2f);
 
-                MainPlayer.Position = new Vector2(
-                    Math.Clamp(MainPlayer.Position.X, bounds.Left + halfSize.Width, bounds.Right - halfSize.Width),
-                    Math.Clamp(MainPlayer.Position.Y, bounds.Top + halfSize.Height, bounds.Bottom - halfSize.Height)
+                PlayerUnit.Position = new Vector2(
+                    Math.Clamp(PlayerUnit.Position.X, bounds.Left + halfSize.Width, bounds.Right - halfSize.Width),
+                    Math.Clamp(PlayerUnit.Position.Y, bounds.Top + halfSize.Height, bounds.Bottom - halfSize.Height)
                 );
             }
         }
 
-        void IBoardContext.AddProjectile(Projectile p)
+        public void AddProjectile(Projectile p)
         {
             Projectiles.Add(p);
         }
 
-        void IBoardContext.AddUnit(Unit u)
+        public void AddUnit(Unit u)
         {
             Units.Add(u);
         }
+
     }
 }

@@ -18,11 +18,11 @@ namespace Wc3_Combat_Game.Core
 
         public GameState CurrentState;
 
-        public GameBoard? Session { get; set; }
+        public GameBoard? Board { get; set; }
         public readonly GameView View;
 
 
-        public float CurrentTime => Session?.CurrentTime ?? float.NegativeInfinity;
+        public float CurrentTime => Board?.CurrentTime ?? float.NegativeInfinity;
         public InputManager Input => View.Input;
 
         private readonly Timer _gameLoopTimer;
@@ -58,10 +58,10 @@ namespace Wc3_Combat_Game.Core
 
             if (CurrentState == GameState.Playing)
             {
-                if (View != null && Session != null)
+                if (View != null && Board != null)
                 {
-                    Session.Update(deltaTime);
-                    View.Update(deltaTime, Session.BoardContext);
+                    Board.Update(deltaTime);
+                    View.Update(deltaTime, Board);
                 }
             }
             else if (CurrentState == GameState.GameOver)
@@ -79,12 +79,12 @@ namespace Wc3_Combat_Game.Core
 
         public void CreateSession()
         {
-            Session = new GameBoard(this);
+            Board = new GameBoard(this);
         }
 
         internal void StartGame()
         {
-            if (Session != null)
+            if (Board != null)
             {
                 CurrentState = GameState.Playing;
             }
@@ -92,9 +92,9 @@ namespace Wc3_Combat_Game.Core
 
         internal void SyncDrawables()
         {
-            if (View != null && Session != null)
+            if (View != null && Board != null)
             {
-                View?.SetDrawables(Session.Projectiles, Session.Units);
+                View?.SetDrawables(Board.Projectiles, Board.Units);
 
             }
 

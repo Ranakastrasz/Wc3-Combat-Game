@@ -26,7 +26,7 @@ namespace Wc3_Combat_Game.Interface.Weapons
             _attackRange = prototype.CastRange;
         }
 
-        public bool TryShootPoint(Unit unit, Vector2 target, BoardContext context)
+        public bool TryShootPoint(Unit unit, Vector2 target, IBoardContext context)
         {
             if (!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
@@ -37,7 +37,7 @@ namespace Wc3_Combat_Game.Interface.Weapons
             return true;
         }
 
-        public bool TryShootEntity(Unit unit, IEntity target, BoardContext context)
+        public bool TryShootEntity(Unit unit, IEntity target, IBoardContext context)
         {
             if (!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
@@ -49,7 +49,7 @@ namespace Wc3_Combat_Game.Interface.Weapons
         }
 
         public float GetCooldown() => _cooldown;
-        public float GetTimeSinceLastShot(BoardContext context) => context.CurrentTime - _lastShotTime;
+        public float GetTimeSinceLastShot(IDrawContext context) => context.CurrentTime - _lastShotTime;
 
         public float GetAttackRange() => _attackRange;
 

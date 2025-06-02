@@ -23,7 +23,7 @@ namespace Wc3_Combat_Game.Entities
 
 
 
-        public RectangleF BoundingBox { get => _position.RectFromCenter(_sizeVector); }
+        public RectangleF BoundingBox { get => _position.RectFFromCenter(_sizeVector); }
 
         public IEntity(float size, Vector2 position, Color color)
         {
@@ -40,19 +40,19 @@ namespace Wc3_Combat_Game.Entities
         public Vector2 Position { get => _position; set => _position = value; }
         public bool IsAlive { get => _isAlive; set => _isAlive = value; }
 
-        public bool IsExpired(BoardContext context) => !_isAlive && context.CurrentTime > _lastKilled + _despawnDelay;
+        public bool IsExpired(IBoardContext context) => !_isAlive && context.CurrentTime > _lastKilled + _despawnDelay;
 
-        public virtual void Draw(Graphics g, BoardContext context)
+        public virtual void Draw(Graphics g, IDrawContext context)
         {
             if (!IsAlive) return;
-            Rectangle entityRect = _position.RectFromCenter(_sizeVector);
+            RectangleF entityRect = _position.RectFFromCenter(_sizeVector);
             using var brush = new SolidBrush(_fillColor);
             g.FillRectangle(brush, entityRect);
         }
 
-        public abstract void Update(float deltaTime, BoardContext context);
+        public abstract void Update(float deltaTime, IBoardContext context);
 
-        public void Die(BoardContext context)
+        public void Die(IBoardContext context)
         {
             if (!IsAlive) return;
 

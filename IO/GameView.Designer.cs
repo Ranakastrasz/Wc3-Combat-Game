@@ -1,4 +1,5 @@
-﻿namespace Wc3_Combat_Game
+﻿
+namespace Wc3_Combat_Game
 {
     partial class GameView
     {
@@ -20,6 +21,7 @@
             }
             base.Dispose(disposing);
         }
+
 
         #region Windows Form Designer generated code
 

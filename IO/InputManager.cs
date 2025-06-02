@@ -9,7 +9,7 @@ namespace Wc3_Combat_Game.IO
         private HashSet<Keys> _keysPressedThisFrame = new();
         private bool _mouseDown = false;
         private bool _mouseClickedThisFrame = false;
-        private Point _mouseClickedPoint;
+        private Vector2 _mouseClickedPosition;
         private Vector2 _currentMousePosition;
 
         public void OnKeyDown(Keys key)
@@ -23,11 +23,11 @@ namespace Wc3_Combat_Game.IO
             _keysDown.Remove(key);
         }
 
-        public void OnMouseDown(Point point)
+        public void OnMouseDown(Vector2 pos)
         {
             _mouseDown = true;
             _mouseClickedThisFrame = true;
-            _mouseClickedPoint = point;
+            _mouseClickedPosition = pos;
         }
 
         public void OnMouseUp()
@@ -49,7 +49,7 @@ namespace Wc3_Combat_Game.IO
         public bool IsMouseClicked() => _mouseClickedThisFrame;
 
         public Vector2 CurrentMousePosition => _currentMousePosition;
-        public Vector2 MouseClickedPosition => _mouseClickedPoint.ToVector2();
+        public Vector2 MouseClickedPosition => _mouseClickedPosition;
 
         // Call at end of update to clear key press buffer (if not consumed)
         public void EndFrame()

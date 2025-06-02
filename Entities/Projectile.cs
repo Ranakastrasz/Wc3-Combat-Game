@@ -32,7 +32,7 @@ namespace Wc3_Combat_Game.Entities
         public Vector2 Velocity { get => _velocity; set => _velocity = value; }
         public float TimeToLive { get => _timeToLive; set => _timeToLive = value; }
 
-        public override void Update(float deltaTime, BoardContext context)
+        public override void Update(float deltaTime, IBoardContext context)
         {
             if (IsAlive)
             {
@@ -45,7 +45,7 @@ namespace Wc3_Combat_Game.Entities
             }
         }
 
-        public override void Draw(Graphics g, BoardContext context)
+        public override void Draw(Graphics g, IDrawContext context)
         {
             base.Draw(g, context);
         }
