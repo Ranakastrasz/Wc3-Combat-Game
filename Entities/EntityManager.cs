@@ -24,5 +24,6 @@ namespace Wc3_Combat_Game.Entities
             foreach (var entity in _entities)
                 action(entity);
         }
+
     }
 }

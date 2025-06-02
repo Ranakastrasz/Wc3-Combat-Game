@@ -17,9 +17,6 @@ namespace Wc3_Combat_Game
         private Camera _camera;
 
 
-        private EntityManager<Projectile>? _projectiles;
-        private EntityManager<Unit>? _units;
-
         private IDrawContext? _drawContext;
 
         private Font? _gridFont;
@@ -60,12 +57,6 @@ namespace Wc3_Combat_Game
             var points = new PointF[] { new PointF(screenPos.X, screenPos.Y) };
             matrix.TransformPoints(points);
             return new Vector2(points[0].X, points[0].Y);
-        }
-
-        internal void SetDrawables(EntityManager<Projectile> projectiles, EntityManager<Unit> enemies)
-        { // Could be another context if I wanted. I think.
-            _projectiles = projectiles;
-            _units = enemies;
         }
 
         internal GameView(GameController controller)
@@ -155,8 +146,7 @@ namespace Wc3_Combat_Game
 #endif
             if (_drawContext != null)
             {
-                _projectiles?.ForEach(p => p.Draw(g, _drawContext));
-                _units?.ForEach(p => p.Draw(g, _drawContext));
+                _drawContext.Entities?.ForEach(p => p.Draw(g, _drawContext));
             }
 
 

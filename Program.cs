@@ -17,9 +17,8 @@ namespace Wc3_Combat_Game
             GameController game = new GameController();
 
             //game.View = new GameView(game);
-            game.CreateSession();
+            game.CreateGameBoard();
             
-            game.SyncDrawables();
 
 
             game.StartGame();

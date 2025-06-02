@@ -28,6 +28,9 @@ namespace Wc3_Combat_Game.Core
         internal EntityManager<Projectile> Projectiles { get; private set; } = new();
         internal EntityManager<Unit> Units { get; private set; } = new();
 
+        public EntityManager<IEntity> Entities { get; private set; } = new();
+
+
         public Tile[,] TileGrid { get; private set; }
 
         private float _lastEnemySpawned = 0f;
@@ -161,9 +164,10 @@ namespace Wc3_Combat_Game.Core
 
             // Update Entities.
 
-            PlayerUnit.Update(deltaTime, this);
-            Projectiles.UpdateAll(deltaTime, this);
             Units.UpdateAll(deltaTime, this);
+            Projectiles.UpdateAll(deltaTime, this);
+            // Seperate required, because units can create projectiles.
+            // Admittedly, eventually projectiles will be able to create projectiles, I think.
 
             CheckCollision(deltaTime);
 
@@ -171,7 +175,7 @@ namespace Wc3_Combat_Game.Core
             // Cleanup dead entities.
             Projectiles.RemoveExpired(this);
             Units.RemoveExpired(this);
-
+            Entities.RemoveExpired(this);
 
             CheckGameOverCondition(this);
             // End Logic
@@ -216,11 +220,13 @@ namespace Wc3_Combat_Game.Core
         public void AddProjectile(Projectile p)
         {
             Projectiles.Add(p);
+            Entities.Add(p);
         }
 
         public void AddUnit(Unit u)
         {
             Units.Add(u);
+            Entities.Add(u);
         }
 
     }

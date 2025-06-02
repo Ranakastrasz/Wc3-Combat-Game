@@ -68,8 +68,7 @@ namespace Wc3_Combat_Game.Core
             {
                 if (TimeUtils.HasElapsed(GlobalTime, _gameOverTime, GameConstants.GAME_RESTART_DELAY))
                 {
-                    CreateSession();
-                    SyncDrawables();
+                    CreateGameBoard();
                     StartGame();
                 }
             }
@@ -77,7 +76,7 @@ namespace Wc3_Combat_Game.Core
 
         }
 
-        public void CreateSession()
+        public void CreateGameBoard()
         {
             Board = new GameBoard(this);
         }
@@ -90,14 +89,5 @@ namespace Wc3_Combat_Game.Core
             }
         }
 
-        internal void SyncDrawables()
-        {
-            if (View != null && Board != null)
-            {
-                View?.SetDrawables(Board.Projectiles, Board.Units);
-
-            }
-
-        }
     }
 }
