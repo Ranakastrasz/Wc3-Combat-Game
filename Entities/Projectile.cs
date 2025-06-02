@@ -11,9 +11,9 @@ namespace Wc3_Combat_Game.Entities
     /// Projectile object representing bullets, missiles, or other fired entities.
     /// Inherits from Entity.
     /// </summary>
-    public class Projectile : IEntity
+    public class Projectile : MobileEntity
     {
-        private Vector2 _velocity;
+        //private Vector2 _velocity;
         private float _timeToLive;
         private PrototypeProjectile _prototype;
         public Effect? ImpactEffect => _prototype.ImpactEffect;
@@ -29,25 +29,32 @@ namespace Wc3_Combat_Game.Entities
 
         }
 
-        public Vector2 Velocity { get => _velocity; set => _velocity = value; }
-        public float TimeToLive { get => _timeToLive; set => _timeToLive = value; }
+//        public Vector2 Velocity { get => _velocity; set => _velocity = value; }
+//        public float TimeToLive { get => _timeToLive; set => _timeToLive = value; }
 
         public override void Update(float deltaTime, IBoardContext context)
         {
+            base.Update(deltaTime, context);
             if (IsAlive)
             {
-                _position += _velocity * FIXED_DELTA_TIME;
 
                 _timeToLive -= FIXED_DELTA_TIME;
-
                 if (_timeToLive <= 0)
+                {
                     Die(context);
+                    _velocity = Vector2.Zero;
+                }
             }
         }
 
         public override void Draw(Graphics g, IDrawContext context)
         {
             base.Draw(g, context);
+        }
+
+        protected override void OnTerrainCollision(IBoardContext context)
+        {
+            Die(context);
         }
     }
 }

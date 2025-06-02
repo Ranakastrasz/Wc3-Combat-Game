@@ -10,7 +10,8 @@ namespace Wc3_Combat_Game.Entities
     /// </summary>
     public abstract class IEntity
     {
-        protected float _size;
+        protected float _size; // Diameter
+        protected float CollisionRadius => _size / 2; // Hardcode for now.
         protected Vector2 _sizeVector => new Vector2(_size, _size);
         protected Vector2 _position;
         protected Color _fillColor;

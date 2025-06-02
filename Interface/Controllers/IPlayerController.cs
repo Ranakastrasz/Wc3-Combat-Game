@@ -26,7 +26,7 @@ namespace Wc3_Combat_Game.Interface.Controllers
             if (_input.IsKeyDown(Keys.D)) move.X += 1;
 
             if (move != Vector2.Zero)
-                unit.Move(move);
+                unit.OrderMove(move);
 
 
             if (unit.Weapon != null)

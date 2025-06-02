@@ -111,21 +111,25 @@ namespace Wc3_Combat_Game
             // Draw Map.
             if (_drawContext != null)
             {
-                Tile[,] grid = _drawContext.TileGrid;
+                Map map = _drawContext.Map;
 
                 //_gridFont ??= FontUtils.FitFontToTile(g, "Consolas", 32f, FontStyle.Regular, GraphicsUnit.Pixel);//new Font("Consolas", 32f, FontStyle.Regular, GraphicsUnit.Pixel);
-                
-                
-                int tileSize = 32;
 
-                for (int y = 0; y < grid.GetLength(0); y++)
+
+                float tileSize = _drawContext.Map.TileSize;
+
+                for (int y = 0; y < map.TileMap.GetLength(1); y++)
                 {
-                    for (int x = 0; x < grid.GetLength(1); x++)
+                    for (int x = 0; x < map.TileMap.GetLength(0); x++)
                     {
-                        Tile tile = grid[x, y];
+                        Tile tile = map.TileMap[x, y];
                         Brush brush = new SolidBrush(tile.Color); // optionally cache these
 
                         g.FillRectangle(brush,x*tileSize,y*tileSize,tileSize,tileSize);
+                        // Tell tiles to draw themselves.
+                        // Pass in the coordinates, and the scale.
+                        // Tiles have no idea where they are after all. Orhow big they are.
+
                         //g.DrawString(
                         //    tile.Ascii.ToString(),
                         //    _gridFont,

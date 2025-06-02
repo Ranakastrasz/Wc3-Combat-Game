@@ -7,6 +7,7 @@ using Wc3_Combat_Game.Interface.Weapons;
 using Wc3_Combat_Game.Interface.Controllers;
 using Wc3_Combat_Game.Prototype;
 using Wc3_Combat_Game.Terrain;
+using System.Data;
 
 namespace Wc3_Combat_Game.Core
 {
@@ -21,6 +22,8 @@ namespace Wc3_Combat_Game.Core
         private int _waveCurrent;
         private int _waveSpawnsRemaining;
 
+        private List<Vector2> spawnPoints;
+
 
         // Entities.
         public Unit PlayerUnit { get; private set; }
@@ -31,7 +34,8 @@ namespace Wc3_Combat_Game.Core
         public EntityManager<IEntity> Entities { get; private set; } = new();
 
 
-        public Tile[,] TileGrid { get; private set; }
+        public Map Map { get; private set; }
+        public float TileSize { get; private set; }
 
         private float _lastEnemySpawned = 0f;
 
@@ -77,7 +81,7 @@ namespace Wc3_Combat_Game.Core
             _waveUnits.Add(new(weapon5Damage,       10f, 2f  ,  10f, 75f, Color.Brown  , PrototypeUnit.DrawShape.Circle));
             _waveUnits.Add(new(weapon10Damage,      20f, 0.1f,  15f, 100f, Color.Red    , PrototypeUnit.DrawShape.Circle));
             _waveUnits.Add(new(weapon10DamageRanged,30f, 0.1f,  15f, 50f, Color.Orange , PrototypeUnit.DrawShape.Square));
-            _waveUnits.Add(new(weapon25Damage,      80f, 2f  ,  25f, 750f, Color.Red    , PrototypeUnit.DrawShape.Square));
+            _waveUnits.Add(new(weapon25Damage,      80f, 2f  ,  25f, 75f, Color.Red    , PrototypeUnit.DrawShape.Square));
             _waveUnits.Add(new(weapon200Damage,     2000f,0f  , 50f,125f, Color.DarkRed, PrototypeUnit.DrawShape.Square));
 
 
@@ -91,17 +95,10 @@ namespace Wc3_Combat_Game.Core
             _waveCurrent = -1;
             _waveSpawnsRemaining = 0;
 
-            // ParseMap
-            string[] map = Map.map1;
-            TileGrid = new Tile[map[0].Length, map.Length];
-            for (int y = 0; y < map.Length; y++)
-            {
-                for (int x = 0; x < map[y].Length; x++)
-                {
-                    char c = Map.map1[y][x];
-                    TileGrid[x, y] = Tile.CharToTile(c);
-                }
-            }
+            TileSize = 32f;
+            Map = Map.ParseMap(Map.map1, TileSize);
+            List<Vector2Int> Portals = Map.GetTilesMatching('P');
+            spawnPoints = Portals.Select(p => (p.ToVector2() + new Vector2(0.5f,0.5f))* TileSize).ToList();
 
         }
 
@@ -127,7 +124,9 @@ namespace Wc3_Combat_Game.Core
                 {
                     _lastEnemySpawned = CurrentTime;
                     _waveSpawnsRemaining--;
-                    Unit unit = UnitFactory.SpawnUnit(_waveUnits[_waveCurrent], (Vector2)RandomUtils.RandomPointBorder(SPAWN_BOUNDS), new IBasicAIController(), TeamType.Enemy);
+                    Vector2 spawnPoint = spawnPoints[_waveSpawnsRemaining%spawnPoints.Count]; // Poor, but for now
+
+                    Unit unit = UnitFactory.SpawnUnit(_waveUnits[_waveCurrent],spawnPoint, new IBasicAIController(), TeamType.Enemy);
                     unit.Target = PlayerUnit;
                     AddUnit(unit);
                     // Elite
@@ -167,7 +166,8 @@ namespace Wc3_Combat_Game.Core
             Units.UpdateAll(deltaTime, this);
             Projectiles.UpdateAll(deltaTime, this);
             // Seperate required, because units can create projectiles.
-            // Admittedly, eventually projectiles will be able to create projectiles, I think.
+            // Admittedly, eventually projectiles will be able to create projectiles, Starburst or Delayed cast.
+            // so a method to do this right is needed.
 
             CheckCollision(deltaTime);
 

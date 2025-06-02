@@ -12,7 +12,7 @@ namespace Wc3_Combat_Game.Entities
     /// Represents a living or interactive game unit with health and actions.
     /// Inherits from Entity.
     /// </summary>
-    public class Unit : IEntity
+    public class Unit : MobileEntity
     {
 
         public IUnitController? Controller = null;
@@ -26,14 +26,13 @@ namespace Wc3_Combat_Game.Entities
         float _lastDamaged = float.NegativeInfinity;
         static float s_DamageFlashTime = GameConstants.FIXED_DELTA_TIME;
 
-        protected Vector2 _moveVector = Vector2.Zero;
-        public float Speed { get; set; }
+        public float MoveSpeed { get; set; }
 
         public Unit(PrototypeUnit prototype, Vector2 position) : base(prototype.Size, position, prototype.FillColor)
         {
             Health = prototype.MaxHealth;
             MaxHealth = prototype.MaxHealth;
-            Speed = prototype.Speed;
+            MoveSpeed = prototype.Speed;
             if (prototype.Weapon is PrototypeWeaponBasic basic)
             {
                 Weapon = new IWeaponBasic(basic);
@@ -44,16 +43,16 @@ namespace Wc3_Combat_Game.Entities
 
         public override void Update(float deltaTime, IBoardContext context)
         {
-
             Controller?.Update(this, deltaTime, context);
+            base.Update(deltaTime, context);
 
-            _position += _moveVector * deltaTime;
-            _moveVector = Vector2.Zero;
+            // Units only move once tick of movement per "move order",
+            _velocity = Vector2.Zero;
         }
 
-        internal void Move(Vector2 moveVector)
+        internal void OrderMove(Vector2 moveVector)
         {
-            _moveVector = GeometryUtils.NormalizeAndScale(moveVector,Speed);
+            _velocity = GeometryUtils.NormalizeAndScale(moveVector,MoveSpeed);
         }
 
 

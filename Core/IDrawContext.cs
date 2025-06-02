@@ -11,7 +11,7 @@ namespace Wc3_Combat_Game.Core
     public interface IDrawContext
     {
 
-        Tile[,] TileGrid { get; }
+        Map Map { get; }
         float CurrentTime { get; }
         Unit PlayerUnit { get; }
 
