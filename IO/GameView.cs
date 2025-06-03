@@ -68,6 +68,7 @@ namespace Wc3_Combat_Game
             this.ClientSize = GameConstants.CAMERA_BOUNDS.Size.ToSize();
             this._camera = new Camera();
             _camera.LerpFactor = 10f;
+
             _camera.Zoom = 3;
             _camera.Width = GameConstants.CAMERA_BOUNDS.Width;
             _camera.Height = GameConstants.CAMERA_BOUNDS.Height;
@@ -125,7 +126,7 @@ namespace Wc3_Combat_Game
                     for (int x = 0; x < map.TileMap.GetLength(0); x++)
                     {
                         Tile tile = map.TileMap[x, y];
-                        Brush brush = new SolidBrush(tile.Color); // optionally cache these
+                        Brush brush = new SolidBrush(tile.GetColor); // optionally cache these
 
                         g.FillRectangle(brush,x*tileSize,y*tileSize,tileSize,tileSize);
                         // Tell tiles to draw themselves.

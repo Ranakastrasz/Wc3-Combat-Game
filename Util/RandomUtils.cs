@@ -92,5 +92,10 @@ namespace Wc3_Combat_Game.Util
                     throw new Exception("RandomPointOutside bad side");
             }
         }
+
+        internal static int RandomIntBelow(int count)
+        {
+            return RandomUtils.Instance.Next(0, count);
+        }
     }
 }

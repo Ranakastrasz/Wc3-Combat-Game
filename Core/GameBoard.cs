@@ -71,18 +71,18 @@ namespace Wc3_Combat_Game.Core
             var weapon200Damage = meleeWeaponBase.SetDamage(200f);
 
             var rangedWeaponBase = new PrototypeWeaponBasic(
-                new EffectProjectile(new PrototypeProjectile(5, 450f, 2f, null, Color.Cyan)),
+                new EffectProjectile(new PrototypeProjectile(5, 225f, 4f, null, Color.Cyan)),
                 1f,
                 150f);
 
             var weapon10DamageRanged = rangedWeaponBase.SetDamage(10f);
 
 
-            _waveUnits.Add(new(weapon5Damage,       10f, 2f  ,  10f, 75f, Color.Brown  , PrototypeUnit.DrawShape.Circle));
-            _waveUnits.Add(new(weapon10Damage,      20f, 0.1f,  15f, 100f, Color.Red    , PrototypeUnit.DrawShape.Circle));
-            _waveUnits.Add(new(weapon10DamageRanged,30f, 0.1f,  15f, 50f, Color.Orange , PrototypeUnit.DrawShape.Square));
-            _waveUnits.Add(new(weapon25Damage,      80f, 2f  ,  25f, 75f, Color.Red    , PrototypeUnit.DrawShape.Square));
-            _waveUnits.Add(new(weapon200Damage,     2000f,0f  , 50f,125f, Color.DarkRed, PrototypeUnit.DrawShape.Square));
+            _waveUnits.Add(new(weapon5Damage,       10f, 2f  ,  8f, 75f, Color.Brown  , PrototypeUnit.DrawShape.Circle));
+            _waveUnits.Add(new(weapon10Damage,      20f, 0.1f,  12f, 100f, Color.Red    , PrototypeUnit.DrawShape.Circle));
+            _waveUnits.Add(new(weapon10DamageRanged,30f, 0.1f,  10f, 50f, Color.Orange , PrototypeUnit.DrawShape.Square));
+            _waveUnits.Add(new(weapon25Damage,      80f, 2f  ,  20f, 75f, Color.Red    , PrototypeUnit.DrawShape.Square));
+            _waveUnits.Add(new(weapon200Damage,     2000f,0f  , 30f,125f, Color.DarkRed, PrototypeUnit.DrawShape.Square));
 
 
 
@@ -124,7 +124,7 @@ namespace Wc3_Combat_Game.Core
                 {
                     _lastEnemySpawned = CurrentTime;
                     _waveSpawnsRemaining--;
-                    Vector2 spawnPoint = spawnPoints[_waveSpawnsRemaining%spawnPoints.Count]; // Poor, but for now
+                    Vector2 spawnPoint = spawnPoints[RandomUtils.RandomIntBelow(spawnPoints.Count)]; // Poor, but for now
 
                     Unit unit = UnitFactory.SpawnUnit(_waveUnits[_waveCurrent],spawnPoint, new IBasicAIController(), TeamType.Enemy);
                     unit.Target = PlayerUnit;
