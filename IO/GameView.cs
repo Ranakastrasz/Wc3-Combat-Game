@@ -68,9 +68,11 @@ namespace Wc3_Combat_Game
             this.ClientSize = GameConstants.CAMERA_BOUNDS.Size.ToSize();
             this._camera = new Camera();
             _camera.LerpFactor = 10f;
-            _camera.Zoom = 2;
+            _camera.Zoom = 3;
             _camera.Width = GameConstants.CAMERA_BOUNDS.Width;
             _camera.Height = GameConstants.CAMERA_BOUNDS.Height;
+            
+
 
             this.DoubleBuffered = true;
             this.KeyPreview = true;  // Form gets key events even if controls are focused

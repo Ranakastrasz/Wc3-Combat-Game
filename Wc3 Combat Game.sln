@@ -3,7 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wc3 Combat Game", "Wc3 Combat Game.csproj", "{1EC9E647-3537-492B-8BFB-6303CD15EC01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wc3 Combat Game", "Wc3 Combat Game.csproj", "{1EC9E647-3537-492B-8BFB-6303CD15EC01}"
+	ProjectSection(ProjectDependencies) = postProject
+		{24D5EA49-EE14-4E83-A6D0-67899020ACD5} = {24D5EA49-EE14-4E83-A6D0-67899020ACD5}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AStarPathing", "..\AStarPathing\AStarPathing.csproj", "{1339E06D-DFC7-46A2-BB30-36408D9121C5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathUtils", "..\MathUtils\MathUtils.csproj", "{24D5EA49-EE14-4E83-A6D0-67899020ACD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AStarPathing.Tests", "..\AStarPathing.Tests\AStarPathing.Tests.csproj", "{67B84657-3009-48E7-B788-9E815386DBD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +24,18 @@ Global
 		{1EC9E647-3537-492B-8BFB-6303CD15EC01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EC9E647-3537-492B-8BFB-6303CD15EC01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EC9E647-3537-492B-8BFB-6303CD15EC01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1339E06D-DFC7-46A2-BB30-36408D9121C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1339E06D-DFC7-46A2-BB30-36408D9121C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1339E06D-DFC7-46A2-BB30-36408D9121C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1339E06D-DFC7-46A2-BB30-36408D9121C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24D5EA49-EE14-4E83-A6D0-67899020ACD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24D5EA49-EE14-4E83-A6D0-67899020ACD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24D5EA49-EE14-4E83-A6D0-67899020ACD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24D5EA49-EE14-4E83-A6D0-67899020ACD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67B84657-3009-48E7-B788-9E815386DBD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67B84657-3009-48E7-B788-9E815386DBD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67B84657-3009-48E7-B788-9E815386DBD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67B84657-3009-48E7-B788-9E815386DBD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

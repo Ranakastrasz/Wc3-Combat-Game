@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Terrain;
-using Wc3_Combat_Game.Util;
+using MathUtils;
 
 namespace Wc3_Combat_Game.Interface.Controllers
 {

@@ -17,4 +17,8 @@
     <None Include="C:\Users\Corwin Slater\source\repos\Wc3 Combat Game\.editorconfig" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MathUtils\MathUtils.csproj" />
+  </ItemGroup>
+
 </Project>

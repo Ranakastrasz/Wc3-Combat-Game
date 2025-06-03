@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Wc3_Combat_Game.Core;
-using Wc3_Combat_Game.Entities;
-using Wc3_Combat_Game.Util;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
+﻿using System.Numerics;
+using MathUtils;
 namespace Wc3_Combat_Game.Terrain
 {
     public class Map

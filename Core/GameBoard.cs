@@ -3,11 +3,11 @@ using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Util;
 using Wc3_Combat_Game.Effects;
 using static Wc3_Combat_Game.Core.GameConstants;
-using Wc3_Combat_Game.Interface.Weapons;
 using Wc3_Combat_Game.Interface.Controllers;
 using Wc3_Combat_Game.Prototype;
 using Wc3_Combat_Game.Terrain;
 using System.Data;
+using MathUtils;
 
 namespace Wc3_Combat_Game.Core
 {
@@ -86,11 +86,11 @@ namespace Wc3_Combat_Game.Core
 
 
 
-            _waveUnitCounts.Add(64);
-            _waveUnitCounts.Add(64);
-            _waveUnitCounts.Add(32);
-            _waveUnitCounts.Add(16);
-            _waveUnitCounts.Add(1);
+            _waveUnitCounts.Add(16);//64);
+            _waveUnitCounts.Add(16);//64);
+            _waveUnitCounts.Add(8);//32);
+            _waveUnitCounts.Add(4);//16);
+            _waveUnitCounts.Add(1);//1);
 
             _waveCurrent = -1;
             _waveSpawnsRemaining = 0;
