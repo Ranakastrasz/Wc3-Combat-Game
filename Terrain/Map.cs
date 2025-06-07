@@ -195,8 +195,8 @@ namespace Wc3_Combat_Game.Terrain
         public List<Vector2Int> GetAdjacentTiles(int x, int y)
         {
             List<Vector2Int> adjacent = new List<Vector2Int>();
-            int[] dx = { 0, 1, 0, -1 };
-            int[] dy = { -1, 0, 1, 0 };
+            int[] dx = [ 0, 1, 0,-1];
+            int[] dy = [-1, 0, 1, 0];
 
             for (int i = 0; i < 4; i++)
             {

@@ -8,7 +8,7 @@ using Wc3_Combat_Game.Core;
 
 namespace Wc3_Combat_Game.Entities
 {
-    public class EntityManager<T> where T : IEntity
+    public class EntityManager<T> where T : Entity
     {
         private readonly List<T> _entities = new List<T>();
         public void UpdateAll(float deltaTime, IBoardContext context)

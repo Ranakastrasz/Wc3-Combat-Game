@@ -31,7 +31,7 @@ namespace Wc3_Combat_Game.Core
         internal EntityManager<Projectile> Projectiles { get; private set; } = new();
         internal EntityManager<Unit> Units { get; private set; } = new();
 
-        public EntityManager<IEntity> Entities { get; private set; } = new();
+        public EntityManager<Entities.Entity> Entities { get; private set; } = new();
 
 
         public Map Map { get; private set; }
@@ -46,10 +46,10 @@ namespace Wc3_Combat_Game.Core
 
 
             // Init player
-            PrototypeWeaponBasic weapon = new PrototypeWeaponBasic(new EffectProjectile(new PrototypeProjectile(5f,
+            PrototypeWeaponBasic weapon = new PrototypeWeaponBasic(new ActionProjectile(new PrototypeProjectile(5f,
             600f,
             2f,
-            new EffectDamage(10f),
+            new ActionDamage(10f),
             Color.Blue)),
             0.20f,
             float.PositiveInfinity);
@@ -64,14 +64,14 @@ namespace Wc3_Combat_Game.Core
             AddUnit(PlayerUnit);
 
 
-            var meleeWeaponBase = new PrototypeWeaponBasic(new Effect(), 1f, 20f);
+            var meleeWeaponBase = new PrototypeWeaponBasic(new Effects.Action(), 1f, 20f);
             var weapon5Damage = meleeWeaponBase.SetDamage(5f);
             var weapon10Damage = meleeWeaponBase.SetDamage(10f);
             var weapon25Damage = meleeWeaponBase.SetDamage(25f);
             var weapon200Damage = meleeWeaponBase.SetDamage(200f);
 
             var rangedWeaponBase = new PrototypeWeaponBasic(
-                new EffectProjectile(new PrototypeProjectile(5, 225f, 4f, null, Color.Cyan)),
+                new ActionProjectile(new PrototypeProjectile(5, 225f, 4f, null, Color.Cyan)),
                 1f,
                 150f);
 

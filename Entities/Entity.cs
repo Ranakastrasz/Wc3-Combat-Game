@@ -8,7 +8,7 @@ namespace Wc3_Combat_Game.Entities
     /// <summary>
     /// Base class representing any game object with a position and size.
     /// </summary>
-    public abstract class IEntity
+    public class Entity
     {
         protected float _size; // Diameter
         protected float CollisionRadius => _size / 2; // Hardcode for now.
@@ -26,7 +26,7 @@ namespace Wc3_Combat_Game.Entities
 
         public RectangleF BoundingBox { get => _position.RectFFromCenter(_sizeVector); }
 
-        public IEntity(float size, Vector2 position, Color color)
+        public Entity(float size, Vector2 position, Color color)
         {
             _size = size;
             _position = position;
@@ -51,7 +51,8 @@ namespace Wc3_Combat_Game.Entities
             g.FillRectangle(brush, entityRect);
         }
 
-        public abstract void Update(float deltaTime, IBoardContext context);
+        public virtual void Update(float deltaTime, IBoardContext context)
+        { }
 
         public void Die(IBoardContext context)
         {
@@ -61,19 +62,19 @@ namespace Wc3_Combat_Game.Entities
             _lastKilled = context.CurrentTime;
         }
 
-        public bool Intersects(IEntity other)
+        public bool Intersects(Entity other)
         {
             RectangleF rect = new((PointF)_position, (SizeF)_sizeVector);
             RectangleF otherRect = new((PointF)other._position, (SizeF)other._sizeVector);
             return rect.IntersectsWith(otherRect);
         }
 
-        public float DistanceTo(IEntity other)
+        public float DistanceTo(Entity other)
         {
             Vector2 between = other.Position - _position;
             return between.Length();
         }
-        public float DistanceSquaredTo(IEntity other)
+        public float DistanceSquaredTo(Entity other)
         {
             Vector2 between = other.Position - _position;
             return between.LengthSquared();

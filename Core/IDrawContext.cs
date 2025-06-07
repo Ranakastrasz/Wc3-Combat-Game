@@ -15,7 +15,7 @@ namespace Wc3_Combat_Game.Core
         float CurrentTime { get; }
         Unit PlayerUnit { get; }
 
-        EntityManager<IEntity> Entities { get; }
+        EntityManager<Entities.Entity> Entities { get; }
 
 
     }

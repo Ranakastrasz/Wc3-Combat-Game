@@ -12,10 +12,10 @@ namespace Wc3_Combat_Game.Prototype
         public float Size;
         public float Speed;
         public float Lifespan;
-        public Effect? ImpactEffect;
+        public Effects.Action? ImpactEffect;
         public Color FillColor;
 
-        public PrototypeProjectile(float size, float speed, float lifespan, Effect? impactEffect, Color fillColor)
+        public PrototypeProjectile(float size, float speed, float lifespan, Effects.Action? impactEffect, Color fillColor)
         { 
             Size = size;
             Speed = speed;

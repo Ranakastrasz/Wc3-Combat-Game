@@ -151,10 +151,7 @@ namespace Wc3_Combat_Game
             g.DrawRectangle(Pens.White, GameConstants.GAME_BOUNDS);
             g.DrawRectangle(Pens.Blue, GameConstants.SPAWN_BOUNDS);
 #endif
-            if (_drawContext != null)
-            {
-                _drawContext.Entities?.ForEach(p => p.Draw(g, _drawContext));
-            }
+            _drawContext?.Entities?.ForEach(p => p.Draw(g, _drawContext));
 
 
             if (_controller.CurrentState == GameState.GameOver)

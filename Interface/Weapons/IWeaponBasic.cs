@@ -13,7 +13,7 @@ namespace Wc3_Combat_Game.Interface.Weapons
         private float _lastShotTime = float.NegativeInfinity;
 
         private float _attackRange;
-        private Effect? _CastEffect;
+        private Effects.Action? _CastEffect;
 
         PrototypeWeapon _prototype;
 
@@ -37,7 +37,7 @@ namespace Wc3_Combat_Game.Interface.Weapons
             return true;
         }
 
-        public bool TryShootEntity(Unit unit, IEntity target, IBoardContext context)
+        public bool TryShootEntity(Unit unit, Entities.Entity target, IBoardContext context)
         {
             if (!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;

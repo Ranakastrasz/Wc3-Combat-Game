@@ -9,7 +9,7 @@ using Wc3_Combat_Game.Terrain;
 
 namespace Wc3_Combat_Game.Entities
 {
-    public class MobileEntity : IEntity
+    public class MobileEntity : Entity
     {
         protected Vector2 _velocity = Vector2.Zero;
         public MobileEntity(float size, Vector2 position, Color color): base(size,position,color)

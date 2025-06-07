@@ -9,7 +9,7 @@ using Wc3_Combat_Game.Entities;
 
 namespace Wc3_Combat_Game.Effects
 {
-    public class Effect
+    public class Action
     {
 
         //public enum TARGET
@@ -19,13 +19,13 @@ namespace Wc3_Combat_Game.Effects
         //    TOWER
         //}
 
-        protected virtual void Execute(IEntity? Source, IBoardContext context)
+        protected virtual void Execute(Entities.Entity? Source, IBoardContext context)
         { }
 
-        public virtual void ApplyToEntity(IEntity? Caster, IEntity? Emitter, IEntity Target, IBoardContext context)
+        public virtual void ApplyToEntity(Entities.Entity? Caster, Entities.Entity? Emitter, Entities.Entity Target, IBoardContext context)
         { }
 
-        public virtual void ApplyToPoint(IEntity? Caster, IEntity? Emitter, Vector2 TargetPoint, IBoardContext context)
+        public virtual void ApplyToPoint(Entities.Entity? Caster, Entities.Entity? Emitter, Vector2 TargetPoint, IBoardContext context)
         { }
 
         //protected static bool validateTarget(TARGET iType, Entity iTarget)

@@ -16,7 +16,7 @@ namespace Wc3_Combat_Game.IO
         {
             _keysDown.Add(key);
             _keysPressedThisFrame.Add(key);
-        }
+        }   
 
         public void OnKeyUp(Keys key)
         {
