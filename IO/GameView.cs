@@ -74,7 +74,8 @@ namespace Wc3_Combat_Game
             _camera.Zoom = 3;
             _camera.Width = GameConstants.CAMERA_BOUNDS.Width;
             _camera.Height = GameConstants.CAMERA_BOUNDS.Height;
-            _camera.FollowUnit(_drawContext.PlayerUnit);
+            //AssertUtil.AssertNotNull(_drawContext.PlayerUnit);
+            //_camera.FollowUnit(_drawContext.PlayerUnit!);
 
 
             this.DoubleBuffered = true;
@@ -170,6 +171,12 @@ namespace Wc3_Combat_Game
 
 
             }
+        }
+
+        public void RegisterPlayer(Unit playerUnit)
+        {
+            _camera.FollowUnit(playerUnit);
+            _camera.SnapToUnit(playerUnit);
         }
 
         private void DisposeCustomResources() => _gridFont?.Dispose();

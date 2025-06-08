@@ -13,7 +13,7 @@ namespace Wc3_Combat_Game.Core
 {
     public class GameBoard : IBoardContext, IDrawContext
     {
-        private readonly GameController _controller;
+        private readonly GameController? _controller;
 
         public float CurrentTime { get; private set; } = 0f;
 
@@ -26,7 +26,7 @@ namespace Wc3_Combat_Game.Core
 
 
         // Entities.
-        public Unit PlayerUnit { get; private set; }
+        public Unit? PlayerUnit { get; private set; }
 
         internal EntityManager<Projectile> Projectiles { get; private set; } = new();
         internal EntityManager<Unit> Units { get; private set; } = new();
@@ -40,29 +40,33 @@ namespace Wc3_Combat_Game.Core
         private float _lastEnemySpawned = 0f;
 
 
-        public GameBoard(GameController controller)
+        public GameBoard()
+        {
+
+            // Parse the map and setup spawn points
+            TileSize = 32f;
+
+            Map = Map.ParseMap(Map.map1, TileSize);
+            List<Vector2Int> portals = Map.GetTilesMatching('P');
+            spawnPoints = portals.Select(p => (p.ToVector2() + new Vector2(0.5f, 0.5f)) * TileSize).ToList();
+
+            // Setup wave units and counts
+            InitWaves();
+
+            // PlayerUnit remains uninitialized here (depends on _controller.Input)
+        }
+
+        // Optional constructor that sets the controller and initializes dependent things
+        public GameBoard(GameController? controller) : this()
         {
             _controller = controller;
+        }
 
-
-            // Init player
-            PrototypeWeaponBasic weapon = new PrototypeWeaponBasic(new ActionProjectile(new PrototypeProjectile(5f,
-            600f,
-            2f,
-            new ActionDamage(10f),
-            Color.Blue)),
-            0.20f,
-            float.PositiveInfinity);
-
-
-            PrototypeUnit playerUnit = new((PrototypeWeapon)weapon, 100f, 0.1f, 10f, 150f, Color.Green, PrototypeUnit.DrawShape.Circle);
-
-            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)GAME_BOUNDS.Center(), new IPlayerController(controller.Input), TeamType.Ally);
-
-            
-
-            AddUnit(PlayerUnit);
-
+        public void InitWaves()
+        {
+            // Will be in wave class when we get there.
+            _waveCurrent = -1;
+            _waveSpawnsRemaining = 0;
 
             var meleeWeaponBase = new PrototypeWeaponBasic(new Effects.Action(), 1f, 20f);
             var weapon5Damage = meleeWeaponBase.SetDamage(5f);
@@ -77,40 +81,62 @@ namespace Wc3_Combat_Game.Core
 
             var weapon10DamageRanged = rangedWeaponBase.SetDamage(10f);
 
+            _waveUnits.Add(new(weapon5Damage, 10f, 2f, 8f, 75f, Color.Brown, PrototypeUnit.DrawShape.Circle));
+            _waveUnits.Add(new(weapon10Damage, 20f, 0.1f, 12f, 100f, Color.Red, PrototypeUnit.DrawShape.Circle));
+            _waveUnits.Add(new(weapon10DamageRanged, 30f, 0.1f, 10f, 50f, Color.Orange, PrototypeUnit.DrawShape.Square));
+            _waveUnits.Add(new(weapon25Damage, 80f, 2f, 20f, 75f, Color.Red, PrototypeUnit.DrawShape.Square));
+            _waveUnits.Add(new(weapon200Damage, 400f, 0f, 30f, 125f, Color.DarkRed, PrototypeUnit.DrawShape.Square));
 
-            _waveUnits.Add(new(weapon5Damage,       10f, 2f  ,  8f, 75f, Color.Brown  , PrototypeUnit.DrawShape.Circle));
-            _waveUnits.Add(new(weapon10Damage,      20f, 0.1f,  12f, 100f, Color.Red    , PrototypeUnit.DrawShape.Circle));
-            _waveUnits.Add(new(weapon10DamageRanged,30f, 0.1f,  10f, 50f, Color.Orange , PrototypeUnit.DrawShape.Square));
-            _waveUnits.Add(new(weapon25Damage,      80f, 2f  ,  20f, 75f, Color.Red    , PrototypeUnit.DrawShape.Square));
-            _waveUnits.Add(new(weapon200Damage,     2000f,0f  , 30f,125f, Color.DarkRed, PrototypeUnit.DrawShape.Square));
+            _waveUnitCounts.Add(16);
+            _waveUnitCounts.Add(16);
+            _waveUnitCounts.Add(8);
+            _waveUnitCounts.Add(4);
+            _waveUnitCounts.Add(1);
+        }
 
+        public void InitPlayer()
+        {
+            AssertUtil.AssertNotNull(_controller);
+            AssertUtil.AssertNotNull(_controller.Input);
 
+            PrototypeWeaponBasic weapon = new PrototypeWeaponBasic(new ActionProjectile(new PrototypeProjectile(5f,
+                600f,
+                2f,
+                new ActionDamage(10f),
+                Color.Blue)),
+                0.20f,
+                float.PositiveInfinity);
 
-            _waveUnitCounts.Add(16);//64);
-            _waveUnitCounts.Add(16);//64);
-            _waveUnitCounts.Add(8);//32);
-            _waveUnitCounts.Add(4);//16);
-            _waveUnitCounts.Add(1);//1);
+            PrototypeUnit playerUnit = new((PrototypeWeapon)weapon, 100f, 0.1f, 10f, 150f, Color.Green, PrototypeUnit.DrawShape.Circle);
 
-            _waveCurrent = -1;
-            _waveSpawnsRemaining = 0;
+            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)GAME_BOUNDS.Center(), new IPlayerController(_controller.Input), TeamType.Ally);
 
-            TileSize = 32f;
-            Map = Map.ParseMap(Map.map1, TileSize);
-            List<Vector2Int> Portals = Map.GetTilesMatching('P');
-            spawnPoints = Portals.Select(p => (p.ToVector2() + new Vector2(0.5f,0.5f))* TileSize).ToList();
-
+            AddUnit(PlayerUnit);
         }
 
 
 
 
-        private void CheckGameOverCondition(IBoardContext context)
+        private bool CheckGameOverCondition(IBoardContext context)
         {
+            AssertUtil.AssertNotNull(PlayerUnit);
             if (PlayerUnit.IsExpired(context))
             {
-                _controller.OnGameOver();
+                AssertUtil.AssertNotNull(_controller);
+                _controller.OnVictory();
+                return true;
             }
+            return false;
+        }
+        private bool CheckVictoryCondition()
+        {
+            if (_waveCurrent == _waveUnits.Count-1)
+            {
+                AssertUtil.AssertNotNull(_controller);
+                _controller.OnVictory();
+                return true;
+            }
+            return false;
         }
 
         public void Update(float deltaTime)
@@ -143,18 +169,15 @@ namespace Wc3_Combat_Game.Core
                 }
                 else if (!Units.Entities.Any(s => s.IsAlive && s.Team == TeamType.Enemy))
                 {
+                    // Should be .Count, but also needs a boss tag check. Later.
+                    // After all, we do next wave when less than 1/8th remain, or less than 8, maybe. dunno. 
+                    // Right now, its 100%.
                     // New Wave
-                    if (_waveCurrent < _waveUnits.Count)
+
+                    if (!CheckVictoryCondition())
                     {
                         _waveCurrent++;
                         _waveSpawnsRemaining = _waveUnitCounts[_waveCurrent];
-
-                    }
-                    else
-                    {
-                        // Loop it, XD
-                        _waveCurrent = 0;
-                        //CheckGameOverCondition();
                     }
                 }
 
@@ -204,7 +227,7 @@ namespace Wc3_Combat_Game.Core
                     projectile.Die(this);
                 }
             }
-
+            AssertUtil.AssertNotNull(PlayerUnit);
             if (!GAME_BOUNDS.Contains(PlayerUnit.BoundingBox))
             {
                 var bounds = GAME_BOUNDS;

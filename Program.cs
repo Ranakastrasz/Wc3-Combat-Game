@@ -1,4 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
 using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game
 {
@@ -15,9 +17,17 @@ namespace Wc3_Combat_Game
             ApplicationConfiguration.Initialize();
 
             GameController game = new GameController();
-            game.CreateGameBoard();
-            game.CreateGameView();
 
+            game.CreateGameBoard();
+            AssertUtil.AssertNotNull(game.Board);
+
+            game.CreateGameView();
+            AssertUtil.AssertNotNull(game.View);
+
+            game.Board.InitPlayer();
+            AssertUtil.AssertNotNull(game.Board.PlayerUnit);
+
+            game.View.RegisterPlayer(game.Board.PlayerUnit);
 
             game.StartGame();
 

@@ -45,10 +45,10 @@ namespace Wc3_Combat_Game.Core
         {
             _gameLoopTimer.Start();
         }
-        public void OnGameOver()
+        public void OnVictory()
         {
             // handle game over
-            CurrentState = GameState.GameOver;
+            CurrentState = GameState.Victory;
             _gameOverTime = GlobalTime;
         }
 
@@ -65,7 +65,7 @@ namespace Wc3_Combat_Game.Core
                     View.Update(deltaTime);
                 }
             }
-            else if (CurrentState == GameState.GameOver)
+            else if (CurrentState == GameState.GameOver || CurrentState == GameState.Victory)
             {
                 if (TimeUtils.HasElapsed(GlobalTime, _gameOverTime, GameConstants.GAME_RESTART_DELAY))
                 {
@@ -83,7 +83,7 @@ namespace Wc3_Combat_Game.Core
         }
         public GameView CreateGameView()
         {
-            AssertUtil.Assert(() => Board != null);
+            AssertUtil.AssertNotNull(Board);
             return View = new GameView(this, Board);
             
         }

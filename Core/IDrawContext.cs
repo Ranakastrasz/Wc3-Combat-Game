@@ -13,7 +13,6 @@ namespace Wc3_Combat_Game.Core
 
         Map Map { get; }
         float CurrentTime { get; }
-        Unit PlayerUnit { get; }
 
         EntityManager<Entities.Entity> Entities { get; }
 
