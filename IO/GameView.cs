@@ -90,15 +90,20 @@ namespace Wc3_Combat_Game
             this.MouseUp += MainGameWindow_MouseUp;
             this.MouseMove += MainGameWindow_MouseMove;
 
+            this.Resize += new EventHandler(OnWindowSizeChanged);
 
             _gridFont = null;
         }
 
-
+        public void OnWindowSizeChanged(object sender, EventArgs e)
+        {
+            _camera.Width = this.ClientSize.Width;
+            _camera.Height = this.ClientSize.Height;
+        }
         public void Update(float deltaTime)
         {
-
             _camera.Update(deltaTime);
+            
 
             this.Invalidate();
         }
