@@ -6,19 +6,17 @@ using System.Threading.Tasks;
 using Wc3_Combat_Game.Interface.Weapons;
 using Wc3_Combat_Game.Prototype;
 
-namespace Wc3_Combat_Game.Wave
+namespace Wc3_Combat_Game.Waves
 {
-    internal class Wave
+    public struct Wave
     {
         public PrototypeUnit Unit { get; }
-        public IWeapon Weapon { get; }
-        public int Count { get; }
-    
-        internal Wave(PrototypeUnit unit, IWeapon weapon, int count)
+        public int CountToSpawn { get; }
+
+        public Wave(PrototypeUnit unit, int toSpawn)
         {
             Unit = unit;
-            Weapon = weapon;
-            Count = count;
+            CountToSpawn = toSpawn;
         }
     }
 }

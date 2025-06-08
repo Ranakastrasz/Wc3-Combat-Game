@@ -1,13 +1,14 @@
 ﻿using System.Numerics;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.Prototype;
 using Wc3_Combat_Game.Util;
 using Wc3_Combat_Game.Effects;
 using static Wc3_Combat_Game.Core.GameConstants;
 using Wc3_Combat_Game.Interface.Controllers;
-using Wc3_Combat_Game.Prototype;
 using Wc3_Combat_Game.Terrain;
 using System.Data;
 using MathUtils;
+using Wc3_Combat_Game.Waves;
 
 namespace Wc3_Combat_Game.Core
 {
@@ -17,8 +18,10 @@ namespace Wc3_Combat_Game.Core
 
         public float CurrentTime { get; private set; } = 0f;
 
-        private List<PrototypeUnit> _waveUnits = new();
-        private List<int> _waveUnitCounts = new();
+        //private List<PrototypeUnit> _waveUnits = new();
+        //private List<int> _waveUnitCounts = new();
+
+        private List<Wave> _waves = new();
         private int _waveCurrent;
         private int _waveSpawnsRemaining;
 
@@ -81,17 +84,12 @@ namespace Wc3_Combat_Game.Core
 
             var weapon10DamageRanged = rangedWeaponBase.SetDamage(10f);
 
-            _waveUnits.Add(new(weapon5Damage, 10f, 2f, 8f, 75f, Color.Brown, PrototypeUnit.DrawShape.Circle));
-            _waveUnits.Add(new(weapon10Damage, 20f, 0.1f, 12f, 100f, Color.Red, PrototypeUnit.DrawShape.Circle));
-            _waveUnits.Add(new(weapon10DamageRanged, 30f, 0.1f, 10f, 50f, Color.Orange, PrototypeUnit.DrawShape.Square));
-            _waveUnits.Add(new(weapon25Damage, 80f, 2f, 20f, 75f, Color.Red, PrototypeUnit.DrawShape.Square));
-            _waveUnits.Add(new(weapon200Damage, 400f, 0f, 30f, 125f, Color.DarkRed, PrototypeUnit.DrawShape.Square));
+            _waves.Add(new Wave(new PrototypeUnit(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , PrototypeUnit.DrawShape.Circle), 16));
+            _waves.Add(new Wave(new PrototypeUnit(weapon10Damage      , 20f, 0.1f, 12f, 100f, Color.Red    , PrototypeUnit.DrawShape.Circle), 16));
+            _waves.Add(new Wave(new PrototypeUnit(weapon10DamageRanged, 30f, 0.1f, 10f,  50f, Color.Orange , PrototypeUnit.DrawShape.Square), 8));
+            _waves.Add(new Wave(new PrototypeUnit(weapon25Damage      , 80f,   2f, 20f,  75f, Color.Red    , PrototypeUnit.DrawShape.Square), 4));
+            _waves.Add(new Wave(new PrototypeUnit(weapon200Damage     , 400f,  0f, 30f, 125f, Color.DarkRed, PrototypeUnit.DrawShape.Square), 1));
 
-            _waveUnitCounts.Add(16);
-            _waveUnitCounts.Add(16);
-            _waveUnitCounts.Add(8);
-            _waveUnitCounts.Add(4);
-            _waveUnitCounts.Add(1);
         }
 
         public void InitPlayer()
@@ -130,7 +128,7 @@ namespace Wc3_Combat_Game.Core
         }
         private bool CheckVictoryCondition()
         {
-            if (_waveCurrent == _waveUnits.Count-1)
+            if (_waveCurrent == _waves.Count)
             {
                 AssertUtil.AssertNotNull(_controller);
                 _controller.OnVictory();
@@ -152,11 +150,11 @@ namespace Wc3_Combat_Game.Core
                     _waveSpawnsRemaining--;
                     Vector2 spawnPoint = spawnPoints[RandomUtils.RandomIntBelow(spawnPoints.Count)]; // Poor, but for now
 
-                    Unit unit = UnitFactory.SpawnUnit(_waveUnits[_waveCurrent],spawnPoint, new IBasicAIController(), TeamType.Enemy);
+                    Unit unit = UnitFactory.SpawnUnit(_waves[_waveCurrent].Unit,spawnPoint, new IBasicAIController(), TeamType.Enemy);
                     unit.Target = PlayerUnit;
                     AddUnit(unit);
                     // Elite
-                    if (_waveSpawnsRemaining > 0 && _waveSpawnsRemaining == _waveUnitCounts[_waveCurrent])
+                    if (_waveSpawnsRemaining > 0 && _waveSpawnsRemaining == _waves[_waveCurrent].CountToSpawn)
                     {
                         // unit.MaxHealth *= 4;
                         // unit.Health *= 4;
@@ -174,10 +172,11 @@ namespace Wc3_Combat_Game.Core
                     // Right now, its 100%.
                     // New Wave
 
+                    _waveCurrent++;
+
                     if (!CheckVictoryCondition())
                     {
-                        _waveCurrent++;
-                        _waveSpawnsRemaining = _waveUnitCounts[_waveCurrent];
+                        _waveSpawnsRemaining = _waves[_waveCurrent].CountToSpawn;
                     }
                 }
 
