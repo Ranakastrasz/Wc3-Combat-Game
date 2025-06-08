@@ -13,17 +13,19 @@ namespace Wc3_Combat_Game.Core
             Uninitialized,
             Playing,
             Paused,
-            GameOver
+            GameOver,
+            Victory
         }
 
         public GameState CurrentState;
 
         public GameBoard? Board { get; set; }
-        public readonly GameView View;
+        public GameView? View { get; set; }
+
 
 
         public float CurrentTime => Board?.CurrentTime ?? float.NegativeInfinity;
-        public InputManager Input => View.Input;
+        public InputManager ?Input => View?.Input;
 
         private readonly Timer _gameLoopTimer;
 
@@ -34,7 +36,6 @@ namespace Wc3_Combat_Game.Core
 
         public GameController()
         {
-            View = new(this);
             // Setup game loop timer
             _gameLoopTimer = new() { Interval = GameConstants.TICK_DURATION_MS };
             _gameLoopTimer.Tick += GameLoopTimer_Tick;
@@ -61,7 +62,7 @@ namespace Wc3_Combat_Game.Core
                 if (View != null && Board != null)
                 {
                     Board.Update(deltaTime);
-                    View.Update(deltaTime, Board);
+                    View.Update(deltaTime);
                 }
             }
             else if (CurrentState == GameState.GameOver)
@@ -72,13 +73,19 @@ namespace Wc3_Combat_Game.Core
                     StartGame();
                 }
             }
-            Input.EndFrame();
+            Input?.EndFrame();
 
         }
 
-        public void CreateGameBoard()
+        public GameBoard CreateGameBoard()
         {
-            Board = new GameBoard(this);
+            return Board = new GameBoard(this);
+        }
+        public GameView CreateGameView()
+        {
+            AssertUtil.Assert(() => Board != null);
+            return View = new GameView(this, Board);
+            
         }
 
         internal void StartGame()

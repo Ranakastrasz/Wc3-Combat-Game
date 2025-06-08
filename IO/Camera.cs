@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Wc3_Combat_Game.Entities;
 
 namespace Wc3_Combat_Game.IO
 {
@@ -14,6 +15,7 @@ namespace Wc3_Combat_Game.IO
 
         public Vector2 Position; // World-space top-left
         public float Zoom = 1f;  // Scale factor
+        public Unit? FollowTarget { get; private set; }
 
         public RectangleF Viewport => new RectangleF(Position.X, Position.Y, Width / Zoom, Height / Zoom);
 
@@ -28,21 +30,44 @@ namespace Wc3_Combat_Game.IO
             return transform;
         }
 
-        public void UpdateFollow(Vector2 target, float deltaTime)
+        public void Update(float deltaTime)
         {
-            Vector2 targetPosition = new Vector2(
-                target.X - (Width / 2) / Zoom,
-                target.Y - (Height / 2) / Zoom
-            );
+            if (FollowTarget != null)
+            {
+                Vector2 targetPosition = GetPositionCentered(FollowTarget.Position);
 
-            Position = Vector2.Lerp(Position, targetPosition, Math.Clamp(LerpFactor * deltaTime, 0, 1));
+                Position = Vector2.Lerp(Position, targetPosition, Math.Clamp(LerpFactor * deltaTime, 0, 1));
+            }
         }
-        public void CenterOn(Vector2 worldPos)
+        public void FollowUnit(Unit unit)
         {
-            Position = new Vector2(
-                worldPos.X - (Width / 2) / Zoom,
-                worldPos.Y - (Height / 2) / Zoom
-            );
+            FollowTarget = unit;
+        }
+
+        public void SnapToUnit(Unit? unit = null)
+        {
+            Vector2 newPosition;
+            if (unit == null)
+            {
+                if (FollowTarget == null) return;
+                newPosition = FollowTarget.Position;
+            }
+            else
+            {
+                newPosition = unit.Position;
+            }
+            SetPositionCentered(newPosition);
+        }
+        public Vector2 GetPositionCentered(Vector2 position)
+        {
+            return new Vector2(
+                    position.X - (Width / 2) / Zoom,
+                    position.Y - (Height / 2) / Zoom
+                );
+        }
+        public void SetPositionCentered(Vector2 position)
+        {
+            Position = GetPositionCentered(position);
         }
     }
 }

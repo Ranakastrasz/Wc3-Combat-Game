@@ -15,16 +15,18 @@ namespace Wc3_Combat_Game
             ApplicationConfiguration.Initialize();
 
             GameController game = new GameController();
-
-            //game.View = new GameView(game);
             game.CreateGameBoard();
-            
+            game.CreateGameView();
 
 
             game.StartGame();
 
             game.StartTimer();
-            Application.Run(game.View);
+
+            if (game.View != null)
+            {
+                Application.Run(game.View);
+            }
         }
     }
 }

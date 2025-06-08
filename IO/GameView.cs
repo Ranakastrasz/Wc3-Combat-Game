@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Net.NetworkInformation;
 using System.Numerics;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
@@ -20,7 +21,7 @@ namespace Wc3_Combat_Game
         private IDrawContext? _drawContext;
 
         private Font? _gridFont;
-
+#region InputHooks
         public InputManager Input { get; private set; } = new InputManager();
 
         private void MainGameWindow_KeyDown(object? sender, KeyEventArgs e)
@@ -32,7 +33,6 @@ namespace Wc3_Combat_Game
         {
             Input.OnKeyUp(e.KeyCode);
         }
-
         private void MainGameWindow_MouseDown(object? sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -49,6 +49,7 @@ namespace Wc3_Combat_Game
         {
             Input.OnMouseMove(ScreenToWorld(e.Location));
         }
+#endregion
 
         public Vector2 ScreenToWorld(Point screenPos)
         {
@@ -59,11 +60,12 @@ namespace Wc3_Combat_Game
             return new Vector2(points[0].X, points[0].Y);
         }
 
-        internal GameView(GameController controller)
+        internal GameView(GameController controller, IDrawContext context)
         {
             InitializeComponent();
             
             _controller = controller;
+            _drawContext = context;
 
             this.ClientSize = GameConstants.CAMERA_BOUNDS.Size.ToSize();
             this._camera = new Camera();
@@ -72,7 +74,7 @@ namespace Wc3_Combat_Game
             _camera.Zoom = 3;
             _camera.Width = GameConstants.CAMERA_BOUNDS.Width;
             _camera.Height = GameConstants.CAMERA_BOUNDS.Height;
-            
+            _camera.FollowUnit(_drawContext.PlayerUnit);
 
 
             this.DoubleBuffered = true;
@@ -92,11 +94,10 @@ namespace Wc3_Combat_Game
         }
 
 
-        public void Update(float deltaTime, IDrawContext context)
+        public void Update(float deltaTime)
         {
-            _drawContext = context;
 
-            _camera.UpdateFollow(_drawContext.PlayerUnit.Position, deltaTime);
+            _camera.Update(deltaTime);
 
             this.Invalidate();
         }
@@ -154,11 +155,20 @@ namespace Wc3_Combat_Game
             _drawContext?.Entities?.ForEach(p => p.Draw(g, _drawContext));
 
 
-            if (_controller.CurrentState == GameState.GameOver)
+            if (_controller.CurrentState == GameState.GameOver || _controller.CurrentState == GameState.Victory)
             {
                 g.ResetTransform();
+
                 using var gameOverFont = new Font("Arial", 24, FontStyle.Bold);
-                g.DrawString("Game Over", gameOverFont, Brushes.White, ClientSize.Width / 2, ClientSize.Height / 2);
+                string message = _controller.CurrentState == GameState.GameOver ? "Game Over" : "Victory!";
+                SizeF textSize = g.MeasureString(message, gameOverFont);
+
+                float x = (ClientSize.Width - textSize.Width) / 2;
+                float y = (ClientSize.Height - textSize.Height) / 2;
+
+                g.DrawString(message, gameOverFont, Brushes.White, x, y);
+
+
             }
         }
 
