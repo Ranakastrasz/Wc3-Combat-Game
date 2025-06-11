@@ -1,0 +1,116 @@
+{
+  "components": {
+    "visual_effects": {
+      "necrotic_blast_fx": {
+        "effect_shape": "circle",
+        "effect_color": "purple",
+        "effect_shape_size": 1.2,
+        "effect_duration": 0.5,
+        "visual_cue_description": "A glowing purple orb pulses outward before launching."
+      },
+      "bone_shard_fx": {
+        "effect_shape": "triangle",
+        "effect_color": "white",
+        "effect_shape_size": 0.8,
+        "effect_duration": 0.3,
+        "visual_cue_description": "A sharp clinking sound and a flash of white bone."
+      },
+      "death_touch_fx": {
+        "effect_shape": "cross",
+        "effect_color": "maroon",
+        "effect_shape_size": 1.5,
+        "effect_duration": 0.0
+      },
+      "claw_swipe_fx": {
+        "effect_shape": "star",
+        "effect_color": "violet",
+        "effect_shape_size": 1.0,
+        "effect_duration": 0.2
+      }
+    },
+    "projectiles": {
+      "necrotic_blast": {
+        "speed": 6.0,
+        "fire_rate": 2.5,
+        "visual_effect_ref": "necrotic_blast_fx"
+      },
+      "bone_shard": {
+        "speed": 10.0,
+        "fire_rate": 4.0,
+        "visual_effect_ref": "bone_shard_fx"
+      }
+    }
+  },
+  "entities": [
+    {
+      "name": "Bonecaster",
+      "shape": "triangle",
+      "color": "white",
+      "stats": {
+        "level": 5,
+        "attack": 2.3,
+        "health": 2.7,
+        "speed": 4.0,
+        "size": 2.5
+      },
+      "melee_attack": {
+        "damage_value": 1.5,
+        "range": 0.0,
+        "visual_effect_ref": "claw_swipe_fx"
+      },
+      "ranged_attacks": [
+        {
+          "name": "Bone Shard Volley",
+          "damage_value": 2.0,
+          "cooldown": 2.0,
+          "range": 10.0,
+          "visual_cue_description": "The Bonecaster flares, launching a jagged white shard.",
+          "actions": [
+            {
+              "action_type": "projectile_ref",
+              "ref_id": "bone_shard"
+            }
+          ]
+        }
+      ],
+      "flavor": {
+        "summary": "A lean, angular caster that launches sharp bone shards from a distance while darting through tight corridors."
+      }
+    },
+    {
+      "name": "Crypt Wight",
+      "shape": "cross",
+      "color": "maroon",
+      "stats": {
+        "level": 5,
+        "attack": 3.5,
+        "health": 1.5,
+        "speed": 3.0,
+        "size": 3.5
+      },
+      "melee_attack": {
+        "damage_value": 2.0,
+        "range": 0.0,
+        "visual_effect_ref": "death_touch_fx"
+      },
+      "ranged_attacks": [
+        {
+          "name": "Necrotic Blast",
+          "damage_value": 2.5,
+          "cooldown": 2.5,
+          "range": 8.0,
+          "visual_cue_description": "The Wight charges and releases a slow, ominous orb of death.",
+          "actions": [
+            {
+              "action_type": "projectile_ref",
+              "ref_id": "necrotic_blast"
+            }
+          ]
+        }
+      ],
+      "flavor": {
+        "summary": "A looming undead entity that floats through the battlefield, unleashing slow but deadly necrotic orbs and draining life by touch."
+      }
+    }
+  ]
+}

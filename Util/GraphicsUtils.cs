@@ -21,6 +21,8 @@ namespace Wc3_Combat_Game.Util
             new(value.Width, value.Height);
         public static Size ToSize(this Vector2 value) =>
             new((int)Math.Round(value.X), (int)Math.Round(value.Y));
+        public static Size ToSize(this PointF value) =>
+            new((int)Math.Round(value.X), (int)Math.Round(value.Y));
         public static Size ToSize(this Point value) =>
             new(value.X, value.Y);
         public static Vector2 Center(this Rectangle rect) =>
@@ -29,6 +31,9 @@ namespace Wc3_Combat_Game.Util
                 rect.Y + rect.Height / 2
             );
         #endregion
+
+        public static PointF ToPointF(this Point point) =>
+            new(point.X+0.5f, point.Y+0.5f);
 
 
         // Snapping and Rounding Helpers
@@ -167,6 +172,14 @@ namespace Wc3_Combat_Game.Util
                 new Vector2(bounds.Left, bounds.Top),
                 new Vector2(bounds.Right - 1, bounds.Bottom - 1)
             );
+        }
+
+        internal static Point Scale(Point position, float scale)
+        {
+            return new Point(
+                (int)Math.Round(position.X * scale),
+                (int)Math.Round(position.Y * scale)
+            ); // May have rounding issues, but should be fine for most cases.
         }
     }
 }

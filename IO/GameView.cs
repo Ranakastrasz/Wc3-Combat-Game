@@ -135,18 +135,9 @@ namespace Wc3_Combat_Game
                         Tile tile = map.TileMap[x, y];
                         Brush brush = new SolidBrush(tile.GetColor); // optionally cache these
 
-                        g.FillRectangle(brush,x*tileSize,y*tileSize,tileSize,tileSize);
+                        //g.FillRectangle(brush,x*tileSize,y*tileSize,tileSize,tileSize);
                         // Tell tiles to draw themselves.
-                        // Pass in the coordinates, and the scale.
-                        // Tiles have no idea where they are after all. Orhow big they are.
-
-                        //g.DrawString(
-                        //    tile.Ascii.ToString(),
-                        //    _gridFont,
-                        //    brush,
-                        //    x * tileSize,
-                        //    y * tileSize
-                        //);
+                        tile.Draw(g,tileSize);
 
                         brush.Dispose(); // only if not cached
                     }

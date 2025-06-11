@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>Wc3_Combat_Game</RootNamespace>
     <Nullable>enable</Nullable>
@@ -10,14 +10,35 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="IO\Load\EntityPrototyper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EditorConfigFiles Remove="C:\Users\Corwin Slater\source\repos\Wc3 Combat Game\.editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="C:\Users\Corwin Slater\source\repos\Wc3 Combat Game\.editorconfig" />
+    <None Remove="GameData\EnemyData.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="GameData\EnemyData.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\Corwin Slater\source\repos\Wc3 Combat Game\.editorconfig" />
+    <None Include="Prototype\EntityPrototyper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AssertUtils\AssertUtils\AssertUtils.csproj" />
     <ProjectReference Include="..\MathUtils\MathUtils.csproj" />
   </ItemGroup>
 

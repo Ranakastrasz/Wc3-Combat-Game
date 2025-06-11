@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Terrain
 {
@@ -23,5 +25,16 @@ namespace Wc3_Combat_Game.Terrain
         public bool IsWalkable => Type.IsWalkable;
         public char GetChar => Type.Ascii;
         public Color GetColor => Type.Color;
+
+        public void Draw(Graphics g, float scale)
+        {
+            using (Brush brush = new SolidBrush(GetColor))
+            {
+                var location = GraphicsUtils.Scale(Position, scale);
+                var size = new Size((int)scale, (int)scale);
+                var rect = new Rectangle(location, size);
+                g.FillRectangle(brush, rect);
+            }
+        }
     }
 }

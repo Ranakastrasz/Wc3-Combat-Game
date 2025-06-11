@@ -9,6 +9,8 @@ using Wc3_Combat_Game.Terrain;
 using System.Data;
 using MathUtils;
 using Wc3_Combat_Game.Waves;
+using AssertUtils;
+using Wc3_Combat_Game.IO.Load.GameSchema;
 
 namespace Wc3_Combat_Game.Core
 {
@@ -53,8 +55,6 @@ namespace Wc3_Combat_Game.Core
             List<Vector2Int> portals = Map.GetTilesMatching('P');
             spawnPoints = portals.Select(p => (p.ToVector2() + new Vector2(0.5f, 0.5f)) * TileSize).ToList();
 
-            // Setup wave units and counts
-            InitWaves();
 
             // PlayerUnit remains uninitialized here (depends on _controller.Input)
         }
@@ -112,6 +112,7 @@ namespace Wc3_Combat_Game.Core
             AddUnit(PlayerUnit);
         }
 
+        
 
 
 
