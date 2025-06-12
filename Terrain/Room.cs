@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wc3_Combat_Game.Terrain
 {
-    internal class Room
-    {
-    }
+    //internal class Room
+    //{
+    //}
 }

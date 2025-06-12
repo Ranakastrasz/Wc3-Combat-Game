@@ -7,6 +7,7 @@ namespace Wc3_Combat_Game.Interface.Weapons
 {
     public interface IWeapon
     {
+
         PrototypeWeapon? GetPrototype();
         float GetAttackRange(); // For AI mostly.
         float GetAttackRangeSqr() => GetAttackRange() * GetAttackRange(); // For AI mostly.

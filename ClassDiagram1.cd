@@ -1,0 +1,275 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Alphabetical">
+  <Class Name="Wc3_Combat_Game.GameView" Collapsed="true">
+    <Position X="11.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IASAQAAIICQAAAAAAACCAAACUAAAEAAQAAASAGAAAAA=</HashCode>
+      <FileName>IO\GameView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Program" Collapsed="true">
+    <Position X="13.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Effects.Action" Collapsed="true">
+    <Position X="3.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAQAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Actions\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Effects.ActionDamage" Collapsed="true">
+    <Position X="2.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAAQAAAQAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Actions\ActionDamage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Effects.ActionProjectile" Collapsed="true">
+    <Position X="4.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAQAAAAAAAAAAAAAAQAAAAABAAA=</HashCode>
+      <FileName>Actions\ActionProjectile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Core.GameConstants" Collapsed="true">
+    <Position X="18.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAABAAAAAAAAAiIAAAAAkAAAAAAAAgAAAgAABAAAA=</HashCode>
+      <FileName>Constants\GameConstants.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Core.GameBoard" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAwAAAAMEBAAAAUAAAAAAAAAAQAKAECAEimAgEAAAAA=</HashCode>
+      <FileName>Core\GameBoard.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Wc3_Combat_Game.Core.GameController" Collapsed="true">
+    <Position X="20.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAQCAgEAEBQEAAgAAAgiAAAAI=</HashCode>
+      <FileName>Core\GameController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Core.TeamExtensions" Collapsed="true">
+    <Position X="15" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAEAA=</HashCode>
+      <FileName>Core\TeamType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Entities.Entity" Collapsed="true">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQQABAAIAQAAkgSkAAAAAAAAECAAAAAAEAAAgAIAAIA=</HashCode>
+      <FileName>Entities\Entity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Entities.EntityManager&lt;T&gt;" Collapsed="true">
+    <Position X="20.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIACAAAAAAIAAAAAAAAAAAAAAAAgAAAEAEAAAAAAAA=</HashCode>
+      <FileName>Entities\EntityManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Entities.MobileEntity" Collapsed="true">
+    <Position X="3.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Entities\MobileEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Entities.Projectile" Collapsed="true">
+    <Position X="4.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACQAAAACAIAAAgAAAAAAEAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Entities\Projectile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Entities.Unit" Collapsed="true">
+    <Position X="2.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQACAiAAQAAChAAAAAAACAAAAAAAQiAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Unit.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Entities.UnitFactory" Collapsed="true">
+    <Position X="11.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Unit.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Interface.Controllers.IBasicAIController" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="16.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Controllers\IBasicAIController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Wc3_Combat_Game.Interface.Controllers.IPlayerController" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Controllers\IPlayerController.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Wc3_Combat_Game.Interface.Weapons.IWeaponBasic" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAgCAAAASCAGAAAAAABAAAAAAAgAAAAEAA=</HashCode>
+      <FileName>Interface\Weapons\IWeaponBasic.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Wc3_Combat_Game.IO.Camera" Collapsed="true">
+    <Position X="11.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAACAABIAMAAAgEABAAEAAABAAAAIAAAAAAAAAAEA=</HashCode>
+      <FileName>IO\Camera.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.IO.InputManager" Collapsed="true">
+    <Position X="18.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAwAAACEAAAEAAAACAAAgBIAAQAAoCAAQAQCAAA=</HashCode>
+      <FileName>IO\InputManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Prototype.PrototypeProjectile" Collapsed="true">
+    <Position X="18.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAQAAAAAgAAAAAAAAAABAAAAAAAAAAAAAAgAABA=</HashCode>
+      <FileName>Prototype\PrototypeProjectile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Prototype.PrototypeWeapon" Collapsed="true">
+    <Position X="7.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Prototype\PrototypeWeapon.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Prototype.PrototypeWeaponBasic" Collapsed="true">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAABIAAAAAAAAAAAAAAAAgAAAAAAAAABA=</HashCode>
+      <FileName>Prototype\PrototypeWeaponBasic.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Wc3_Combat_Game.Terrain.Map" Collapsed="true">
+    <Position X="11.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAgUAAABAABICEACAAABEDAAAAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>Terrain\Map.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Terrain.Tile" Collapsed="true">
+    <Position X="16.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgAAgAgAAAAAAAAAAAAAACAAQAAAAIAYAA=</HashCode>
+      <FileName>Terrain\Tile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Terrain.TileType" Collapsed="true">
+    <Position X="16.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIACAAAAAAAAoAAAAAAAAAQgCAAQQAABgAgAIBAAA=</HashCode>
+      <FileName>Terrain\TileType.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Util.FontUtils" Collapsed="true">
+    <Position X="15" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Util\Font.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Util.GeometryUtils" Collapsed="true">
+    <Position X="13.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAhAKAAAADAAAAAAAAAAAAAACAAAAAAAAAIAAA=</HashCode>
+      <FileName>Util\GeometryUtils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Util.GraphicsUtils" Collapsed="true">
+    <Position X="15" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAABAKQAAAoBAAJAAAAAwACEQAgAACAAAAAYAAA=</HashCode>
+      <FileName>Util\GraphicsUtils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Util.RandomUtils" Collapsed="true">
+    <Position X="20.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAACAAAAAAAEAAQAIAAAAAAgA=</HashCode>
+      <FileName>Util\RandomUtils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Wc3_Combat_Game.Util.TimeUtils" Collapsed="true">
+    <Position X="9.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Util\TimeUtils.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="Wc3_Combat_Game.Prototype.PrototypeUnit" Collapsed="true">
+    <Position X="9.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAGAAAAAAAAiAAAAAAAAAABAAAAAAgAAAAAAAgAAAA=</HashCode>
+      <FileName>Prototype\PrototypeUnit.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Wc3_Combat_Game.Waves.Wave" Collapsed="true">
+    <Position X="11.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Waves\Wave.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Interface Name="Wc3_Combat_Game.Core.IBoardContext" Collapsed="true">
+    <Position X="9.75" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEABAAAAAAAAAAAAAAAQAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>Core\IBoardContext.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Wc3_Combat_Game.Core.IDrawContext" Collapsed="true">
+    <Position X="11.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAEAgAAAAAA=</HashCode>
+      <FileName>Core\IDrawContext.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Wc3_Combat_Game.Interface.Controllers.IUnitController" Collapsed="true">
+    <Position X="13.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\Controllers\IUnitController.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Wc3_Combat_Game.Interface.Weapons.IWeapon" Collapsed="true">
+    <Position X="15" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAACAAAASAACAAAAAABAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Interface\Weapons\IWeapon.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Wc3_Combat_Game.Core.TeamType" Collapsed="true">
+    <Position X="9.75" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAAAAAAAAAAQAAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Core\TeamType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

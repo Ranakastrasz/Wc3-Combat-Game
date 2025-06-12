@@ -12,7 +12,7 @@ namespace Wc3_Combat_Game.Core
         Enemy,
         Neutral
     }
-    public static class AllegianceExtensions
+    public static class TeamExtensions
     {
         public static bool IsHostileTo(this TeamType self, TeamType other)
         {

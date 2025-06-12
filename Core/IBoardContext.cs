@@ -12,6 +12,8 @@ namespace Wc3_Combat_Game.Core
     {
         float CurrentTime { get; }
         Map Map { get; }
+        //GameBoard GameBoard { get; set; }
+
         void AddProjectile(Projectile p);
         void AddUnit(Unit u);
 

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Wc3_Combat_Game.Terrain
 {
-    internal class RoomGraph
-    {
-
-    }
+    //internal class RoomGraph
+    //{
+    //
+    //}
 }

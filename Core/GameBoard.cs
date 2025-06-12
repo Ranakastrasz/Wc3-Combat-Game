@@ -10,7 +10,7 @@ using System.Data;
 using MathUtils;
 using Wc3_Combat_Game.Waves;
 using AssertUtils;
-using Wc3_Combat_Game.IO.Load.GameSchema;
+//using Wc3_Combat_Game.IO.Load.GameSchema;
 
 namespace Wc3_Combat_Game.Core
 {
@@ -27,7 +27,7 @@ namespace Wc3_Combat_Game.Core
         private int _waveCurrent;
         private int _waveSpawnsRemaining;
 
-        private List<Vector2> spawnPoints;
+        private List<Vector2> spawnPoints = new();
 
 
         // Entities.
@@ -39,7 +39,7 @@ namespace Wc3_Combat_Game.Core
         public EntityManager<Entities.Entity> Entities { get; private set; } = new();
 
 
-        public Map Map { get; private set; }
+        public Map? Map { get; private set; }
         public float TileSize { get; private set; }
 
         private float _lastEnemySpawned = 0f;
@@ -47,22 +47,23 @@ namespace Wc3_Combat_Game.Core
 
         public GameBoard()
         {
-
-            // Parse the map and setup spawn points
-            TileSize = 32f;
-
-            Map = Map.ParseMap(Map.map1, TileSize);
-            List<Vector2Int> portals = Map.GetTilesMatching('P');
-            spawnPoints = portals.Select(p => (p.ToVector2() + new Vector2(0.5f, 0.5f)) * TileSize).ToList();
-
-
-            // PlayerUnit remains uninitialized here (depends on _controller.Input)
         }
 
         // Optional constructor that sets the controller and initializes dependent things
         public GameBoard(GameController? controller) : this()
         {
             _controller = controller;
+        }
+
+        public void InitMap(string[] mapString, float tileSize = 32f)
+        {
+            TileSize = tileSize;
+
+            Map = Map.ParseMap(mapString, TileSize);
+            List<Vector2Int> portals = Map.GetTilesMatching('P');
+            spawnPoints = portals.Select(p => (p.ToVector2() + new Vector2(0.5f, 0.5f)) * TileSize).ToList();
+
+            
         }
 
         public void InitWaves()

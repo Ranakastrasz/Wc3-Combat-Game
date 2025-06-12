@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AssertUtils\AssertUtils\AssertUtils.csproj" />
+    <ProjectReference Include="..\AStar\AStar\AStar.csproj" />
     <ProjectReference Include="..\MathUtils\MathUtils.csproj" />
   </ItemGroup>
 

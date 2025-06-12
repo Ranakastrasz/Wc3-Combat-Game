@@ -4,7 +4,7 @@ using System.Text.Json;
 using Wc3_Combat_Game.IO.Load.GameSchema;
 
 namespace Wc3_Combat_Game.IO.Load
-{
+{/*
     public static class GameDataLoader
     {
         public static EnemySchema? LoadSchema(string filePath)
@@ -105,5 +105,5 @@ namespace Wc3_Combat_Game.IO.Load
                 }
             }
         }
-    }
+    }*/
 }

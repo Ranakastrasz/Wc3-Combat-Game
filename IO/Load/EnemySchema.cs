@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 
 namespace Wc3_Combat_Game.IO.Load.GameSchema
-{
+{/*
     public class EnemySchema
     {
         [JsonPropertyName("components")]
@@ -146,5 +146,5 @@ namespace Wc3_Combat_Game.IO.Load.GameSchema
     
         [JsonIgnore]
         public ProjectileSchema? Projectile { get; set; }
-    }
+    }*/
 }

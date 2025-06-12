@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MathUtils", "..\MathUtils\M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssertUtils", "..\AssertUtils\AssertUtils\AssertUtils.csproj", "{D4629626-BB61-4C61-69D4-3276BBA3F611}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AStar", "..\AStar\AStar\AStar.csproj", "{B3C2D1C1-D9D1-AE0B-7AE9-7A1BAAD0164F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{D4629626-BB61-4C61-69D4-3276BBA3F611}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4629626-BB61-4C61-69D4-3276BBA3F611}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4629626-BB61-4C61-69D4-3276BBA3F611}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3C2D1C1-D9D1-AE0B-7AE9-7A1BAAD0164F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3C2D1C1-D9D1-AE0B-7AE9-7A1BAAD0164F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3C2D1C1-D9D1-AE0B-7AE9-7A1BAAD0164F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3C2D1C1-D9D1-AE0B-7AE9-7A1BAAD0164F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
