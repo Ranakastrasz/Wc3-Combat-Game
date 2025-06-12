@@ -1,9 +1,9 @@
 ﻿using System.Numerics;
 using Wc3_Combat_Game.Util;
-using Wc3_Combat_Game.Effects;
 using Wc3_Combat_Game.Prototype;
 using static Wc3_Combat_Game.Core.GameConstants;
 using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.Components.Actions.Interface;
 
 namespace Wc3_Combat_Game.Entities
 {
@@ -15,12 +15,12 @@ namespace Wc3_Combat_Game.Entities
     {
         //private Vector2 _velocity;
         private float _timeToLive;
-        private PrototypeProjectile _prototype;
-        public Effects.Action? ImpactEffect => _prototype.ImpactEffect;
+        private ProjectilePrototype _prototype;
+        public IGameplayAction? ImpactEffect => _prototype.ImpactEffect;
         public Entity? Caster;
 
 
-        public Projectile(PrototypeProjectile prototype, Entity? caster, Vector2 position, Vector2 direction): base(prototype.Size, position, prototype.FillColor)
+        public Projectile(ProjectilePrototype prototype, Entity? caster, Vector2 position, Vector2 direction): base(prototype.Size, position, prototype.FillColor)
         {
             _prototype = prototype;
             Caster = caster;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 
-namespace Wc3_Combat_Game.Interface.Controllers
+namespace Wc3_Combat_Game.Components.Controllers.Interface
 {
     public interface IUnitController
     {

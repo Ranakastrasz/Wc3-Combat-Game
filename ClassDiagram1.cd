@@ -10,29 +10,15 @@
   <Class Name="Wc3_Combat_Game.Program" Collapsed="true">
     <Position X="13.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAABAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAABAAQAAA=</HashCode>
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Wc3_Combat_Game.Effects.Action" Collapsed="true">
+  <Class Name="Wc3_Combat_Game.Effects.GameplayAction" Collapsed="true">
     <Position X="3.5" Y="4.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAQAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
-      <FileName>Actions\Action.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Wc3_Combat_Game.Effects.ActionDamage" Collapsed="true">
-    <Position X="2.25" Y="5.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAACAAAAAAAQAAAQAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
-      <FileName>Actions\ActionDamage.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Wc3_Combat_Game.Effects.ActionProjectile" Collapsed="true">
-    <Position X="4.5" Y="5.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAQAAAQAAAAAAAAAAAAAAQAAAAABAAA=</HashCode>
-      <FileName>Actions\ActionProjectile.cs</FileName>
+      <FileName>Actions\GameplayAction.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Wc3_Combat_Game.Core.GameConstants" Collapsed="true">
@@ -45,7 +31,7 @@
   <Class Name="Wc3_Combat_Game.Core.GameBoard" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="18.25" Y="6.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAwAAAAMEBAAAAUAAAAAAAAAAQAKAECAEimAgEAAAAA=</HashCode>
+      <HashCode>AAwAAAAMEBAAAAUAAAAAAAAAAQBKAECAEimAgEAAAAA=</HashCode>
       <FileName>Core\GameBoard.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -106,27 +92,19 @@
       <FileName>Entities\Unit.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Wc3_Combat_Game.Interface.Controllers.IBasicAIController" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="Wc3_Combat_Game.Interface.Controllers.BasicAIController" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="16.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Interface\Controllers\IBasicAIController.cs</FileName>
+      <FileName>Interface\Controllers\BasicAIController.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="Wc3_Combat_Game.Interface.Controllers.IPlayerController" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="Wc3_Combat_Game.Interface.Controllers.PlayerController" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="20.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Interface\Controllers\IPlayerController.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Class>
-  <Class Name="Wc3_Combat_Game.Interface.Weapons.IWeaponBasic" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.75" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAQAAgCAAAASCAGAAAAAABAAAAAAAgAAAAEAA=</HashCode>
-      <FileName>Interface\Weapons\IWeaponBasic.cs</FileName>
+      <FileName>Interface\Controllers\PlayerController.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
@@ -144,32 +122,17 @@
       <FileName>IO\InputManager.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Wc3_Combat_Game.Prototype.PrototypeProjectile" Collapsed="true">
-    <Position X="18.5" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>ACAAAAQAAAAAgAAAAAAAAAABAAAAAAAAAAAAAAgAABA=</HashCode>
-      <FileName>Prototype\PrototypeProjectile.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Wc3_Combat_Game.Prototype.PrototypeWeapon" Collapsed="true">
+  <Class Name="Wc3_Combat_Game.Prototype.WeaponPrototype" Collapsed="true">
     <Position X="7.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Prototype\PrototypeWeapon.cs</FileName>
+      <FileName>Prototype\WeaponPrototype.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="Wc3_Combat_Game.Prototype.PrototypeWeaponBasic" Collapsed="true">
-    <Position X="7.25" Y="1.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAACAAAAAABIAAAAAAAAAAAAAAAAgAAAAAAAAABA=</HashCode>
-      <FileName>Prototype\PrototypeWeaponBasic.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Wc3_Combat_Game.Terrain.Map" Collapsed="true">
     <Position X="11.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAAgUAAABAABICEACAAABEDAAAAAAAAAAAAAAAACAAA=</HashCode>
+      <HashCode>IAAgUAAABAABACEACAAABEDAAAAAAAAAAAAAAAACAAA=</HashCode>
       <FileName>Terrain\Map.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -222,11 +185,11 @@
       <FileName>Util\TimeUtils.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Struct Name="Wc3_Combat_Game.Prototype.PrototypeUnit" Collapsed="true">
+  <Struct Name="Wc3_Combat_Game.Prototype.UnitPrototype" Collapsed="true">
     <Position X="9.75" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAGAAAAAAAAiAAAAAAAAAABAAAAAAgAAAAAAAgAAAA=</HashCode>
-      <FileName>Prototype\PrototypeUnit.cs</FileName>
+      <FileName>Prototype\UnitPrototype.cs</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="Wc3_Combat_Game.Waves.Wave" Collapsed="true">

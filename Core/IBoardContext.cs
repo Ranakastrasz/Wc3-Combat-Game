@@ -11,7 +11,7 @@ namespace Wc3_Combat_Game.Core
     public interface IBoardContext
     {
         float CurrentTime { get; }
-        Map Map { get; }
+        Map? Map { get; }
         //GameBoard GameBoard { get; set; }
 
         void AddProjectile(Projectile p);

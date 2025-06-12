@@ -3,10 +3,12 @@ using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Terrain;
 using MathUtils;
+using Wc3_Combat_Game.Components.Controllers.Interface;
+using AssertUtils;
 
-namespace Wc3_Combat_Game.Interface.Controllers
+namespace Wc3_Combat_Game.Components.Controllers
 {
-    class IBasicAIController : IUnitController
+    class BasicAIController : IUnitController
     {
         public void Update(Unit unit, float deltaTime, IBoardContext context)
         {
@@ -33,9 +35,11 @@ namespace Wc3_Combat_Game.Interface.Controllers
         }
 
 
-        public Vector2 GetPartialSteeringTarget(Vector2 myPos, Vector2 targetPos, IBoardContext context)
+        public static Vector2 GetPartialSteeringTarget(Vector2 myPos, Vector2 targetPos, IBoardContext context)
         {
-            Map map = context.Map;
+
+            Map? map = context.Map;
+            AssertUtil.AssertNotNull(map);
 
             Vector2Int myTile = map.ToGrid(myPos);
             Vector2Int targetTile = map.ToGrid(targetPos);

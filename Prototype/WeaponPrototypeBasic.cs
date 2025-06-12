@@ -4,18 +4,19 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using Wc3_Combat_Game.Effects;
+using Wc3_Combat_Game.Components.Actions;
+using Wc3_Combat_Game.Components.Actions.Interface;
 using Wc3_Combat_Game.Entities;
 
 namespace Wc3_Combat_Game.Prototype
 {
-    internal class PrototypeWeaponBasic : PrototypeWeapon, ICloneable
+    internal class WeaponPrototypeBasic : WeaponPrototype, ICloneable
     {
-        public Effects.Action? CastEffect { get; set; }
+        public IGameplayAction? CastEffect { get; set; }
         public float Cooldown { get; set; }
         public float CastRange { get; set; }
 
-        public PrototypeWeaponBasic(Effects.Action? castEffect, float cooldown, float castRange)
+        public WeaponPrototypeBasic(IGameplayAction? castEffect, float cooldown, float castRange)
         {
             CastEffect = castEffect;
             Cooldown = cooldown;
@@ -26,32 +27,32 @@ namespace Wc3_Combat_Game.Prototype
         {
             return this.MemberwiseClone();
         }
-        public PrototypeWeaponBasic SetDamage(float damage)
+        public WeaponPrototypeBasic SetDamage(float damage)
         {
-            Effects.Action? newEffect;
+            IGameplayAction? newEffect;
             switch (CastEffect)
             {
-                case ActionProjectile projEffect: // Created a projectile. That projectile deals damage.
+                case ProjectileAction projEffect: // Created a projectile. That projectile deals damage.
                     var oldProj = projEffect.Prototype;
-                    var newProj = new PrototypeProjectile(
+                    var newProj = new ProjectilePrototype(
                         oldProj.Size,
                         oldProj.Speed,
                         oldProj.Lifespan,
-                        new ActionDamage(damage),
+                        new DamageAction(damage),
                         oldProj.FillColor);
-                    newEffect = new ActionProjectile(newProj);
+                    newEffect = new ProjectileAction(newProj);
                     break;
-                case ActionDamage _: // Already did Damage.
-                    newEffect = new ActionDamage(damage);
+                case DamageAction _: // Already did Damage.
+                    newEffect = new DamageAction(damage);
                     break;
-                case Effects.Action _: // Null effect.
-                    newEffect = new ActionDamage(damage);
+                case IGameplayAction _: // Null effect.
+                    newEffect = new DamageAction(damage);
                     break;
                 default:
                     newEffect = CastEffect; // fallback, or throw
                     break;
             }
-            return new PrototypeWeaponBasic(newEffect, Cooldown, CastRange);
+            return new WeaponPrototypeBasic(newEffect, Cooldown, CastRange);
         }
     }
 }

@@ -1,24 +1,25 @@
 ﻿using System.Numerics;
+using Wc3_Combat_Game.Components.Actions.Interface;
+using Wc3_Combat_Game.Components.Weapons.Interface;
 using Wc3_Combat_Game.Core;
-using Wc3_Combat_Game.Effects;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Prototype;
 using Wc3_Combat_Game.Util;
 
-namespace Wc3_Combat_Game.Interface.Weapons
+namespace Wc3_Combat_Game.Components.Weapons
 {
-    class IWeaponBasic : IWeapon
+    class BasicWeapon : IWeapon
     {
         private float _cooldown;
         private float _lastShotTime = float.NegativeInfinity;
 
         private float _attackRange;
-        private Effects.Action? _CastEffect;
+        private IGameplayAction? _CastEffect;
 
-        PrototypeWeapon _prototype;
+        WeaponPrototype _prototype;
 
 
-        public IWeaponBasic(PrototypeWeaponBasic prototype)
+        public BasicWeapon(WeaponPrototypeBasic prototype)
         {
             _prototype = prototype;
             _CastEffect = prototype.CastEffect;
@@ -31,18 +32,18 @@ namespace Wc3_Combat_Game.Interface.Weapons
             if (!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
 
-            _CastEffect?.ApplyToPoint(unit, unit, target, context);
+            _CastEffect?.ExecuteOnPoint(unit, unit, target, context);
 
             _lastShotTime = context.CurrentTime;
             return true;
         }
 
-        public bool TryShootEntity(Unit unit, Entities.Entity target, IBoardContext context)
+        public bool TryShootEntity(Unit unit, Entity target, IBoardContext context)
         {
             if (!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
 
-            _CastEffect?.ApplyToEntity(unit, unit, target, context);
+            _CastEffect?.ExecuteOnEntity(unit, unit, target, context);
 
             _lastShotTime = context.CurrentTime;
             return true;
@@ -53,7 +54,7 @@ namespace Wc3_Combat_Game.Interface.Weapons
 
         public float GetAttackRange() => _attackRange;
 
-        public PrototypeWeapon? GetPrototype()
+        public WeaponPrototype? GetPrototype()
         {
             return _prototype;
         }

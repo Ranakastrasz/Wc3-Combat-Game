@@ -68,86 +68,102 @@ namespace Wc3_Combat_Game
         }
         public static void ListClasses()
         {
-            // Build a string for all classes and their properties in the assembly.
             var oString = new StringBuilder();
-            // Write to a file in the Debug folder
             string docPath = Path.Combine(AppContext.BaseDirectory, "Debug");
-            Directory.CreateDirectory(docPath); // Ensure the directory exists
+            Directory.CreateDirectory(docPath);
 
-            var assembly = Assembly.GetExecutingAssembly(); // This is the assembly of the current project
-            var allTypes = assembly.GetTypes() // Get all types in the assembly
-                .Where(t => t.IsClass && t.IsPublic && t.Namespace != null) // Filter for public classes with a namespace
-                .OrderBy(t => t.Namespace) // Order by namespace
-                .ThenBy(t => t.Name); // Then by class name
+            var assembly = Assembly.GetExecutingAssembly();
+            var allTypes = assembly.GetTypes()
+                .Where(t => t.IsClass && t.IsPublic && t.Namespace != null)
+                .OrderBy(t => t.Namespace)
+                .ThenBy(t => t.Name);
 
-            // Write header
-            oString.AppendLine("Namespace\tClass\tBaseType\tInterfaces\tProperty\tPropertyType");
+            oString.AppendLine("--- Assembly Class Structure ---");
 
             foreach (var type in allTypes)
             {
-                // Get the base type and interfaces
-                string baseType = type.BaseType?.Name ?? "";
-                string interfaces = string.Join(",", type.GetInterfaces().Select(i => i.FullName ?? i.Name));
+                // Get the base type
+                string baseType = type.BaseType?.Name ?? "Object";
+                if (baseType == "Object" && type.IsValueType) baseType = "ValueType"; // For structs/enums
+
+                // Get interfaces, filtering for those within the current assembly
+                var projectInterfaces = type.GetInterfaces()
+                                            .Where(i => i.Assembly == assembly)
+                                            .Select(i => i.Name);
+                string interfaces = projectInterfaces.Any() ? string.Join(", ", projectInterfaces) : "None (Custom)";
+                if (!projectInterfaces.Any() && type.GetInterfaces().Any())
+                {
+                    interfaces = "None (Custom), plus external interfaces...";
+                }
 
 
-                // Get properties of the class, excluding duplicates by name
-                
+                oString.AppendLine($"\n## Namespace: {type.Namespace}");
+                oString.AppendLine($"### Class: {type.Name}");
+                oString.AppendLine($"  - Base Type: {baseType}");
+                oString.AppendLine($"  - Interfaces: {interfaces}");
+
+                // Constructors
                 ConstructorInfo[] ctors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                     .Where(c => !c.IsPrivate && !c.IsFamily)
                     .ToArray();
-                foreach (ConstructorInfo ctor in ctors)
+                if (ctors.Any())
                 {
-                    string args = string.Join(", ", ctor.GetParameters()
-                    .Select(p => $"{p.ParameterType.Name} {p.Name}"));
-                    oString.AppendLine($"{type.Namespace}\t{type.Name}\t{baseType}\t{interfaces}\tConstructor\t({args})");
-                }
-
-
-                PropertyInfo[] props = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
-                    .Where(p => p.GetMethod?.IsPrivate != true && p.GetMethod?.IsFamily != true)
-                    .DistinctBy(p => p.Name).ToArray();
-                
-
-                if (props.Length == 0)
-                {// If there are no properties, just print the class information
-
-                    oString.AppendLine($"{type.Namespace}\t{type.Name}\t{baseType}\t{interfaces}\t\t");
-                }
-                else
-                {
-                    foreach (var prop in props)
-                    { // For each property, check if it is part of the project assembly
-                        bool isProjectType = prop.PropertyType.Assembly == assembly;
-                        if (!isProjectType)
-                        {
-                            // Skip properties that are not part of the project assembly
-                            continue;
-                        }
-                        // Append the class, base type, interfaces, property name, and property type to the string
-                        oString.AppendLine($"{type.Namespace}\t{type.Name}\t{baseType}\t{interfaces}\t{prop.Name}\t{prop.PropertyType}");
+                    oString.AppendLine("  - Constructors:");
+                    foreach (ConstructorInfo ctor in ctors)
+                    {
+                        string args = string.Join(", ", ctor.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"));
+                        oString.AppendLine($"    - {type.Name}({args})");
                     }
                 }
-                var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
-                .Where(m => !m.IsPrivate && !m.IsSpecialName); // Excludes things like get_/set_
 
-                foreach(var method in methods)
+                // Properties
+                PropertyInfo[] props = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+                    .Where(p => (p.GetMethod?.IsPrivate != true && p.GetMethod?.IsFamily != true) || (p.SetMethod?.IsPrivate != true && p.SetMethod?.IsFamily != true))
+                    .DistinctBy(p => p.Name).ToArray();
+
+                var projectProperties = props.Where(p => p.PropertyType.Assembly == assembly).ToList();
+                var externalProperties = props.Where(p => p.PropertyType.Assembly != assembly).ToList();
+
+                if (projectProperties.Any() || externalProperties.Any())
                 {
-                    string args = string.Join(", ", method.GetParameters()
-                .Select(p => $"{p.ParameterType.Name} {p.Name}"));
-                    string returnType = method.ReturnType.Name;
-                    oString.AppendLine($"{type.Namespace}\t{type.Name}\tMethod\t{type.BaseType?.Name ?? ""}\t{interfaces}\t{method.Name}\t{returnType} ({args})");
+                    oString.AppendLine("  - Properties:");
+                    foreach (var prop in projectProperties)
+                    {
+                        oString.AppendLine($"    - {prop.Name}: {prop.PropertyType.Name}");
+                    }
+                    if (externalProperties.Any())
+                    {
+                        oString.AppendLine($"    - ... (plus {externalProperties.Count} properties with external types)");
+                    }
+                }
+
+                // Methods
+                var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+                .Where(m => !m.IsPrivate && !m.IsSpecialName && !m.IsFamily); // Excludes things like get_/set_ and private/protected methods
+
+                if (methods.Any())
+                {
+                    oString.AppendLine("  - Methods:");
+                    foreach (var method in methods)
+                    {
+                        string args = string.Join(", ", method.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"));
+                        string returnType = method.ReturnType.Name;
+                        oString.AppendLine($"    - {method.Name}({args}): {returnType}");
+                    }
                 }
             }
+
             Console.Write(oString.ToString());
 
             try
-            { // Write the output to a file in the Debug folder
+            {
                 var outputPath = Path.Combine(docPath, "ProgramStructure.txt");
                 using var outputFile = new StreamWriter(outputPath);
                 outputFile.Write(oString.ToString());
+                Console.WriteLine($"\nOutput saved to: {outputPath}");
             }
             catch (IOException ex)
-            { // Handle any IO exceptions that may occur
+            {
                 Console.Error.WriteLine($"Error writing file: {ex.Message}");
             }
         }

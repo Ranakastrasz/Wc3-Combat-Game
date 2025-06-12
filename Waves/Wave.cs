@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wc3_Combat_Game.Interface.Weapons;
 using Wc3_Combat_Game.Prototype;
 
 namespace Wc3_Combat_Game.Waves
 {
     public struct Wave
     {
-        public PrototypeUnit Unit { get; }
+        public UnitPrototype Unit { get; }
         public int CountToSpawn { get; }
 
-        public Wave(PrototypeUnit unit, int toSpawn)
+        public Wave(UnitPrototype unit, int toSpawn)
         {
             Unit = unit;
             CountToSpawn = toSpawn;

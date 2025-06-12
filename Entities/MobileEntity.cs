@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Terrain;
+using AssertUtils;
 
 namespace Wc3_Combat_Game.Entities
 {
@@ -20,7 +21,9 @@ namespace Wc3_Combat_Game.Entities
         public override void Update(float deltaTime, IBoardContext context)
         {
             Vector2 newPosition = _position + _velocity * deltaTime;
-            Map map = context.Map;
+            Map? map = context.Map;
+            AssertUtil.AssertNotNull(map);
+
             float collisionRadius = CollisionRadius;
 
             if (!map.CollidesAt(newPosition, collisionRadius))

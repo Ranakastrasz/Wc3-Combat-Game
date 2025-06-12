@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Wc3_Combat_Game.Prototype
 {
-    public class PrototypeWeapon
+    public class WeaponPrototype
     {
     }
 }

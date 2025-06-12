@@ -4,34 +4,30 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Wc3_Combat_Game.Components.Actions.Interface;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Prototype;
 using Wc3_Combat_Game.Util;
 
 
-namespace Wc3_Combat_Game.Effects
+namespace Wc3_Combat_Game.Components.Actions
 {
-    internal class ActionProjectile : Action
+    internal class ProjectileAction : IGameplayAction
     {
-        public PrototypeProjectile Prototype;
+        public ProjectilePrototype Prototype;
 
-        public ActionProjectile(PrototypeProjectile prototype)
+        public ProjectileAction(ProjectilePrototype prototype)
         {
             Prototype = prototype;
         }
 
-        protected override void Execute(Entities.Entity? Source, IBoardContext context)
+        public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)
         {
-            // Maybe launch from source facing?
-
-        }
-        public override void ApplyToEntity(Entities.Entity? Caster, Entities.Entity? Emitter, Entities.Entity Target, IBoardContext context)
-        {
-            ApplyToPoint(Caster,Emitter,Target.Position, context);
+            ExecuteOnPoint(Caster,Emitter,Target.Position, context);
         }
 
-        public override void ApplyToPoint(Entities.Entity? Caster, Entities.Entity? Emitter, Vector2 TargetPoint, IBoardContext context)
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, Vector2 TargetPoint, IBoardContext context)
         {
             //Projectile projectile = new Projectile(Caster.Position, Prototype);
             // Hardcode requirements for now

@@ -6,6 +6,7 @@ using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
+using AssertUtils;
 using static Wc3_Combat_Game.Core.GameController;
 
 namespace Wc3_Combat_Game
@@ -90,15 +91,15 @@ namespace Wc3_Combat_Game
             this.MouseUp += MainGameWindow_MouseUp;
             this.MouseMove += MainGameWindow_MouseMove;
 
-            this.Resize += new EventHandler(OnWindowSizeChanged);
+            this.Resize +=  OnWindowSizeChanged;
 
             _gridFont = null;
         }
 
-        public void OnWindowSizeChanged(object sender, EventArgs e)
+        public void OnWindowSizeChanged(object? sender, EventArgs e)
         {
-            _camera.Width = this.ClientSize.Width;
-            _camera.Height = this.ClientSize.Height;
+            _camera.Width = ClientSize.Width;
+            _camera.Height = ClientSize.Height;
         }
         public void Update(float deltaTime)
         {
@@ -121,12 +122,13 @@ namespace Wc3_Combat_Game
             // Draw Map.
             if (_drawContext != null)
             {
-                Map map = _drawContext.Map;
+                Map? map = _drawContext.Map;
+                AssertUtil.AssertNotNull(map);
 
                 //_gridFont ??= FontUtils.FitFontToTile(g, "Consolas", 32f, FontStyle.Regular, GraphicsUnit.Pixel);//new Font("Consolas", 32f, FontStyle.Regular, GraphicsUnit.Pixel);
 
 
-                float tileSize = _drawContext.Map.TileSize;
+                float tileSize = map.TileSize;
 
                 for (int y = 0; y < map.TileMap.GetLength(1); y++)
                 {

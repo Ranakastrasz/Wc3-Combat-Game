@@ -4,25 +4,24 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Wc3_Combat_Game.Components.Actions.Interface;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 
-namespace Wc3_Combat_Game.Effects
+namespace Wc3_Combat_Game.Components.Actions
 {
-    internal class ActionDamage : Action
+    internal class DamageAction : IGameplayAction
     {
+
         public float Damage;
 
-        internal ActionDamage(float damage)
+        internal DamageAction(float damage)
         {
             Damage = damage;
         }
 
-        protected override void Execute(Entities.Entity? Source, IBoardContext context)
-        {
 
-        }
-        public override void ApplyToEntity(Entities.Entity? Caster, Entities.Entity? Emitter, Entities.Entity Target, IBoardContext context)
+        public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)
         {
             if (Target is Unit unit)
             {
@@ -30,7 +29,7 @@ namespace Wc3_Combat_Game.Effects
             }
         }
 
-        public override void ApplyToPoint(Entities.Entity? Caster, Entities.Entity? Emitter, Vector2 TargetPoint, IBoardContext context)
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, Vector2 TargetPoint, IBoardContext context)
         {
             // DoNothing.
             // Damage requires a target, or an AOE Effect to find targets.

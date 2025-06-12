@@ -1,16 +1,17 @@
 ﻿using System.Numerics;
+using Wc3_Combat_Game.Components.Controllers.Interface;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
 
-namespace Wc3_Combat_Game.Interface.Controllers
+namespace Wc3_Combat_Game.Components.Controllers
 {
-    class IPlayerController : IUnitController
+    class PlayerController : IUnitController
     {
         private InputManager _input;
 
-        public IPlayerController(InputManager input)
+        public PlayerController(InputManager input)
         {
             _input = input;
         }

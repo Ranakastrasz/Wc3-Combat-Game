@@ -1,9 +1,10 @@
 ﻿using System.Numerics;
 using Wc3_Combat_Game.Prototype;
 using Wc3_Combat_Game.Util;
-using Wc3_Combat_Game.Interface.Controllers;
-using Wc3_Combat_Game.Interface.Weapons;
 using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.Components.Weapons;
+using Wc3_Combat_Game.Components.Weapons.Interface;
+using Wc3_Combat_Game.Components.Controllers.Interface;
 
 
 namespace Wc3_Combat_Game.Entities
@@ -28,14 +29,14 @@ namespace Wc3_Combat_Game.Entities
 
         public float MoveSpeed { get; set; }
 
-        public Unit(PrototypeUnit prototype, Vector2 position) : base(prototype.Size, position, prototype.FillColor)
+        public Unit(UnitPrototype prototype, Vector2 position) : base(prototype.Size, position, prototype.FillColor)
         {
             Health = prototype.MaxHealth;
             MaxHealth = prototype.MaxHealth;
             MoveSpeed = prototype.Speed;
-            if (prototype.Weapon is PrototypeWeaponBasic basic)
+            if (prototype.Weapon is WeaponPrototypeBasic basic)
             {
-                Weapon = new IWeaponBasic(basic);
+                Weapon = new BasicWeapon(basic);
             }
             _despawnDelay = 1f; // For units specifically.
         }
@@ -146,7 +147,7 @@ namespace Wc3_Combat_Game.Entities
     }
     static class UnitFactory
     {
-        public static Unit SpawnUnit(PrototypeUnit prototype, Vector2 position, IUnitController controller, TeamType team)
+        public static Unit SpawnUnit(UnitPrototype prototype, Vector2 position, IUnitController controller, TeamType team)
         {
             Unit unit = new Unit(prototype, position)
             {

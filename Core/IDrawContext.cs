@@ -11,7 +11,7 @@ namespace Wc3_Combat_Game.Core
     public interface IDrawContext
     {
 
-        Map Map { get; }
+        Map? Map { get; }
         float CurrentTime { get; }
 
         EntityManager<Entities.Entity> Entities { get; }

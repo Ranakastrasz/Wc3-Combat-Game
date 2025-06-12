@@ -1,8 +1,6 @@
 using AssertUtils;
 using System.ComponentModel;
 using System.Windows.Forms;
-using Wc3_Combat_Game.Effects;
-using Wc3_Combat_Game.Interface.Weapons;
 //using Wc3_Combat_Game.IO.Load.GameSchema;
 using Wc3_Combat_Game.Prototype;
 /*
