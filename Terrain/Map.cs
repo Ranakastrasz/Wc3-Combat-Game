@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using MathUtils;
+using AStar;
 namespace Wc3_Combat_Game.Terrain
 {
     public class Map
@@ -8,6 +8,7 @@ namespace Wc3_Combat_Game.Terrain
         
 
         public Tile[,] TileMap;
+        public WorldGrid PathfinderGrid;
         public float TileSize { get; set; }
         public int Width;
         public int Height;
@@ -16,6 +17,9 @@ namespace Wc3_Combat_Game.Terrain
         {
             TileMap = tileMap;
             TileSize = tileSize;
+            short[,] pathfinderGrid = new short[tileMap.GetLength(0), tileMap.GetLength(1)];
+            this.PathfinderGrid = new WorldGrid(pathfinderGrid);
+            UpdatePathing();
         }
 
         public static Map ParseMap(string[] mapString, float tileSize = 1f)
@@ -38,23 +42,23 @@ namespace Wc3_Combat_Game.Terrain
             return newMap;
         }
 
-        internal List<Vector2Int> GetTilesMatching(char chr)
+        internal List<Point> GetTilesMatching(char chr)
         {
-            List<Vector2Int> matchingTiles = new();
+            List<Point> matchingTiles = new();
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
                 {
                     if (TileMap[x, y].GetChar == 'P')
                     {
-                        matchingTiles.Add(new Vector2Int(x, y));
+                        matchingTiles.Add(new Point(x, y));
                     }
                 }
             }
             return matchingTiles;
         }
 
-        public Vector2Int ToGrid(Vector2 worldPosition)
+        public Point ToGrid(Vector2 worldPosition)
         {
             int x = (int)Math.Floor(worldPosition.X / TileSize);
             int y = (int)Math.Floor(worldPosition.Y / TileSize);
@@ -67,7 +71,7 @@ namespace Wc3_Combat_Game.Terrain
             return new Vector2((x + 0.5f) * TileSize, (y + 0.5f) * TileSize);
         }
 
-        public Vector2 FromGrid(Vector2Int index)
+        public Vector2 FromGrid(Point index)
         {
             return FromGrid(index.X, index.Y);
         }
@@ -110,14 +114,14 @@ namespace Wc3_Combat_Game.Terrain
             return false;
         }
 
-        public bool HasLineOfSight(Vector2Int myTile, Vector2Int targetTile)
+        public bool HasLineOfSight(Point myTile, Point targetTile)
         {
             return HasLineOfSight(FromGrid(myTile), FromGrid(targetTile));
         }
         public bool HasLineOfSight(Vector2 startWorld, Vector2 targetWorld)
         {
-            Vector2Int startGrid = ToGrid(startWorld);
-            Vector2Int targetGrid = ToGrid(targetWorld);
+            Point startGrid = ToGrid(startWorld);
+            Point targetGrid = ToGrid(targetWorld);
 
             int x0 = startGrid.X;
             int y0 = startGrid.Y;
@@ -160,9 +164,9 @@ namespace Wc3_Combat_Game.Terrain
             return true;
         }
 
-        public List<Vector2Int> GetAdjacentTiles(int x, int y)
+        public List<Point> GetAdjacentTiles(int x, int y)
         {
-            List<Vector2Int> adjacent = new List<Vector2Int>();
+            List<Point> adjacent = new List<Point>();
             int[] dx = [ 0, 1, 0,-1];
             int[] dy = [-1, 0, 1, 0];
 
@@ -173,13 +177,13 @@ namespace Wc3_Combat_Game.Terrain
 
                 if (nx >= 0 && nx < Width && ny >= 0 && ny < Height)
                 {
-                    adjacent.Add(new Vector2Int(nx,ny));
+                    adjacent.Add(new Point(nx,ny));
                 }
             }
             return adjacent;
         }
 
-        public List<Vector2Int> GetAdjacentTiles(Vector2Int index)
+        public List<Point> GetAdjacentTiles(Point index)
         {
             return GetAdjacentTiles(index.X, index.Y);
         }
@@ -190,12 +194,23 @@ namespace Wc3_Combat_Game.Terrain
             return new List<Tile>();
         }
 
+        public void UpdatePathing()
+        {
+            for (int y = 0; y < TileMap.GetLength(1); y++)
+            {
+                for (int x = 0; x < TileMap.GetLength(0); x++)
+                {
+                    Tile tile = TileMap[x, y];
+                    PathfinderGrid[x, y] = tile.IsWalkable ? (short)1 : (short)0;
+                }
+            }
+        }
         public Tile this[int x, int y]
         {
             get => TileMap[x, y];
             set => TileMap[x, y] = value;
         }
-        public Tile this[Vector2Int index]
+        public Tile this[Point index]
         {
             get => TileMap[index.X, index.Y];
             set => TileMap[index.X, index.X] = value;

@@ -25,6 +25,7 @@ namespace Wc3_Combat_Game.Util
             new((int)Math.Round(value.X), (int)Math.Round(value.Y));
         public static Size ToSize(this Point value) =>
             new(value.X, value.Y);
+
         public static Vector2 Center(this Rectangle rect) =>
             new(
                 rect.X + rect.Width / 2,

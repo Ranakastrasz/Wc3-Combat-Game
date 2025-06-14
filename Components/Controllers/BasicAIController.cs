@@ -2,14 +2,18 @@
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Terrain;
-using MathUtils;
 using Wc3_Combat_Game.Components.Controllers.Interface;
 using AssertUtils;
+using AStar;
+using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Components.Controllers
 {
     class BasicAIController : IUnitController
     {
+        //private PathFinder _pathFinder;
+
+
         public void Update(Unit unit, float deltaTime, IBoardContext context)
         {
             // Example: move toward nearest enemy
@@ -34,6 +38,26 @@ namespace Wc3_Combat_Game.Components.Controllers
 
         }
 
+        public void RegisterGrid(Map map)
+        {
+            //_pathFinder = new PathFinder(map.PathfinderGrid);
+        }
+        
+        //public void Pathfind(Unit unit, Vector2 targetPos, IBoardContext context)
+        //{
+        //    Map? map = context.Map;
+        //    AssertUtil.AssertNotNull(map);
+        //    Vector2Int startTile = map.ToGrid(unit.Position);
+        //    Vector2Int targetTile = map.ToGrid(targetPos);
+        //    Point[] path = _pathFinder.FindPath(startTile.ToPoint(), targetTile.ToPoint());
+        //    if (path.Length > 0)
+        //    {
+        //        // Move to the first tile in the path
+        //        Vector2 nextTilePos = map.FromGrid(path[0]);
+        //        Vector2 moveDir = Vector2.Normalize(nextTilePos - unit.Position);
+        //        unit.OrderMove(moveDir * unit.MoveSpeed);
+        //    }
+        //}
 
         public static Vector2 GetPartialSteeringTarget(Vector2 myPos, Vector2 targetPos, IBoardContext context)
         {
@@ -41,8 +65,8 @@ namespace Wc3_Combat_Game.Components.Controllers
             Map? map = context.Map;
             AssertUtil.AssertNotNull(map);
 
-            Vector2Int myTile = map.ToGrid(myPos);
-            Vector2Int targetTile = map.ToGrid(targetPos);
+            Point myTile = map.ToGrid(myPos);
+            Point targetTile = map.ToGrid(targetPos);
             
             if (map.HasLineOfSight(myTile, targetTile))
             {
@@ -53,13 +77,13 @@ namespace Wc3_Combat_Game.Components.Controllers
             Vector2 bestDir = Vector2.Zero;
             float bestDist = float.MaxValue;
 
-            foreach (Vector2Int neighbor in map.GetAdjacentTiles(myTile))
+            foreach (Point neighbor in map.GetAdjacentTiles(myTile))
             {
                 //Vector2Int offset = neighbor - myTile;
                 if (!map[neighbor].IsWalkable)
                     continue;
             
-                float dist = (targetTile - neighbor).LengthSquared();
+                float dist = GeometryUtils.DistanceToSquared(targetTile, neighbor);
                 if (dist < bestDist)
                 {
                     bestDist = dist;

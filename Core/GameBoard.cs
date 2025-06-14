@@ -5,7 +5,6 @@ using Wc3_Combat_Game.Util;
 using static Wc3_Combat_Game.Core.GameConstants;
 using Wc3_Combat_Game.Terrain;
 using System.Data;
-using MathUtils;
 using Wc3_Combat_Game.Waves;
 using AssertUtils;
 using Wc3_Combat_Game.Components.Controllers;
@@ -62,7 +61,7 @@ namespace Wc3_Combat_Game.Core
             TileSize = tileSize;
 
             Map = Map.ParseMap(mapString, TileSize);
-            List<Vector2Int> portals = Map.GetTilesMatching('P');
+            List<Point> portals = Map.GetTilesMatching('P');
             spawnPoints = portals.Select(p => (p.ToVector2() + new Vector2(0.5f, 0.5f)) * TileSize).ToList();
 
             
