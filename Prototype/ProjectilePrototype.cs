@@ -29,7 +29,7 @@ namespace Wc3_Combat_Game.Prototype
 
         public static ProjectilePrototype Clone(ProjectilePrototype projectile)
         {
-            AssertUtil.AssertNotNull(projectile);
+            AssertUtil.NotNull(projectile);
             return new ProjectilePrototype(projectile.Size, projectile.Speed, projectile.Lifespan, projectile.ImpactEffect, projectile.FillColor);
         }
     }

@@ -10,6 +10,8 @@ using AssertUtils;
 using Wc3_Combat_Game.Components.Controllers;
 using Wc3_Combat_Game.Components.Actions;
 using Wc3_Combat_Game.Components.Actions.Interface;
+using AStar;
+using AStar.Options;
 //using Wc3_Combat_Game.IO.Load.GameSchema;
 
 namespace Wc3_Combat_Game.Core
@@ -40,6 +42,7 @@ namespace Wc3_Combat_Game.Core
 
 
         public Map? Map { get; private set; }
+        public PathFinder? PathFinder { get; private set; }
         public float TileSize { get; private set; }
 
         private float _lastEnemySpawned = 0f;
@@ -48,6 +51,7 @@ namespace Wc3_Combat_Game.Core
         public GameBoard()
         {
             Map = null;
+            PathFinder = null;
         }
 
         // Optional constructor that sets the controller and initializes dependent things
@@ -64,7 +68,8 @@ namespace Wc3_Combat_Game.Core
             List<Point> portals = Map.GetTilesMatching('P');
             spawnPoints = portals.Select(p => (p.ToVector2() + new Vector2(0.5f, 0.5f)) * TileSize).ToList();
 
-            
+            PathFinder = new PathFinder(Map.PathfinderGrid);
+
         }
 
         public void InitWaves()
@@ -96,8 +101,8 @@ namespace Wc3_Combat_Game.Core
 
         public void InitPlayer()
         {
-            AssertUtil.AssertNotNull(_controller);
-            AssertUtil.AssertNotNull(_controller.Input);
+            AssertUtil.NotNull(_controller);
+            AssertUtil.NotNull(_controller.Input);
 
             WeaponPrototypeBasic weapon = new WeaponPrototypeBasic(new ProjectileAction(new ProjectilePrototype(5f,
                 600f,
@@ -120,10 +125,10 @@ namespace Wc3_Combat_Game.Core
 
         private bool CheckGameOverCondition(IBoardContext context)
         {
-            AssertUtil.AssertNotNull(PlayerUnit);
+            AssertUtil.NotNull(PlayerUnit);
             if (PlayerUnit.IsExpired(context))
             {
-                AssertUtil.AssertNotNull(_controller);
+                AssertUtil.NotNull(_controller);
                 _controller.OnVictory();
                 return true;
             }
@@ -133,7 +138,7 @@ namespace Wc3_Combat_Game.Core
         {
             if (_waveCurrent == _waves.Count)
             {
-                AssertUtil.AssertNotNull(_controller);
+                AssertUtil.NotNull(_controller);
                 _controller.OnVictory();
                 return true;
             }
@@ -229,7 +234,7 @@ namespace Wc3_Combat_Game.Core
                     projectile.Die(this);
                 }
             }
-            AssertUtil.AssertNotNull(PlayerUnit);
+            AssertUtil.NotNull(PlayerUnit);
             if (!GAME_BOUNDS.Contains(PlayerUnit.BoundingBox))
             {
                 var bounds = GAME_BOUNDS;

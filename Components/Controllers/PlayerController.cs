@@ -39,6 +39,13 @@ namespace Wc3_Combat_Game.Components.Controllers
                     unit.Weapon.TryShootPoint(unit, _input.CurrentMousePosition, context);
             }
         }
+        public void DrawDebug(Graphics g, IDrawContext context, Unit unit)
+        {
+            //throw new NotImplementedException();
+            // No idea what goes here yet
+            // Probably draw the current input and desired movement direction?
+            if (!unit.IsAlive) return;
 
+        }
     }
 }

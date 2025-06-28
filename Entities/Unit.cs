@@ -5,6 +5,7 @@ using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Components.Weapons;
 using Wc3_Combat_Game.Components.Weapons.Interface;
 using Wc3_Combat_Game.Components.Controllers.Interface;
+using Wc3_Combat_Game.Components.Controllers;
 
 
 namespace Wc3_Combat_Game.Entities
@@ -59,6 +60,8 @@ namespace Wc3_Combat_Game.Entities
 
         public override void Draw(Graphics g, IDrawContext context)
         {
+            Controller?.DrawDebug(g, context, this);
+
             RectangleF entityRect = _position.RectFFromCenter(_sizeVector);
 
             if (!TimeUtils.HasElapsed(context.CurrentTime,_lastDamaged,s_DamageFlashTime))
@@ -131,7 +134,6 @@ namespace Wc3_Combat_Game.Entities
                     g.FillRectangle(Brushes.Blue, manaFillRect);
                 }
             }
-
         }
 
         public void Damage(float amount, IBoardContext context)

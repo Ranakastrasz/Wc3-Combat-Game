@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AStar;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,8 @@ namespace Wc3_Combat_Game.Core
     {
         float CurrentTime { get; }
         Map? Map { get; }
-        //GameBoard GameBoard { get; set; }
+
+        PathFinder PathFinder { get; }
 
         void AddProjectile(Projectile p);
         void AddUnit(Unit u);

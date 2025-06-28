@@ -31,9 +31,9 @@ namespace Wc3_Combat_Game.Prototypes
 
         public static Dictionary<string, PrototypeProjectile> InitProjectileStubs(EnemyComponentSchema components)
         { 
-            AssertUtil.AssertNotNull(components.Projectiles, "Projectiles not found in enemy schema");
+            AssertUtil.NotNull(components.Projectiles, "Projectiles not found in enemy schema");
             Dictionary<string, ProjectileSchema> projectileSchemas = components.Projectiles;
-            AssertUtil.AssertNotNull(components.VisualEffects, "VisualEffects not found in enemy schema.");
+            AssertUtil.NotNull(components.VisualEffects, "VisualEffects not found in enemy schema.");
             Dictionary<string, DrawableSchema> drawableSchemas = components.VisualEffects;
 
             Dictionary<string, PrototypeProjectile> projectiles = new Dictionary<string, PrototypeProjectile>();
@@ -75,9 +75,9 @@ namespace Wc3_Combat_Game.Prototypes
                     continue;
                 }
 
-                AssertUtil.AssertNotNull(entitySchema.MeleeAttack);
+                AssertUtil.NotNull(entitySchema.MeleeAttack);
                 MeleeAttackSchema meleeAttack = entitySchema.MeleeAttack;
-                AssertUtil.AssertNotNull(entitySchema.RangedAttacks?[0]);
+                AssertUtil.NotNull(entitySchema.RangedAttacks?[0]);
                 RangedAttackSchema rangedAttack = entitySchema.RangedAttacks[0]; // theoretically, there could be multiple ranged attacks, but for now we take the first one
 
                 // now we have the melee and ranged attacks, we can create the weapons
@@ -130,9 +130,9 @@ namespace Wc3_Combat_Game.Prototypes
             // Then, the Units.
             // The above function that was hardcoded built the weapons, then the units, then fed them into the waves.
 
-            AssertUtil.AssertNotNull(enemySchema.Components?.Projectiles, "Projectiles not found in enemy schema.");
-            AssertUtil.AssertNotNull(enemySchema.Components?.VisualEffects, "VisualEffects not found in enemy schema.");
-            AssertUtil.AssertNotNull(enemySchema.Entities, "Entities not found in enemy schema.");
+            AssertUtil.NotNull(enemySchema.Components?.Projectiles, "Projectiles not found in enemy schema.");
+            AssertUtil.NotNull(enemySchema.Components?.VisualEffects, "VisualEffects not found in enemy schema.");
+            AssertUtil.NotNull(enemySchema.Entities, "Entities not found in enemy schema.");
 
             Dictionary<string, PrototypeProjectile> projectiles = InitProjectileStubs(enemySchema.Components);
 

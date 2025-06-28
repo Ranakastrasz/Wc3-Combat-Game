@@ -32,7 +32,7 @@ namespace Wc3_Combat_Game
 
 
             game.CreateGameBoard();
-            AssertUtil.AssertNotNull(game.Board);
+            AssertUtil.NotNull(game.Board);
           
             // Setup wave units and counts Old
             game.Board.InitWaves();
@@ -41,10 +41,10 @@ namespace Wc3_Combat_Game
                
 
             game.CreateGameView();
-            AssertUtil.AssertNotNull(game.View);
+            AssertUtil.NotNull(game.View);
 
             game.Board.InitPlayer();
-            AssertUtil.AssertNotNull(game.Board.PlayerUnit);
+            AssertUtil.NotNull(game.Board.PlayerUnit);
             game.View.RegisterPlayer(game.Board.PlayerUnit);
 
             game.Board.InitMap(GetDefaultMap(), 32f);

@@ -75,7 +75,7 @@ namespace Wc3_Combat_Game
             _camera.Zoom = 3;
             _camera.Width = GameConstants.CAMERA_BOUNDS.Width;
             _camera.Height = GameConstants.CAMERA_BOUNDS.Height;
-            //AssertUtil.AssertNotNull(_drawContext.PlayerUnit);
+            //AssertUtil.NotNull(_drawContext.PlayerUnit);
             //_camera.FollowUnit(_drawContext.PlayerUnit!);
 
 
@@ -123,7 +123,7 @@ namespace Wc3_Combat_Game
             if (_drawContext != null)
             {
                 Map? map = _drawContext.Map;
-                AssertUtil.AssertNotNull(map);
+                AssertUtil.NotNull(map);
 
                 //_gridFont ??= FontUtils.FitFontToTile(g, "Consolas", 32f, FontStyle.Regular, GraphicsUnit.Pixel);//new Font("Consolas", 32f, FontStyle.Regular, GraphicsUnit.Pixel);
 

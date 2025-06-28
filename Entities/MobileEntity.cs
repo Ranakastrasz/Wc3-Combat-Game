@@ -22,7 +22,7 @@ namespace Wc3_Combat_Game.Entities
         {
             Vector2 newPosition = _position + _velocity * deltaTime;
             Map? map = context.Map;
-            AssertUtil.AssertNotNull(map);
+            AssertUtil.NotNull(map);
 
             float collisionRadius = CollisionRadius;
 

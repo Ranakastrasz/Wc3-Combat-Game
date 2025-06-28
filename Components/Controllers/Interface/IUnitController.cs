@@ -10,6 +10,7 @@ namespace Wc3_Combat_Game.Components.Controllers.Interface
 {
     public interface IUnitController
     {
+        void DrawDebug(Graphics g, IDrawContext context, Unit unit);
         void Update(Unit unit, float deltaTime, IBoardContext context);
     }
 }

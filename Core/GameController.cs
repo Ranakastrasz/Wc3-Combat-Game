@@ -84,7 +84,7 @@ namespace Wc3_Combat_Game.Core
         }
         public GameView CreateGameView()
         {
-            AssertUtil.AssertNotNull(Board);
+            AssertUtil.NotNull(Board);
             return View = new GameView(this, Board);
             
         }
