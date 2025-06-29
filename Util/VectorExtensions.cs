@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Wc3_Combat_Game.Util
+{
+    internal static class PointFExtensions
+    {
+        public static PointF Add(this PointF a, Vector2 b) => new(a.X + b.X, a.Y + b.Y);
+        public static PointF Subtract(this PointF a, Vector2 b) => new(a.X - b.X, a.Y - b.Y);
+    }
+ }

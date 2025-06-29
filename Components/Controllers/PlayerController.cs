@@ -27,7 +27,7 @@ namespace Wc3_Combat_Game.Components.Controllers
             if (_input.IsKeyDown(Keys.D)) move.X += 1;
 
             if (move != Vector2.Zero)
-                unit.OrderMove(move);
+                unit.TargetPoint = unit.Position + move*(unit.MoveSpeed*deltaTime);
 
 
             if (unit.Weapon != null)

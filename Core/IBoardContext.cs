@@ -14,7 +14,7 @@ namespace Wc3_Combat_Game.Core
         float CurrentTime { get; }
         Map? Map { get; }
 
-        PathFinder PathFinder { get; }
+        PathFinder? PathFinder { get; }
 
         void AddProjectile(Projectile p);
         void AddUnit(Unit u);

@@ -20,8 +20,9 @@ namespace Wc3_Combat_Game.Entities
         public IUnitController? Controller = null;
         public Unit? Target { get; set; }
 
-        public IWeapon? Weapon; // needs to be a weapon list instead.
+        public IWeapon? Weapon; // needs to be a weapon list instead.\
 
+        public Vector2? TargetPoint { get; set; } = null; // For movement orders.
         public float MaxHealth { get; protected set; }
         public float Health { get; protected set; }
 
@@ -46,16 +47,24 @@ namespace Wc3_Combat_Game.Entities
         public override void Update(float deltaTime, IBoardContext context)
         {
             Controller?.Update(this, deltaTime, context);
-            base.Update(deltaTime, context);
+
+            if(TargetPoint != null)
+            {
+                Vector2 moveVector = (Vector2)TargetPoint - Position;
+                if(Vector2.DistanceSquared(Position, (Vector2)TargetPoint) < MoveSpeed*deltaTime)
+                    _velocity = moveVector / deltaTime; // Just reach the point this frame.
+                else
+                    _velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
+            }
+
+
+
+            base.Update(deltaTime, context); // Includes movement and collision.
 
             // Units only move once tick of movement per "move order",
             _velocity = Vector2.Zero;
         }
 
-        internal void OrderMove(Vector2 moveVector)
-        {
-            _velocity = GeometryUtils.NormalizeAndScale(moveVector,MoveSpeed);
-        }
 
 
         public override void Draw(Graphics g, IDrawContext context)

@@ -12,12 +12,16 @@ namespace Wc3_Combat_Game.Components.Controllers
     class BasicAIController : IUnitController
     {
         public Point[]? Path = null;
+        public int nextWayPoint = 0;
 
         public void Update(Unit unit, float deltaTime, IBoardContext context)
         {
             // Example: move toward nearest enemy
             //Unit target = FindNearestEnemy(unit);
-            if (!unit.IsAlive) return;
+            if(!unit.IsAlive)
+            {
+                unit.MoveSpeed *= 0.95f;
+            }
             Unit? target = unit.Target;
             if (target != null)
             {
@@ -34,7 +38,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                 { // With no pathfinder, just do basic steering.
                     Vector2 SteeringTarget = GetPartialSteeringTarget(unit.Position, target.Position, context);
                     Vector2 dir = SteeringTarget * unit.MoveSpeed;
-                    unit.OrderMove(dir);
+                    unit.TargetPoint = unit.Position + dir;
                 }
                 //else
                 Pathfind(unit, target.Position, context);
@@ -51,6 +55,7 @@ namespace Wc3_Combat_Game.Components.Controllers
             Path = context.PathFinder.FindPath(startTile, targetTile);
             if (Path.Length > 0)
             {
+                nextWayPoint = 0;
                 // Move to the first tile in the path
                 //Vector2 nextTilePos = map.FromGrid(path[0]);
 
