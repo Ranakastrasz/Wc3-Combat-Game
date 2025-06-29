@@ -6,6 +6,7 @@ using Wc3_Combat_Game.Components.Controllers.Interface;
 using AssertUtils;
 using AStar;
 using Wc3_Combat_Game.Util;
+using System.ComponentModel;
 
 namespace Wc3_Combat_Game.Components.Controllers
 {
@@ -34,18 +35,40 @@ namespace Wc3_Combat_Game.Components.Controllers
                         return;
                     }
                 }
-                //if (context.PathFinder == null)
-                { // With no pathfinder, just do basic steering.
-                    Vector2 SteeringTarget = GetPartialSteeringTarget(unit.Position, target.Position, context);
-                    Vector2 dir = SteeringTarget * unit.MoveSpeed;
-                    unit.TargetPoint = unit.Position + dir;
+                Vector2 targetPos = target.Position;
+                if(context.PathFinder != null)
+                {
+                    if(ValidPath())
+                    {
+                        AssertUtil.NotNull(Path);
+                        AssertUtil.NotNull(context.Map); // Already certain, valid path would be impossible otherwise.
+                        targetPos = context.Map.FromGrid(Path[nextWayPoint]);
+
+                    }
+                    else
+                    {
+                        Pathfind(unit, target.Position, context);
+                        AssertUtil.Assert(() => ValidPath(), "Pathfinding failed to find a valid path.");
+                        // Strictly speaking, I don't think this is a good way to do this.
+                        // Failure may be valid in some cases.
+
+                        AssertUtil.NotNull(context.Map);
+                        targetPos = context.Map.FromGrid(Path![nextWayPoint]);
+
+                    }
                 }
-                //else
-                Pathfind(unit, target.Position, context);
+
+                Vector2 SteeringTarget = GetPartialSteeringTarget(unit.Position, targetPos, context);
+                Vector2 dir = SteeringTarget * unit.MoveSpeed;
+                unit.TargetPoint = unit.Position + dir;
             }
 
         }
-        
+        public bool ValidPath()
+        {
+            return Path != null && Path.Length > 0 && nextWayPoint < Path.Length;
+        }
+
         public void Pathfind(Unit unit, Vector2 targetPos, IBoardContext context)
         {
             Map? map = context.Map;
@@ -56,12 +79,11 @@ namespace Wc3_Combat_Game.Components.Controllers
             if (Path.Length > 0)
             {
                 nextWayPoint = 0;
-                // Move to the first tile in the path
-                //Vector2 nextTilePos = map.FromGrid(path[0]);
 
-                //unit.OrderMove(nextTilePos); // Recalculates every single frame, which is inefficient but simple.
-                //Vector2 moveDir = Vector2.Normalize(nextTilePos - unit.Position);
-                //unit.OrderMove(moveDir * unit.MoveSpeed);
+                if (Path[0] == startTile && Path.Length > 1)
+                {
+                    nextWayPoint = 1; // Skip first waypoint if it's the current tile.
+                }
 
             }
         }

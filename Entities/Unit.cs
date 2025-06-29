@@ -46,6 +46,7 @@ namespace Wc3_Combat_Game.Entities
 
         public override void Update(float deltaTime, IBoardContext context)
         {
+            if (deltaTime <= 0f) return; // No time has passed, no update needed.
             Controller?.Update(this, deltaTime, context);
 
             if(TargetPoint != null)

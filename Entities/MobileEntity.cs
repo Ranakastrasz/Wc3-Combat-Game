@@ -38,13 +38,13 @@ namespace Wc3_Combat_Game.Entities
 
                 float xDirection = Math.Sign(moveX);
                 float allowedMoveX = 0;
-                if (moveX != 0)
+                if(moveX != 0)
                 {
                     float step = 0.1f * xDirection;
-                    for (float delta = 0; Math.Abs(delta) < Math.Abs(moveX); delta += step)
+                    for(float delta = 0; Math.Abs(delta) < Math.Abs(moveX); delta += step)
                     {
                         Vector2 testPos = _position + new Vector2(delta, 0);
-                        if (map.CollidesAt(testPos, collisionRadius))
+                        if(map.CollidesAt(testPos, collisionRadius))
                             break;
                         allowedMoveX = delta;
                     }
@@ -52,13 +52,13 @@ namespace Wc3_Combat_Game.Entities
 
                 float yDirection = Math.Sign(moveY);
                 float allowedMoveY = 0;
-                if (moveY != 0)
+                if(moveY != 0)
                 {
                     float step = 0.1f * yDirection;
-                    for (float delta = 0; Math.Abs(delta) < Math.Abs(moveY); delta += step)
+                    for(float delta = 0; Math.Abs(delta) < Math.Abs(moveY); delta += step)
                     {
                         Vector2 testPos = _position + new Vector2(0, delta);
-                        if (map.CollidesAt(testPos, collisionRadius))
+                        if(map.CollidesAt(testPos, collisionRadius))
                             break;
                         allowedMoveY = delta;
                     }
