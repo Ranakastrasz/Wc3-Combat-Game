@@ -17,8 +17,8 @@ namespace Wc3_Combat_Game.Terrain
         static public readonly TileType Wall     = new TileType("Wall"    ,'#', Color.Gray, false);
         static public readonly TileType Door     = new TileType("Door"    ,'_', Color.LightGray, true);
         static public readonly TileType Portal   = new TileType("Portal"  ,'P', Color.Purple, true);
-        static public readonly TileType Fountain = new TileType("Fountain",'F', Color.Blue, true);
-        static public readonly TileType Shop     = new TileType("Shop"    ,'S', Color.Cyan, false);
+        static public readonly TileType Fountain = new TileType("Fountain",'F', Color.Cyan, true);
+        static public readonly TileType Shop     = new TileType("Shop"    ,'S', Color.Gray, true);
 
 
 

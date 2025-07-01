@@ -30,7 +30,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                 float distSqrt = unit.DistanceSquaredTo(target);
                 if(unit.Weapon != null)
                 {
-                    if(distSqrt <= unit.Weapon.GetAttackRangeSqr())
+                    if(distSqrt <= unit.Weapon.AttackRangeSqr)
                     {
                         unit.Weapon.TryShootEntity(unit, target, context);
                         return;

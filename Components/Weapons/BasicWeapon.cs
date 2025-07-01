@@ -3,20 +3,25 @@ using Wc3_Combat_Game.Components.Actions.Interface;
 using Wc3_Combat_Game.Components.Weapons.Interface;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
-using Wc3_Combat_Game.Prototype;
+using Wc3_Combat_Game.Prototype.Weapons;
 using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Components.Weapons
 {
     class BasicWeapon : IWeapon
     {
-        private float _cooldown;
-        private float _lastShotTime = float.NegativeInfinity;
+        protected float _cooldown;
+        protected float _lastShotTime = float.NegativeInfinity;
 
-        private float _attackRange;
-        private IGameplayAction? _CastEffect;
+        protected float _attackRange;
+        public float Cooldown => _cooldown;
+        public float LastShotTime => _lastShotTime;
+        public float AttackRange => _attackRange;
 
-        WeaponPrototype _prototype;
+        protected IGameplayAction? _CastEffect;
+
+        protected readonly WeaponPrototype _prototype;
+
 
 
         public BasicWeapon(WeaponPrototypeBasic prototype)
@@ -31,6 +36,16 @@ namespace Wc3_Combat_Game.Components.Weapons
         {
             if (!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
+
+            if(_prototype is WeaponPrototypeBasic basic) // This is hidious, and needs to be encapsulated better.
+            {
+                if(basic.ManaCost > 0)
+                {
+                    if (unit.Mana < basic.ManaCost)
+                        return false; // Not enough mana to cast.
+                    unit.Mana -= basic.ManaCost; // Deduct mana cost.
+                }
+            }
 
             _CastEffect?.ExecuteOnPoint(unit, unit, target, context);
 
@@ -49,10 +64,9 @@ namespace Wc3_Combat_Game.Components.Weapons
             return true;
         }
 
-        public float GetCooldown() => _cooldown;
         public float GetTimeSinceLastShot(IDrawContext context) => context.CurrentTime - _lastShotTime;
+        public float GetTimeSinceLastShot(IBoardContext context) => context.CurrentTime - _lastShotTime;
 
-        public float GetAttackRange() => _attackRange;
 
         public WeaponPrototype? GetPrototype()
         {

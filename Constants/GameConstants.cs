@@ -16,7 +16,7 @@ namespace Wc3_Combat_Game.Core
 
         public const float ENEMY_SPAWN_PADDING = 50f;
 
-        public const float ENEMY_SPAWN_COOLDOWN = 0.5f;
+        public const float ENEMY_SPAWN_COOLDOWN = 1/8f;
 
         //#if DEBUG
         //        public static readonly Size DEBUG_PADDING = new(120, 120);

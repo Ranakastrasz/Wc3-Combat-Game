@@ -8,29 +8,31 @@ using Wc3_Combat_Game.Components.Actions;
 using Wc3_Combat_Game.Components.Actions.Interface;
 using Wc3_Combat_Game.Entities;
 
-namespace Wc3_Combat_Game.Prototype
+namespace Wc3_Combat_Game.Prototype.Weapons
 {
     internal class WeaponPrototypeBasic : WeaponPrototype, ICloneable
     {
-        public IGameplayAction? CastEffect { get; set; }
-        public float Cooldown { get; set; }
-        public float CastRange { get; set; }
+        public IGameplayAction? CastEffect { get; private set; }
+        public float Cooldown { get; private set; }
+        public float CastRange { get; private set; }
+        public float ManaCost { get; private set; }
 
-        public WeaponPrototypeBasic(IGameplayAction? castEffect, float cooldown, float castRange)
+        public WeaponPrototypeBasic(IGameplayAction? castEffect, float cooldown, float castRange, float manaCost = 0f)
         {
             CastEffect = castEffect;
             Cooldown = cooldown;
             CastRange = castRange;
+            ManaCost = manaCost;
         }
 
         public object Clone()
         {
-            return this.MemberwiseClone();
+            return MemberwiseClone();
         }
         public WeaponPrototypeBasic SetDamage(float damage)
         {
             IGameplayAction? newEffect;
-            switch (CastEffect)
+            switch (CastEffect) // Very messy but works for now.
             {
                 case ProjectileAction projEffect: // Created a projectile. That projectile deals damage.
                     var oldProj = projEffect.Prototype;

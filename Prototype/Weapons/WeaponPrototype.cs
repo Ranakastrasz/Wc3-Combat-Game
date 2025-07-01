@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wc3_Combat_Game.Prototype
+namespace Wc3_Combat_Game.Prototype.Weapons
 {
     public class WeaponPrototype
     {

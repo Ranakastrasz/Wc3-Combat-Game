@@ -12,6 +12,7 @@ using Wc3_Combat_Game.Components.Actions;
 using Wc3_Combat_Game.Components.Actions.Interface;
 using AStar;
 using AStar.Options;
+using Wc3_Combat_Game.Prototype.Weapons;
 //using Wc3_Combat_Game.IO.Load.GameSchema;
 
 namespace Wc3_Combat_Game.Core
@@ -85,16 +86,16 @@ namespace Wc3_Combat_Game.Core
             var weapon200Damage = meleeWeaponBase.SetDamage(200f);
 
             var rangedWeaponBase = new WeaponPrototypeBasic(
-                new ProjectileAction(new ProjectilePrototype(5, 225f, 4f, null, Color.Cyan)),
+                new ProjectileAction(new ProjectilePrototype(5, 225f, 4f, null, Color.DarkMagenta)),
                 1f,
                 150f);
 
             var weapon10DamageRanged = rangedWeaponBase.SetDamage(10f);
 
-            _waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 16));
-            _waves.Add(new Wave(new UnitPrototype(weapon10Damage      , 20f, 0.1f, 12f, 100f, Color.Red    , UnitPrototype.DrawShape.Circle), 16));
-            _waves.Add(new Wave(new UnitPrototype(weapon10DamageRanged, 30f, 0.1f, 10f,  50f, Color.Orange , UnitPrototype.DrawShape.Square), 8));
-            _waves.Add(new Wave(new UnitPrototype(weapon25Damage      , 80f,   2f, 20f,  75f, Color.Red    , UnitPrototype.DrawShape.Square), 4));
+            _waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 32));
+            _waves.Add(new Wave(new UnitPrototype(weapon10Damage      , 20f, 0.1f, 12f, 100f, Color.Red    , UnitPrototype.DrawShape.Circle), 32));
+            _waves.Add(new Wave(new UnitPrototype(weapon10DamageRanged, 30f, 0.1f, 10f,  50f, Color.Orange , UnitPrototype.DrawShape.Square), 16));
+            _waves.Add(new Wave(new UnitPrototype(weapon25Damage      , 80f,   2f, 20f,  75f, Color.Red    , UnitPrototype.DrawShape.Square), 8));
             _waves.Add(new Wave(new UnitPrototype(weapon200Damage     , 400f,  0f, 30f, 125f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
 
         }
@@ -108,13 +109,18 @@ namespace Wc3_Combat_Game.Core
                 600f,
                 2f,
                 new DamageAction(10f),
-                Color.Blue)),
+                Color.Orange)),
                 0.20f,
-                float.PositiveInfinity);
+                float.PositiveInfinity,3f);
 
             UnitPrototype playerUnit = new((WeaponPrototype)weapon, 100f, 0.1f, 10f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
 
             PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)GAME_BOUNDS.Center(), new PlayerController(_controller.Input), TeamType.Ally);
+
+            PlayerUnit.MaxMana = 100f; // manual sets for now, til mana is properly implemented.
+            PlayerUnit.ManaRegen = 3f;
+            PlayerUnit.Mana = 100f;
+            PlayerUnit.LifeRegen = 1f;
 
             AddUnit(PlayerUnit);
         }

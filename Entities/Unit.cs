@@ -7,6 +7,7 @@ using Wc3_Combat_Game.Components.Weapons.Interface;
 using Wc3_Combat_Game.Components.Controllers.Interface;
 using Wc3_Combat_Game.Components.Controllers;
 using AssertUtils;
+using Wc3_Combat_Game.Prototype.Weapons;
 
 
 namespace Wc3_Combat_Game.Entities
@@ -21,19 +22,25 @@ namespace Wc3_Combat_Game.Entities
         public IUnitController? Controller = null;
         public Unit? Target { get; set; }
 
-        public IWeapon? Weapon; // needs to be a weapon list instead.\
+        public IWeapon? Weapon; // needs to be a weapon list instead.
 
         public Vector2? TargetPoint
         {
             get => _targetPoint;
-            set
-            {
-                AssertUtil.Assert(() => value == null || !value.Value.IsNaN());
-                _targetPoint = value;
-            }
+            set => _targetPoint = value;
+            //{
+            //    AssertUtil.Assert(() => value == null || !value.Value.IsNaN());
+            //    _targetPoint = value;
+            //}
         }
-        public float MaxHealth { get; protected set; }
-        public float Health { get; protected set; }
+        public float MaxLife { get; protected set; }
+        public float Life { get; protected set; }
+
+        public float LifeRegen { get; set; } = 0f;
+
+        public float MaxMana { get; set; } = 0f; // Temporary, will be an interface in the future.
+        public float Mana { get; set; } = 0f; // Temporary, will be an interface in the future.
+        public float ManaRegen { get; set; } = 0f; // Temporary, will be an interface in the future.
 
         float _lastDamaged = float.NegativeInfinity;
         static float s_DamageFlashTime = GameConstants.FIXED_DELTA_TIME;
@@ -44,8 +51,8 @@ namespace Wc3_Combat_Game.Entities
 
         public Unit(UnitPrototype prototype, Vector2 position) : base(prototype.Size, position, prototype.FillColor)
         {
-            Health = prototype.MaxHealth;
-            MaxHealth = prototype.MaxHealth;
+            Life = prototype.MaxHealth;
+            MaxLife = prototype.MaxHealth;
             MoveSpeed = prototype.Speed;
             if (prototype.Weapon is WeaponPrototypeBasic basic)
             {
@@ -58,7 +65,20 @@ namespace Wc3_Combat_Game.Entities
         public override void Update(float deltaTime, IBoardContext context)
         {
             if (deltaTime <= 0f) return; // No time has passed, no update needed.
-            Controller?.Update(this, deltaTime, context);
+
+            if(context.Map?[context.Map.ToGrid(Position)].GetChar == 'F')
+            {
+                // If on a fountain tile, regenerate health and mana faster.
+                Life = MathF.Min(Life + LifeRegen * 10f * deltaTime, MaxLife);
+                Mana = MathF.Min(Mana + ManaRegen * 10f * deltaTime, MaxMana);
+            }
+            else
+            {
+                Life = MathF.Min(Life + LifeRegen * deltaTime, MaxLife);
+                Mana = MathF.Min(Mana + ManaRegen * deltaTime, MaxMana);
+            }
+
+                Controller?.Update(this, deltaTime, context);
 
             if(TargetPoint != null)
             {
@@ -67,6 +87,10 @@ namespace Wc3_Combat_Game.Entities
                     _velocity = moveVector / deltaTime; // Just reach the point this frame.
                 else
                     _velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
+            }
+            if(Weapon != null && Weapon.GetTimeSinceLastShot(context) < Weapon.Cooldown)
+            {
+                _velocity *= 0.5f; // Slow down while shooting.
             }
 
 
@@ -100,11 +124,11 @@ namespace Wc3_Combat_Game.Entities
             }
 
             // Bar dimensions
-            int barHeight = 6;
+            int barHeight = 2;
             int barOffset = 4; // gap below entity rect
             int barSpacing = 2; // gap between bars
 
-            if (Health < MaxHealth && Health > 0)
+            if (Life < MaxLife && Life > 0)
             {
                 // --- Health Bar ---
                 RectangleF healthBarBackgroundRect = new RectangleF(
@@ -115,7 +139,7 @@ namespace Wc3_Combat_Game.Entities
 
                 g.FillRectangle(Brushes.DarkGray, healthBarBackgroundRect);
 
-                float healthRatio = (float)Health / MaxHealth;
+                float healthRatio = (float)Life / MaxLife;
                 int healthFillWidth = (int)(entityRect.Width * healthRatio);
 
                 RectangleF healthFillRect = new RectangleF(
@@ -131,7 +155,7 @@ namespace Wc3_Combat_Game.Entities
             // --- More of a cooldown bar. For player only.
             if (Team == TeamType.Ally)
             {
-                if (Weapon != null)
+                if(Weapon != null)
                 {
                     float manaBarY = entityRect.Bottom + barOffset + barHeight + barSpacing;
 
@@ -143,7 +167,38 @@ namespace Wc3_Combat_Game.Entities
 
                     g.FillRectangle(Brushes.DarkGray, manaBarBackgroundRect);
 
-                    float manaRatio = (float)Math.Min(1f, Weapon.GetTimeSinceLastShot(context) / Weapon.GetCooldown());
+                    float manaRatio;
+
+                    //if(Weapon is BasicWeapon basicWeapon)
+                    //{
+                    //// Calculate mana ratio based on weapon cooldown and time since last shot
+                    //// This is a temporary solution, will be replaced with a proper mana system later.
+                    //
+                    //float manaCost = (basicWeapon.GetPrototype() as WeaponPrototypeBasic).ManaCost; // Hacky, but should work.
+                    //int shotsLeft = (int)MathF.Floor(Mana / manaCost); // How many shots can be fired with current mana.
+                    //
+                    //manaRatio = MaxMana > 0 ? (float)Mana / MaxMana : 0f; // Avoid division by zero
+                    //if(basicWeapon.Cooldown > 0f)
+                    //    manaRatio = MathF.Min(1f, Weapon.GetTimeSinceLastShot(context) / basicWeapon.Cooldown);
+                    //}
+                    //else
+                    if(MaxMana > 0f)
+                    {
+                        // Calculate mana ratio based on current mana and max mana
+                        manaRatio = Mana / MaxMana;
+                        // Ideally, needs to sort of round to the nearest shot that can be fired.
+                    }
+                    else
+                    {
+                        // If no mana system is implemented, use cooldown as a proxy for mana
+                        // This is a temporary solution, will be replaced with a proper mana system later.
+
+                        {
+                            manaRatio = (float)Math.Min(1f, Weapon.GetTimeSinceLastShot(context) / Weapon.Cooldown);
+                        }
+
+                    }
+
                     int manaFillWidth = (int)(entityRect.Width * manaRatio);
 
                     RectangleF manaFillRect = new RectangleF(
@@ -159,11 +214,11 @@ namespace Wc3_Combat_Game.Entities
 
         public void Damage(float amount, IBoardContext context)
         {
-            Health -= amount;
+            Life -= amount;
             _lastDamaged = context.CurrentTime;
-            if (Health <= 0f)
+            if (Life <= 0f)
             {
-                Health = 0;
+                Life = 0;
                 Die(context);
             }
         }
