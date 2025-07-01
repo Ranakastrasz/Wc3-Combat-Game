@@ -19,6 +19,8 @@ namespace Wc3_Combat_Game.Core
         void AddProjectile(Projectile p);
         void AddUnit(Unit u);
 
+        EntityManager<Entities.Entity> Entities { get; }
+
 
     }
 }

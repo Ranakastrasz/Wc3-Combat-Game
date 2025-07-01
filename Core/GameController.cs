@@ -53,6 +53,12 @@ namespace Wc3_Combat_Game.Core
             _gameOverTime = GlobalTime;
         }
 
+        internal void OnDefeat()
+        {
+            // handle Victory
+            CurrentState = GameState.GameOver;
+            _gameOverTime = GlobalTime;
+        }
         private void GameLoopTimer_Tick(object? sender, EventArgs e)
         {
             float deltaTime = GameConstants.FIXED_DELTA_TIME;

@@ -69,7 +69,11 @@ namespace Wc3_Combat_Game.Core
             List<Point> portals = Map.GetTilesMatching('P');
             spawnPoints = portals.Select(p => (p.ToVector2() + new Vector2(0.5f, 0.5f)) * TileSize).ToList();
 
-            PathFinder = new PathFinder(Map.PathfinderGrid);
+            PathFinderOptions options = new PathFinderOptions
+            {
+                UseDiagonals = false
+            };
+            PathFinder = new PathFinder(Map.PathfinderGrid,options);
 
         }
 
@@ -135,7 +139,7 @@ namespace Wc3_Combat_Game.Core
             if (PlayerUnit.IsExpired(context))
             {
                 AssertUtil.NotNull(_controller);
-                _controller.OnVictory();
+                _controller.OnDefeat();
                 return true;
             }
             return false;

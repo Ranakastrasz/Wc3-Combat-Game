@@ -64,6 +64,8 @@ namespace Wc3_Combat_Game
             if(game.View != null)
             {
                 Application.Run(game.View);
+                // When this finishes, GameOver/Victory. Probably need to handle here.
+                // and, Allow restarting the game.
             }
         }
         public static void ListClasses()

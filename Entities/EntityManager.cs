@@ -25,5 +25,13 @@ namespace Wc3_Combat_Game.Entities
                 action(entity);
         }
 
+        public IEnumerable<T> GetEntitiesByTeam(TeamType team)
+        {
+            return _entities.Where(e => e.Team == team);
+        }
+        public IEnumerable<T> GetEntitiesByType(Type type)
+        {
+            return _entities.Where(e => e.GetType() == type);
+        }
     }
 }
