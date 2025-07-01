@@ -25,7 +25,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                 unit.MoveSpeed *= 0.95f;
             }
             Unit? target = unit.Target;
-            if(target != null)
+            if(unit.IsAlive && target != null )
             {
                 float distSqrt = unit.DistanceSquaredTo(target);
                 if(unit.Weapon != null)
