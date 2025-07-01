@@ -168,7 +168,7 @@ namespace Wc3_Combat_Game.Core
                         // unit.Health *= 4;
                         // unit.Speed += 25;
                         // unit.Damage *= 4;
-                        // I probably need to... Do something to register untis as unique.
+                        // I probably need to... Do something to register units as unique.
                         // I can't just set these values.
 
                     }
@@ -195,7 +195,7 @@ namespace Wc3_Combat_Game.Core
 
             Units.UpdateAll(deltaTime, this);
             Projectiles.UpdateAll(deltaTime, this);
-            // Seperate required, because units can create projectiles.
+            // Separate required, because units can create projectiles.
             // Admittedly, eventually projectiles will be able to create projectiles, Starburst or Delayed cast.
             // so a method to do this right is needed.
 

@@ -70,8 +70,12 @@ namespace Wc3_Combat_Game.Core
             {
                 if (TimeUtils.HasElapsed(GlobalTime, _gameOverTime, GameConstants.GAME_RESTART_DELAY))
                 {
-                    CreateGameBoard();
-                    StartGame();
+                    // Game crashes once the game starts and update happens, because CreateGameBoard isn't sufficient.
+                    // This needs to be sent to the actual Program.cs, since that is where all the initialization happens.
+                    // Dunno how to do that atm.
+                    View?.Dispose();
+                    //CreateGameBoard();
+                    //StartGame();
                 }
             }
             Input?.EndFrame();
