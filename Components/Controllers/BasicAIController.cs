@@ -24,12 +24,12 @@ namespace Wc3_Combat_Game.Components.Controllers
                 unit.MoveSpeed *= 0.95f;
             }
             Unit? target = unit.Target;
-            if (target != null)
+            if(target != null)
             {
                 float distSqrt = unit.DistanceSquaredTo(target);
-                if (unit.Weapon != null)
+                if(unit.Weapon != null)
                 {
-                    if (distSqrt <= unit.Weapon.GetAttackRangeSqr())
+                    if(distSqrt <= unit.Weapon.GetAttackRangeSqr())
                     {
                         unit.Weapon.TryShootEntity(unit, target, context);
                         return;
@@ -42,7 +42,20 @@ namespace Wc3_Combat_Game.Components.Controllers
                     {
                         AssertUtil.NotNull(Path);
                         AssertUtil.NotNull(context.Map); // Already certain, valid path would be impossible otherwise.
+                        
                         targetPos = context.Map.FromGrid(Path[nextWayPoint]);
+
+                        if(Vector2.DistanceSquared(targetPos, unit.Position) <= 4f) // Close enough to the waypoint.
+                        {
+                            nextWayPoint++;
+                            if(nextWayPoint >= Path.Length)
+                            {
+                                // Kill the pathfinding, we reached the end.
+                                Path = null;
+                                nextWayPoint = 0;
+                                unit.TargetPoint = unit.Position; // Stop moving.
+                            }
+                        }
 
                     }
                     else
@@ -59,10 +72,21 @@ namespace Wc3_Combat_Game.Components.Controllers
                 }
 
                 Vector2 SteeringTarget = GetPartialSteeringTarget(unit.Position, targetPos, context);
-                Vector2 dir = SteeringTarget * unit.MoveSpeed;
-                unit.TargetPoint = unit.Position + dir;
+                if(SteeringTarget != unit.Position)
+                {
+                    Vector2 dir = SteeringTarget * unit.MoveSpeed;
+                    unit.TargetPoint = unit.Position + dir;
+                }
+                else
+                {
+                    unit.TargetPoint = unit.Position; // No movement needed.
+                }
             }
-
+            else
+            {
+                // No target, Keep doing what you're doing.
+                // Well, ideally, follow the path properly, but That should really be a method call.
+            }
         }
         public bool ValidPath()
         {
@@ -72,10 +96,12 @@ namespace Wc3_Combat_Game.Components.Controllers
         public void Pathfind(Unit unit, Vector2 targetPos, IBoardContext context)
         {
             Map? map = context.Map;
+            PathFinder? pathFinder = context.PathFinder;
             AssertUtil.NotNull(map);
+            AssertUtil.NotNull(pathFinder);
             Point startTile = map.ToGrid(unit.Position);
             Point targetTile = map.ToGrid(targetPos);
-            Path = context.PathFinder.FindPath(startTile, targetTile);
+            Path = pathFinder.FindPath(startTile, targetTile);
             if (Path.Length > 0)
             {
                 nextWayPoint = 0;
@@ -93,6 +119,10 @@ namespace Wc3_Combat_Game.Components.Controllers
 
             Map? map = context.Map;
             AssertUtil.NotNull(map);
+            if (myPos == targetPos)
+            {
+                return Vector2.Zero; // Already at the target position.
+            }
 
             Point myTile = map.ToGrid(myPos);
             Point targetTile = map.ToGrid(targetPos);
@@ -119,7 +149,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                     bestDir = Vector2.Normalize(map.FromGrid(neighbor) - myPos);
                 }
             }
-            
+            AssertUtil.Assert(()=>!bestDir.IsNaN());
             return bestDir;
         }
 

@@ -29,6 +29,7 @@ namespace Wc3_Combat_Game.Entities
             if (!map.CollidesAt(newPosition, collisionRadius))
             {
                 _position = newPosition;
+                // not ideal, but good enough for now.
             }
             else
             {

@@ -6,6 +6,7 @@ using Wc3_Combat_Game.Components.Weapons;
 using Wc3_Combat_Game.Components.Weapons.Interface;
 using Wc3_Combat_Game.Components.Controllers.Interface;
 using Wc3_Combat_Game.Components.Controllers;
+using AssertUtils;
 
 
 namespace Wc3_Combat_Game.Entities
@@ -22,12 +23,22 @@ namespace Wc3_Combat_Game.Entities
 
         public IWeapon? Weapon; // needs to be a weapon list instead.\
 
-        public Vector2? TargetPoint { get; set; } = null; // For movement orders.
+        public Vector2? TargetPoint
+        {
+            get => _targetPoint;
+            set
+            {
+                AssertUtil.Assert(() => value == null || !value.Value.IsNaN());
+                _targetPoint = value;
+            }
+        }
         public float MaxHealth { get; protected set; }
         public float Health { get; protected set; }
 
         float _lastDamaged = float.NegativeInfinity;
         static float s_DamageFlashTime = GameConstants.FIXED_DELTA_TIME;
+
+        private Vector2? _targetPoint = null;
 
         public float MoveSpeed { get; set; }
 
