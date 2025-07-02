@@ -127,7 +127,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                     .ToList(); // Get all friendly units
 
                 separationForce = GetSeparationSteering(unit, entities, context);
-                
+                separationForce *= 0.25f;
 
                 // Combine steering forces (path following + separation).
                 // You might want to weight these forces based on priority.
@@ -252,7 +252,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         private Vector2 GetSeparationSteering(Unit unit, IEnumerable<Unit> allUnits, IBoardContext context)
         {
             Vector2 separationForce = Vector2.Zero;
-            float separationRadius = unit.Size * 3; // Adjust this radius as needed
+            float separationRadius = unit.Size * 2; // Adjust this radius as needed
             float separationRadiusSqr = separationRadius * separationRadius;
 
             foreach(Unit otherUnit in allUnits)
