@@ -1,13 +1,12 @@
-﻿using System.Numerics;
+﻿using AssertUtils;
+using AStar;
+using System.Diagnostics;
+using System.Numerics;
+using Wc3_Combat_Game.Components.Controllers.Interface;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Terrain;
-using Wc3_Combat_Game.Components.Controllers.Interface;
-using AssertUtils;
-using AStar;
 using Wc3_Combat_Game.Util;
-using System.ComponentModel;
-using System.Diagnostics;
 
 namespace Wc3_Combat_Game.Components.Controllers
 {
@@ -57,7 +56,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                         // (e.g., by stopping movement or finding a new target).
                         if (!ValidPath())
                         {
-                            Pathfind(unit, targetPos, context); // Do ita again for debug tracking purposes
+                            Pathfind(unit, targetPos, context); // Do it again for debug tracking purposes
 
                         }
                         AssertUtil.Assert(() => ValidPath(), "Pathfinding failed to find a valid path.");
@@ -122,7 +121,10 @@ namespace Wc3_Combat_Game.Components.Controllers
                 // For demonstration, let's assume context.GetAllUnits() exists and we filter.
                 Vector2 separationForce = Vector2.Zero;
                 
-                IEnumerable<Unit> entities = context.Entities.Entities.Select(e => e as Unit).Where(u => u != null && u.IsAlive && u.Team.IsFriendlyTo(unit.Team)).ToList(); // Get all friendly units
+                IEnumerable<Unit> entities = context.Entities.Entities
+                    .OfType<Unit>()
+                    .Where(u => u.IsAlive && u.Team.IsFriendlyTo(unit.Team))
+                    .ToList(); // Get all friendly units
 
                 separationForce = GetSeparationSteering(unit, entities, context);
                 
@@ -177,6 +179,10 @@ namespace Wc3_Combat_Game.Components.Controllers
             Path = pathFinder.FindPath(startTile, targetTile);
             if(Path.Length > 0)
             {
+                foreach(Point point in Path)
+                {
+                    Debug.Assert(map[point].IsWalkable, $"Path contains non-walkable tile at {point}");
+                }
                 nextWayPoint = 0;
 
                 if(Path[0] == startTile && Path.Length > 1)
@@ -184,6 +190,10 @@ namespace Wc3_Combat_Game.Components.Controllers
                     nextWayPoint = 1; // Skip first waypoint if it's the current tile.
                 }
 
+            }
+            else
+            {
+                Map.ValidateMapAndPathfinder(map, pathFinder); // Make sure its valid.
             }
         }
 
@@ -281,6 +291,7 @@ namespace Wc3_Combat_Game.Components.Controllers
             AssertUtil.NotNull(map);
             if(ValidPath())
             {
+                AssertUtil.NotNull(Path); // ValidPath already does this, but compiler insists.
                 float tileSize = map.TileSize / 4;
                 // Draw lines between path points and highlight waypoints
                 for(int x = nextWayPoint; x < Path.Length; x++) // Start drawing from the current waypoint

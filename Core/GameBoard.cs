@@ -73,7 +73,7 @@ namespace Wc3_Combat_Game.Core
             {
                 UseDiagonals = false
             };
-            PathFinder = new PathFinder(Map.PathfinderGrid,options);
+            PathFinder = new PathFinder(Map.PathfinderGrid.Grid, options);
 
         }
 
@@ -97,12 +97,12 @@ namespace Wc3_Combat_Game.Core
             var weapon10DamageRanged = rangedWeaponBase.SetDamage(10f);
 
 
-            _waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 1));
-            //_waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 32));
-            //_waves.Add(new Wave(new UnitPrototype(weapon10Damage      , 20f, 0.1f, 12f, 100f, Color.Red    , UnitPrototype.DrawShape.Circle), 32));
-            //_waves.Add(new Wave(new UnitPrototype(weapon10DamageRanged, 30f, 0.1f, 10f,  50f, Color.Orange , UnitPrototype.DrawShape.Square), 16));
-            //_waves.Add(new Wave(new UnitPrototype(weapon25Damage      , 80f,   2f, 20f,  75f, Color.Red    , UnitPrototype.DrawShape.Square), 8));
-            //_waves.Add(new Wave(new UnitPrototype(weapon200Damage     , 400f,  0f, 30f, 125f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
+            //_waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 1));
+            _waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 32));
+            _waves.Add(new Wave(new UnitPrototype(weapon10Damage      , 20f, 0.1f, 12f, 100f, Color.Red    , UnitPrototype.DrawShape.Circle), 32));
+            _waves.Add(new Wave(new UnitPrototype(weapon10DamageRanged, 30f, 0.1f, 10f,  50f, Color.Orange , UnitPrototype.DrawShape.Square), 16));
+            _waves.Add(new Wave(new UnitPrototype(weapon25Damage      , 80f,   2f, 20f,  75f, Color.Red    , UnitPrototype.DrawShape.Square), 8));
+            _waves.Add(new Wave(new UnitPrototype(weapon200Damage     , 400f,  0f, 30f, 125f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
 
         }
 
@@ -110,6 +110,7 @@ namespace Wc3_Combat_Game.Core
         {
             AssertUtil.NotNull(_controller);
             AssertUtil.NotNull(_controller.Input);
+            AssertUtil.NotNull(Map);
 
             WeaponPrototypeBasic weapon = new WeaponPrototypeBasic(new ProjectileAction(new ProjectilePrototype(5f,
                 600f,
@@ -121,7 +122,7 @@ namespace Wc3_Combat_Game.Core
 
             UnitPrototype playerUnit = new((WeaponPrototype)weapon, 100f, 0.1f, 10f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
 
-            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)GAME_BOUNDS.Center(), new PlayerController(_controller.Input), TeamType.Ally);
+            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)Map.GetPlayerSpawn(), new PlayerController(_controller.Input), TeamType.Ally);
 
             PlayerUnit.MaxMana = 100f; // manual sets for now, til mana is properly implemented.
             PlayerUnit.ManaRegen = 3f;
@@ -225,6 +226,7 @@ namespace Wc3_Combat_Game.Core
 
         private void CheckCollision(float deltaTime)
         {
+            AssertUtil.NotNull(Map);
             foreach (Projectile projectile in Projectiles.Entities.Where(p => p.IsAlive))
             {
                 foreach (Unit unit in Units.Entities.Where(p => p.IsAlive && p.Team.IsHostileTo(projectile.Team)))
@@ -241,20 +243,19 @@ namespace Wc3_Combat_Game.Core
 
             foreach (Projectile projectile in Projectiles.Entities)
             {
-                if (!projectile.BoundingBox.IntersectsWith(GAME_BOUNDS))
+                if (!projectile.BoundingBox.IntersectsWith(Map.WorldBounds))
                 {
                     projectile.Die(this);
                 }
             }
             AssertUtil.NotNull(PlayerUnit);
-            if (!GAME_BOUNDS.Contains(PlayerUnit.BoundingBox))
+            if (!Map.WorldBounds.Contains(PlayerUnit.BoundingBox))
             {
-                var bounds = GAME_BOUNDS;
                 var halfSize = new SizeF(PlayerUnit.Size / 2f, PlayerUnit.Size / 2f);
 
                 PlayerUnit.Position = new Vector2(
-                    Math.Clamp(PlayerUnit.Position.X, bounds.Left + halfSize.Width, bounds.Right - halfSize.Width),
-                    Math.Clamp(PlayerUnit.Position.Y, bounds.Top + halfSize.Height, bounds.Bottom - halfSize.Height)
+                    Math.Clamp(PlayerUnit.Position.X, Map.WorldBounds.Left + halfSize.Width, Map.WorldBounds.Right - halfSize.Width),
+                    Math.Clamp(PlayerUnit.Position.Y, Map.WorldBounds.Top + halfSize.Height, Map.WorldBounds.Bottom - halfSize.Height)
                 );
             }
         }

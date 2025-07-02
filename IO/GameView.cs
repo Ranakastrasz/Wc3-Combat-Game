@@ -147,10 +147,6 @@ namespace Wc3_Combat_Game
 
             }
 
-#if DEBUG
-            g.DrawRectangle(Pens.White, GameConstants.GAME_BOUNDS);
-            g.DrawRectangle(Pens.Blue, GameConstants.SPAWN_BOUNDS);
-#endif
             _drawContext?.Entities?.ForEach(p => p.Draw(g, _drawContext));
 
 

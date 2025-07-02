@@ -1,6 +1,5 @@
 using AssertUtils;
 using System.Reflection;
-using System.Security.AccessControl;
 using System.Text;
 using Wc3_Combat_Game.Core;
 
@@ -43,11 +42,12 @@ namespace Wc3_Combat_Game
             game.CreateGameView();
             AssertUtil.NotNull(game.View);
 
+            game.Board.InitMap(GetDefaultMap(), 32f);
+
             game.Board.InitPlayer();
             AssertUtil.NotNull(game.Board.PlayerUnit);
             game.View.RegisterPlayer(game.Board.PlayerUnit);
 
-            game.Board.InitMap(GetDefaultMap(), 32f);
 
             game.StartGame();
 
@@ -207,6 +207,25 @@ namespace Wc3_Combat_Game
             "#......_.._.........._.._......#",
             "#......_.._.........._.._......#",
             "################################"];
+        }
+
+        private static string[] GetDebugMap()
+        {
+            return [
+            "################################",
+            "#..............................#",
+            "#__#####..##........##..#####__#",
+            "#..#P.._................_..P#..#",
+            "#..#P.._................_..P#..#",
+            "#__#####__##__####__##__#####__#",
+            "#.........#..........#..#......#",
+            "#.........#..##..##..#..#......#",
+            "#..SS..#PP#..##..##..#PP#..SS..#",
+            "#..SS..####..........####..SS..#",
+            "#......_.._.........._.._......#",
+            "#......_.._.........._.._......#",
+            "################################"];
+        
         }
     }
 }

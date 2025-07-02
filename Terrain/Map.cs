@@ -1,30 +1,58 @@
-﻿using System.Numerics;
+﻿using AssertUtils;
 using AStar;
+using System.Diagnostics;
+using System.Numerics;
 using Wc3_Combat_Game.Util;
 namespace Wc3_Combat_Game.Terrain
 {
     public class Map
     {
 
-        
-
         public Tile[,] TileMap;
-        public WorldGrid PathfinderGrid;
+        public GameWorldGrid PathfinderGrid;
         public float TileSize { get; set; }
-        public int Width;
-        public int Height;
+        public RectangleF WorldBounds { get; internal set; }
+
+        public int Width; // X, 0
+        public int Height; // Y, 1 
 
         Map(Tile[,] tileMap, float tileSize)
         {
+            AssertUtil.NotNull(tileMap, true);
+
+            // Sanity check: Ensure tileMap has valid dimensions
+            AssertUtil.Greater(tileMap.GetLength(0), 0, true);
+            AssertUtil.Greater(tileMap.GetLength(1), 0, true);
             TileMap = tileMap;
             TileSize = tileSize;
+
+            // GetLength(0) is the width (X-dimension), GetLength(1) is the height (Y-dimension)
             short[,] pathfinderGrid = new short[tileMap.GetLength(0), tileMap.GetLength(1)];
-            this.PathfinderGrid = new WorldGrid(pathfinderGrid);
+            this.PathfinderGrid = new GameWorldGrid(pathfinderGrid);
             UpdatePathing();
+
+            // Initialize Width and Height based on the provided tileMap
+            Width = tileMap.GetLength(0);
+            Height = tileMap.GetLength(1);
+
+            WorldBounds = new RectangleF(0, 0, Width * TileSize, Height * TileSize);
         }
 
         public static Map ParseMap(string[] mapString, float tileSize = 1f)
         {
+            // Sanity check: Ensure mapString is not null or empty
+            if(mapString == null)
+            {
+                throw new ArgumentNullException(nameof(mapString), "Map string array cannot be null.");
+            }
+            if(mapString.Length == 0)
+            {
+                throw new ArgumentException("Map string array cannot be empty.", nameof(mapString));
+            }
+            if(mapString[0].Length == 0)
+            {
+                throw new ArgumentException("Map string array rows cannot have zero length.", nameof(mapString));
+            }
 
             Tile[,] tileMap = new Tile[mapString[0].Length, mapString.Length];
             for (int y = 0; y < mapString.Length; y++)
@@ -35,10 +63,23 @@ namespace Wc3_Combat_Game.Terrain
                     tileMap[x, y] = new(TileType.FromChar(c),new(x,y));
                 }
             }
+
+            int mapWidth = mapString[0].Length;
+            int mapHeight = mapString.Length;
+
+            // Sanity check: Ensure all rows have consistent length
+            for(int i = 0; i < mapHeight; i++)
+            {
+                if(mapString[i].Length != mapWidth)
+                {
+                    throw new ArgumentException($"Inconsistent row length in mapString. Row {i} has length {mapString[i].Length}, expected {mapWidth}.", nameof(mapString));
+                }
+            }
+
             Map newMap = new(tileMap, tileSize)
             {
-                Width = mapString[0].Length,
-                Height = mapString.Length
+                Width = mapWidth,
+                Height = mapHeight
             };
             return newMap;
         }
@@ -50,7 +91,7 @@ namespace Wc3_Combat_Game.Terrain
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    if (TileMap[x, y].GetChar == 'P')
+                    if (TileMap[x, y].GetChar == chr)
                     {
                         matchingTiles.Add(new Point(x, y));
                     }
@@ -256,5 +297,43 @@ namespace Wc3_Combat_Game.Terrain
             get => TileMap[index.X, index.Y];
             set => TileMap[index.X, index.X] = value;
         }
+
+        /// <summary>
+        /// Validates that the walkability of the Map matches the Pathfinder's WorldGrid.
+        /// Throws an exception or Debug.Assert if a mismatch is found.
+        /// </summary>
+        /// <param name="map">The Map instance.</param>
+        /// <param name="pathFinder">The PathFinder instance.</param>
+        public static void ValidateMapAndPathfinder(Map map, PathFinder pathFinder)
+        {
+            GameWorldGrid grid = map.PathfinderGrid;
+            int height = grid.Height;
+            int width = grid.Width;
+
+            for(int y = 0; y < height; y++)
+            {
+                for(int x = 0; x < width; x++)
+                {
+                    bool mapWalkable = map.TileMap[x, y].IsWalkable;
+                    bool gridWalkable = grid[x, y] != 0;
+                    if(mapWalkable != gridWalkable)
+                    {
+                        Debug.Fail($"Walkability mismatch at ({x},{y}): Map.IsWalkable={mapWalkable}, PathfinderGrid={gridWalkable}");
+                        throw new InvalidOperationException($"Walkability mismatch at ({x},{y}): Map.IsWalkable={mapWalkable}, PathfinderGrid={gridWalkable}");
+                    }
+                }
+            }
+        }
+
+        internal Vector2 GetPlayerSpawn()
+        {
+            var spawnTile = GetTilesMatching('F').FirstOrDefault();
+            if(spawnTile != default)
+            {
+                return FromGrid(spawnTile);
+            }
+            throw new InvalidOperationException("No player spawn point found in the map.");
+        }
     }
 }
+
