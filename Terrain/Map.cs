@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using AStar;
+using Wc3_Combat_Game.Util;
 namespace Wc3_Combat_Game.Terrain
 {
     public class Map
@@ -83,31 +84,50 @@ namespace Wc3_Combat_Game.Terrain
             return FromGrid(x, y);
         }
 
+        /// <summary>
+        /// Checks if a circle at a given world position collides with any non-walkable tile.
+        /// This method iterates through the tiles that the circle's bounding box might overlap.
+        /// </summary>
+        /// <param name="pos">The center world position of the circle.</param>
+        /// <param name="radius">The radius of the circle.</param>
+        /// <returns>True if the circle collides with any non-walkable tile, false otherwise.</returns>
         public bool CollidesAt(Vector2 pos, float radius)
-        {// Needs to be in GeometryUtil.. Or Map. Pass map, radius, Position.
-            Map map = this;
-
+        {
+            // Calculate the tile range that the circle at 'pos' with 'radius' might overlap.
             int minTileX = (int)Math.Floor((pos.X - radius) / TileSize);
-            int maxTileX = (int)Math.Floor((pos.X + radius) / TileSize);
+            int maxTileX = (int)Math.Ceiling((pos.X + radius) / TileSize) - 1; // Use Ceil and -1 to get inclusive max tile
             int minTileY = (int)Math.Floor((pos.Y - radius) / TileSize);
-            int maxTileY = (int)Math.Floor((pos.Y + radius) / TileSize);
+            int maxTileY = (int)Math.Ceiling((pos.Y + radius) / TileSize) - 1; // Use Ceil and -1 to get inclusive max tile
 
-            for (int y = minTileY; y <= maxTileY; y++)
+            // Clamp tile coordinates to map bounds
+            minTileX = Math.Max(0, minTileX);
+            maxTileX = Math.Min(Width - 1, maxTileX);
+            minTileY = Math.Max(0, minTileY);
+            maxTileY = Math.Min(Height - 1, maxTileY);
+
+            // Iterate through all potential tiles within the circle's bounding box.
+            for(int y = minTileY; y <= maxTileY; y++)
             {
-                for (int x = minTileX; x <= maxTileX; x++)
+                for(int x = minTileX; x <= maxTileX; x++)
                 {
-                    if (x < 0 || y < 0 || x >= map.Width || y >= map.Height)
-                        return true; // Treat out-of-bounds as solid
+                    // If the tile is out of map bounds, treat it as a collision.
+                    // This check is technically redundant if min/max are clamped, but good as a fallback.
+                    if(x < 0 || y < 0 || x >= Width || y >= Height)
+                        return true;
 
-                    Tile tile = map[x, y];
-                    if (!tile.IsWalkable)
+                    Tile tile = this[x, y];
+                    // If the tile is not walkable, check for actual collision with the circle.
+                    if(!tile.IsWalkable)
                     {
+                        // Calculate the min and max world coordinates of the current tile.
                         Vector2 tileMin = new(x * TileSize, y * TileSize);
                         Vector2 tileMax = tileMin + new Vector2(TileSize);
-                        Vector2 closestPoint = Vector2.Clamp(pos, tileMin, tileMax);
-                        float distSq = Vector2.DistanceSquared(pos, closestPoint);
-                        if (distSq < radius * radius)
+
+                        // Use the helper to check circle-rectangle collision for this specific tile.
+                        if(GeometryUtils.CollidesCircleWithRectangle(pos, radius, tileMin, tileMax))
+                        {
                             return true;
+                        }
                     }
                 }
             }
@@ -118,50 +138,71 @@ namespace Wc3_Combat_Game.Terrain
         {
             return HasLineOfSight(FromGrid(myTile), FromGrid(targetTile));
         }
-        public bool HasLineOfSight(Vector2 startWorld, Vector2 targetWorld)
+        public bool HasLineOfSight(Vector2 startWorld, Vector2 targetWorld, float radius = 0f)
         {
-            Point startGrid = ToGrid(startWorld);
-            Point targetGrid = ToGrid(targetWorld);
+            // Calculate the bounding box of the "capsule" (line segment + radius) in world coordinates.
+            float minX = Math.Min(startWorld.X, targetWorld.X) - radius;
+            float maxX = Math.Max(startWorld.X, targetWorld.X) + radius;
+            float minY = Math.Min(startWorld.Y, targetWorld.Y) - radius;
+            float maxY = Math.Max(startWorld.Y, targetWorld.Y) + radius;
 
-            int x0 = startGrid.X;
-            int y0 = startGrid.Y;
-            int x1 = targetGrid.X;
-            int y1 = targetGrid.Y;
+            // Convert the world bounding box to tile coordinates.
+            int minTileX = (int)Math.Floor(minX / TileSize);
+            int maxTileX = (int)Math.Ceiling(maxX / TileSize) - 1;
+            int minTileY = (int)Math.Floor(minY / TileSize);
+            int maxTileY = (int)Math.Ceiling(maxY / TileSize) - 1;
 
-            int dx = Math.Abs(x1 - x0);
-            int dy = Math.Abs(y1 - y0);
-            int sx = x0 < x1 ? 1 : -1;
-            int sy = y0 < y1 ? 1 : -1;
-            int err = dx - dy;
+            // Clamp tile coordinates to map bounds.
+            minTileX = Math.Max(0, minTileX);
+            maxTileX = Math.Min(Width - 1, maxTileX);
+            minTileY = Math.Max(0, minTileY);
+            maxTileY = Math.Min(Height - 1, maxTileY);
 
-            while (true)
+            // Iterate through all tiles within the expanded bounding box.
+            for(int y = minTileY; y <= maxTileY; y++)
             {
-                if (x0 < 0 || x0 >= Width || y0 < 0 || y0 >= Height)
-                    return false; // Out of bounds blocks LOS (you can adjust this)
-
-                Tile currentTile = this[x0, y0];
-                if (currentTile != null && !currentTile.IsWalkable && !(x0 == startGrid.X && y0 == startGrid.Y) && !(x0 == targetGrid.X && y0 == targetGrid.Y))
+                for(int x = minTileX; x <= maxTileX; x++)
                 {
-                    return false; // Non-walkable tile blocks LOS (excluding start and end)
-                }
+                    Tile tile = this[x, y];
 
-                if (x0 == x1 && y0 == y1)
-                    break;
+                    // If the tile is non-walkable, check for collision with the capsule.
+                    // We also exclude the start and end tiles from blocking, as the object might be on them.
+                    // However, if the *radius* of the object at start/end overlaps an obstacle, it IS a collision.
+                    // The logic here is: if the tile is an obstacle AND it's not the exact start/end tile
+                    // (to allow seeing *from* a tile a unit is on), then check for collision.
+                    // A more robust approach might check if start/end points are *valid* positions first.
+                    // For simplicity, we'll allow the start/end *tile* to be an obstacle if the object is there.
+                    // But if the swept path *through* that tile or any other tile collides, LOS is blocked.
 
-                int e2 = 2 * err;
-                if (e2 > -dy)
-                {
-                    err -= dy;
-                    x0 += sx;
-                }
-                if (e2 < dx)
-                {
-                    err += dx;
-                    y0 += sy;
+                    // To simplify and be more accurate for "swept volume":
+                    // If the tile is an obstacle, check if the capsule intersects it.
+                    if(!tile.IsWalkable)
+                    {
+                        Vector2 tileMin = new(x * TileSize, y * TileSize);
+                        Vector2 tileMax = tileMin + new Vector2(TileSize);
+
+                        // Check if the start or end "hemisphere" (circle) collides with this obstacle tile.
+                        if(GeometryUtils.CollidesCircleWithRectangle(startWorld, radius, tileMin, tileMax) ||
+                            GeometryUtils.CollidesCircleWithRectangle(targetWorld, radius, tileMin, tileMax))
+                        {
+                            return false; // Start or end point's radius overlaps an obstacle
+                        }
+
+                        // Check if the line segment (inflated by radius) intersects this obstacle tile.
+                        // This is equivalent to checking if the line segment intersects the tile's AABB
+                        // expanded by the radius.
+                        Vector2 inflatedTileMin = tileMin - new Vector2(radius);
+                        Vector2 inflatedTileMax = tileMax + new Vector2(radius);
+
+                        if(GeometryUtils.LineSegmentIntersectsAABB(startWorld, targetWorld, inflatedTileMin, inflatedTileMax))
+                        {
+                            return false; // The swept body of the capsule collides with an obstacle
+                        }
+                    }
                 }
             }
 
-            return true;
+            return true; // No collision found along the path
         }
 
         public List<Point> GetAdjacentTiles(int x, int y)

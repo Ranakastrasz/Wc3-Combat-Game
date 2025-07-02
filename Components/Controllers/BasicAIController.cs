@@ -55,6 +55,11 @@ namespace Wc3_Combat_Game.Components.Controllers
                         Pathfind(unit, targetPos, context);
                         // Assert that a valid path was found. In a release build, this might be handled differently
                         // (e.g., by stopping movement or finding a new target).
+                        if (!ValidPath())
+                        {
+                            Pathfind(unit, targetPos, context); // Do ita again for debug tracking purposes
+
+                        }
                         AssertUtil.Assert(() => ValidPath(), "Pathfinding failed to find a valid path.");
                     }
 
@@ -109,7 +114,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                 }
 
                 // Calculate steering force towards the target position (waypoint or direct target)
-                Vector2 steeringTarget = GetPartialSteeringTarget(unit.Position, targetPos, context);
+                Vector2 steeringTarget = GetPartialSteeringTarget(unit, targetPos, context);
 
                 // Anti-bunching: Add separation force from nearby friendly units
                 // This assumes IBoardContext can provide nearby units. You might need to implement
@@ -167,6 +172,8 @@ namespace Wc3_Combat_Game.Components.Controllers
             AssertUtil.NotNull(pathFinder);
             Point startTile = map.ToGrid(unit.Position);
             Point targetTile = map.ToGrid(targetPos);
+            Debug.Assert(map[startTile].IsWalkable, "Start tile is not walkable");
+            Debug.Assert(map[targetTile].IsWalkable, "Target tile is not walkable");
             Path = pathFinder.FindPath(startTile, targetTile);
             if(Path.Length > 0)
             {
@@ -187,23 +194,23 @@ namespace Wc3_Combat_Game.Components.Controllers
         /// <param name="targetPos">The target world position.</param>
         /// <param name="context">The board context providing map information.</param>
         /// <returns>A normalized steering vector, or Vector2.Zero if already at target.</returns>
-         public static Vector2 GetPartialSteeringTarget(Vector2 myPos, Vector2 targetPos, IBoardContext context)
+         public static Vector2 GetPartialSteeringTarget(Unit unit, Vector2 targetPos, IBoardContext context)
         {
 
             Map? map = context.Map;
             AssertUtil.NotNull(map);
-            if(myPos == targetPos)
+            if(unit.Position == targetPos)
             {
                 return Vector2.Zero; // Already at the target position.
             }
 
-            Point myTile = map.ToGrid(myPos);
+            Point myTile = map.ToGrid(unit.Position);
             Point targetTile = map.ToGrid(targetPos);
 
-            if(map.HasLineOfSight(myTile, targetTile))
+            if(map.HasLineOfSight(unit.Position, targetPos,unit.Size))
             {
                 // Direct line
-                return Vector2.Normalize(targetPos - myPos);
+                return Vector2.Normalize(targetPos - unit.Position);
             }
 
             Vector2 bestDir = Vector2.Zero;
@@ -215,11 +222,11 @@ namespace Wc3_Combat_Game.Components.Controllers
                 if(!map[neighbor].IsWalkable)
                     continue;
 
-                float dist = GeometryUtils.DistanceToSquared(targetTile, neighbor);
+                float dist = GeometryUtils.DistanceSquared(targetTile, neighbor);
                 if(dist < bestDist)
                 {
                     bestDist = dist;
-                    bestDir = Vector2.Normalize(map.FromGrid(neighbor) - myPos);
+                    bestDir = Vector2.Normalize(map.FromGrid(neighbor) - unit.Position);
                 }
             }
             AssertUtil.Assert(() => !bestDir.IsNaN());
