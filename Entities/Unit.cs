@@ -18,6 +18,7 @@ namespace Wc3_Combat_Game.Entities
     /// </summary>
     public class Unit : MobileEntity
     {
+        UnitPrototype Prototype;
 
         public IUnitController? Controller = null;
         public Unit? Target { get; set; }
@@ -33,14 +34,14 @@ namespace Wc3_Combat_Game.Entities
             //    _targetPoint = value;
             //}
         }
-        public float MaxLife { get; protected set; }
+        public float MaxLife => Prototype.Life;
         public float Life { get; protected set; }
 
-        public float LifeRegen { get; set; } = 0f;
+        public float LifeRegen => Prototype.LifeRegen;
 
-        public float MaxMana { get; set; } = 0f; // Temporary, will be an interface in the future.
-        public float Mana { get; set; } = 0f; // Temporary, will be an interface in the future.
-        public float ManaRegen { get; set; } = 0f; // Temporary, will be an interface in the future.
+        public float MaxMana => Prototype.Mana;
+        public float Mana { get; set; }
+        public float ManaRegen => Prototype.ManaRegen;
 
         float _lastDamaged = float.NegativeInfinity;
         static float s_DamageFlashTime = GameConstants.FIXED_DELTA_TIME;
@@ -51,9 +52,11 @@ namespace Wc3_Combat_Game.Entities
 
         public Unit(UnitPrototype prototype, Vector2 position) : base(prototype.Size, position, prototype.FillColor)
         {
-            Life = prototype.MaxHealth;
-            MaxLife = prototype.MaxHealth;
+            Prototype = prototype;
+            Life = prototype.Life;
+            Mana = prototype.Mana;
             MoveSpeed = prototype.Speed;
+
             if (prototype.Weapon is WeaponPrototypeBasic basic)
             {
                 Weapon = new BasicWeapon(basic);

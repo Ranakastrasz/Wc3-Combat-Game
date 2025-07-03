@@ -98,11 +98,11 @@ namespace Wc3_Combat_Game.Core
 
 
             //_waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 1));
-            _waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 32));
-            _waves.Add(new Wave(new UnitPrototype(weapon10Damage      , 20f, 0.1f, 12f, 100f, Color.Red    , UnitPrototype.DrawShape.Circle), 32));
-            _waves.Add(new Wave(new UnitPrototype(weapon10DamageRanged, 30f, 0.1f, 10f,  50f, Color.Orange , UnitPrototype.DrawShape.Square), 16));
-            _waves.Add(new Wave(new UnitPrototype(weapon25Damage      , 80f,   2f, 20f,  75f, Color.Red    , UnitPrototype.DrawShape.Square), 8));
-            _waves.Add(new Wave(new UnitPrototype(weapon200Damage     , 400f,  0f, 30f, 125f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
+            _waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 12f,   2f,  8f,  50f, Color.Brown  , UnitPrototype.DrawShape.Circle), 32));
+            _waves.Add(new Wave(new UnitPrototype(weapon10Damage      , 10f, 0.1f,  8f,  75f, Color.Pink   , UnitPrototype.DrawShape.Circle), 32));
+            _waves.Add(new Wave(new UnitPrototype(weapon10DamageRanged, 30f,   0f, 10f,  40f, Color.Orange , UnitPrototype.DrawShape.Square), 16));
+            _waves.Add(new Wave(new UnitPrototype(weapon25Damage      , 80f,   2f, 20f,  50f, Color.Brown  , UnitPrototype.DrawShape.Square), 8));
+            _waves.Add(new Wave(new UnitPrototype(weapon200Damage     , 400f,  0f, 30f, 100f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
 
         }
 
@@ -120,14 +120,10 @@ namespace Wc3_Combat_Game.Core
                 0.20f,
                 float.PositiveInfinity,3f);
 
-            UnitPrototype playerUnit = new((WeaponPrototype)weapon, 100f, 0.1f, 10f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
+            UnitPrototype playerUnit = new((WeaponPrototype)weapon, 100f, 1f, 100f, 3f, 10f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
 
             PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)Map.GetPlayerSpawn(), new PlayerController(_controller.Input), TeamType.Ally);
 
-            PlayerUnit.MaxMana = 100f; // manual sets for now, til mana is properly implemented.
-            PlayerUnit.ManaRegen = 3f;
-            PlayerUnit.Mana = 100f;
-            PlayerUnit.LifeRegen = 1f;
 
             AddUnit(PlayerUnit);
         }

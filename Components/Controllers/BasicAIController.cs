@@ -294,18 +294,18 @@ namespace Wc3_Combat_Game.Components.Controllers
                 AssertUtil.NotNull(Path); // ValidPath already does this, but compiler insists.
                 float tileSize = map.TileSize / 4;
                 // Draw lines between path points and highlight waypoints
-                for(int x = nextWayPoint; x < Path.Length; x++) // Start drawing from the current waypoint
-                {
-                    Vector2 currentPointWorld = (x == nextWayPoint) ? unit.Position : map.FromGrid(Path[x-1]);
-                    Vector2 nextPointWorld = map.FromGrid(Path[x]);
-
-
-                    // Draw the line segment
-                    g.DrawLine(Pens.Yellow, currentPointWorld.ToPoint(), nextPointWorld.ToPoint());
-
-                    // Draw a rectangle at each waypoint
-                    g.FillRectangle(Brushes.Yellow, nextPointWorld.X - tileSize / 2, nextPointWorld.Y - tileSize / 2, tileSize, tileSize);
-                }
+                //for(int x = nextWayPoint; x < Path.Length; x++) // Start drawing from the current waypoint
+                //{
+                //    Vector2 currentPointWorld = (x == nextWayPoint) ? unit.Position : map.FromGrid(Path[x-1]);
+                //    Vector2 nextPointWorld = map.FromGrid(Path[x]);
+                //
+                //
+                //    // Draw the line segment
+                //    g.DrawLine(Pens.Yellow, currentPointWorld.ToPoint(), nextPointWorld.ToPoint());
+                //
+                //    // Draw a rectangle at each waypoint
+                //    g.FillRectangle(Brushes.Yellow, nextPointWorld.X - tileSize / 2, nextPointWorld.Y - tileSize / 2, tileSize, tileSize);
+                //}
                 // Highlight the current target waypoint in a different color
                 Vector2 currentTargetWaypointWorld = map.FromGrid(Path![nextWayPoint]);
                 tileSize = map.TileSize / 2; // Make it slightly larger

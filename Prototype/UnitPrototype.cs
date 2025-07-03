@@ -13,8 +13,10 @@ namespace Wc3_Combat_Game.Prototype
     /// </summary>
     public readonly struct UnitPrototype
     {
-        public readonly float MaxHealth;
-        public readonly float HealthRegen;
+        public readonly float Life;
+        public readonly float LifeRegen;
+        public readonly float Mana = 0f;
+        public readonly float ManaRegen = 0f;
         public readonly float Size;
         public readonly float Speed;
         public readonly Color FillColor;
@@ -29,12 +31,19 @@ namespace Wc3_Combat_Game.Prototype
         public UnitPrototype(WeaponPrototype weapon, float maxHealth, float healthRegen, float size, float speed, Color fillColor, DrawShape shape)
         {
             Weapon = weapon;
-            MaxHealth = maxHealth;
-            HealthRegen = healthRegen;
+            Life = maxHealth;
+            LifeRegen = healthRegen;
             Size = size;
             Speed = speed;
             Shape = shape;
             FillColor = fillColor;
+        }
+
+        public UnitPrototype(WeaponPrototype weapon, float maxHealth, float healthRegen, float mana, float manaRegen, float size, float speed, Color fillColor, DrawShape shape)
+            : this(weapon, maxHealth, healthRegen, size, speed, fillColor, DrawShape.Square)
+        {
+            Mana = mana;
+            ManaRegen = manaRegen;
         }
     }
 }
