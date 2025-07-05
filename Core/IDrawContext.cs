@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wc3_Combat_Game.Entities;
+﻿using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Terrain;
 
 namespace Wc3_Combat_Game.Core
@@ -15,6 +10,5 @@ namespace Wc3_Combat_Game.Core
         float CurrentTime { get; }
 
         EntityManager<Entities.Entity> Entities { get; }
-        //GameBoard GameBoard { get; set; }
     }
 }

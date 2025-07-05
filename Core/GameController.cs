@@ -34,12 +34,14 @@ namespace Wc3_Combat_Game.Core
         public float GlobalTime { get; private set; } = 0f;
 
         private float _gameOverTime = float.NegativeInfinity;
+        
+        private bool _paused;
 
         public GameController()
         {
             // Setup game loop timer
             _gameLoopTimer = new() { Interval = GameConstants.TICK_DURATION_MS };
-            _gameLoopTimer.Tick += GameLoopTimer_Tick;
+            _gameLoopTimer.Tick += GameLoopTimer_Tick; // Bad method, apperantly. Not good for games.
         }
 
         public void StartTimer()
@@ -61,15 +63,23 @@ namespace Wc3_Combat_Game.Core
         }
         private void GameLoopTimer_Tick(object? sender, EventArgs e)
         {
-            float deltaTime = GameConstants.FIXED_DELTA_TIME;
-            GlobalTime += deltaTime;
+            float SimDeltaTime; 
+                // for the gameboard's updates. Adjusted by pause and gamespeed.
+            float DrawDeltaTime = GameConstants.FIXED_DELTA_TIME;
+                // For drawing, which is always fixed.
+            if(IsPaused())
+                SimDeltaTime = 0f;
+            else
+                SimDeltaTime = GameConstants.FIXED_DELTA_TIME;
+
+            GlobalTime += SimDeltaTime;
 
             if (CurrentState == GameState.Playing)
             {
                 if (View != null && Board != null)
                 {
-                    Board.Update(deltaTime);
-                    View.Update(deltaTime);
+                    Board.Update(SimDeltaTime);
+                    View.Update(DrawDeltaTime); // May need to pass both in later. 
                 }
             }
             else if (CurrentState == GameState.GameOver || CurrentState == GameState.Victory)
@@ -107,5 +117,15 @@ namespace Wc3_Combat_Game.Core
             }
         }
 
+        internal void TogglePause()
+        {
+            _paused = !_paused;
+        }
+
+
+        internal bool IsPaused()
+        {
+            return _paused; // Manual pause, or debug menu open.
+        }
     }
 }

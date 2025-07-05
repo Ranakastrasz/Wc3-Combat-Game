@@ -31,18 +31,52 @@ namespace Wc3_Combat_Game
         /// </summary>
         private void InitializeComponent()
         {
+            GameWindow = new Panel();
+            DebugPanel = new Panel();
+            DebugPathfinding = new CheckedListBox();
+            DebugPanel.SuspendLayout();
             SuspendLayout();
             // 
-            // MainGameWindow
+            // GameWindow
+            // 
+            GameWindow.Location = new Point(12, 12);
+            GameWindow.Name = "GameWindow";
+            GameWindow.Size = new Size(800, 500);
+            GameWindow.TabIndex = 0;
+            // 
+            // DebugPanel
+            // 
+            DebugPanel.Controls.Add(DebugPathfinding);
+            DebugPanel.Location = new Point(818, 12);
+            DebugPanel.Name = "DebugPanel";
+            DebugPanel.Size = new Size(250, 240);
+            DebugPanel.TabIndex = 1;
+            // 
+            // DebugPathfinding
+            // 
+            DebugPathfinding.FormattingEnabled = true;
+            DebugPathfinding.Location = new Point(3, 3);
+            DebugPathfinding.Name = "DebugPathfinding";
+            DebugPathfinding.Size = new Size(150, 114);
+            DebugPathfinding.TabIndex = 0;
+            // 
+            // GameView
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1182, 553);
-            Name = "MainGameWindow";
+            ClientSize = new Size(1182, 524);
+            Controls.Add(DebugPanel);
+            Controls.Add(GameWindow);
+            Name = "GameView";
             Text = "Wc3 combat Game";
+            DebugPanel.ResumeLayout(false);
             ResumeLayout(false);
         }
 
         #endregion
+
+        private Panel GameWindow;
+        private Panel DebugPanel;
+        private CheckedListBox DebugPathfinding;
     }
 }

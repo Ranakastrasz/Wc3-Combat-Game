@@ -1,3 +1,4 @@
+using AssertUtils;
 using System.Drawing;
 using System.Net.NetworkInformation;
 using System.Numerics;
@@ -6,13 +7,12 @@ using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
-using AssertUtils;
 using static Wc3_Combat_Game.Core.GameController;
 
 namespace Wc3_Combat_Game
 {
 
-    public partial class GameView : Form
+    public partial class GameView: Form
     {
         internal readonly GameController _controller;
 
@@ -22,8 +22,10 @@ namespace Wc3_Combat_Game
         private IDrawContext? _drawContext;
 
         private Font? _gridFont;
-#region InputHooks
+
+        #region InputHooks
         public InputManager Input { get; private set; } = new InputManager();
+
 
         private void MainGameWindow_KeyDown(object? sender, KeyEventArgs e)
         {
@@ -36,13 +38,13 @@ namespace Wc3_Combat_Game
         }
         private void MainGameWindow_MouseDown(object? sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if(e.Button == MouseButtons.Left)
                 Input.OnMouseDown(ScreenToWorld(e.Location));
         }
 
         private void MainGameWindow_MouseUp(object? sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if(e.Button == MouseButtons.Left)
                 Input.OnMouseUp();
         }
 
@@ -50,7 +52,7 @@ namespace Wc3_Combat_Game
         {
             Input.OnMouseMove(ScreenToWorld(e.Location));
         }
-#endregion
+        #endregion
 
         public Vector2 ScreenToWorld(Point screenPos)
         {
@@ -64,7 +66,7 @@ namespace Wc3_Combat_Game
         internal GameView(GameController controller, IDrawContext context)
         {
             InitializeComponent();
-            
+
             _controller = controller;
             _drawContext = context;
 
@@ -91,9 +93,11 @@ namespace Wc3_Combat_Game
             this.MouseUp += MainGameWindow_MouseUp;
             this.MouseMove += MainGameWindow_MouseMove;
 
-            this.Resize +=  OnWindowSizeChanged;
+            this.Resize += OnWindowSizeChanged;
 
             _gridFont = null;
+            this.KeyPreview = true; // For debug form purposes.
+
         }
 
         public void OnWindowSizeChanged(object? sender, EventArgs e)
@@ -104,7 +108,7 @@ namespace Wc3_Combat_Game
         public void Update(float deltaTime)
         {
             _camera.Update(deltaTime);
-            
+
 
             this.Invalidate();
         }
@@ -113,33 +117,31 @@ namespace Wc3_Combat_Game
             Graphics g = e.Graphics;
             g.Clear(Color.Black);
 
-
             // Apply camera transform
             using var transform = _camera.GetTransform();
             g.Transform = transform;
 
+            Rectangle clientRect = GameWindow.ClientRectangle;
 
             // Draw Map.
-            if (_drawContext != null)
+            if(_drawContext != null)
             {
                 Map? map = _drawContext.Map;
                 AssertUtil.NotNull(map);
 
-                //_gridFont ??= FontUtils.FitFontToTile(g, "Consolas", 32f, FontStyle.Regular, GraphicsUnit.Pixel);//new Font("Consolas", 32f, FontStyle.Regular, GraphicsUnit.Pixel);
-
 
                 float tileSize = map.TileSize;
 
-                for (int y = 0; y < map.TileMap.GetLength(1); y++)
+                for(int y = 0; y < map.TileMap.GetLength(1); y++)
                 {
-                    for (int x = 0; x < map.TileMap.GetLength(0); x++)
+                    for(int x = 0; x < map.TileMap.GetLength(0); x++)
                     {
                         Tile tile = map.TileMap[x, y];
                         Brush brush = new SolidBrush(tile.GetColor); // optionally cache these
 
                         //g.FillRectangle(brush,x*tileSize,y*tileSize,tileSize,tileSize);
                         // Tell tiles to draw themselves.
-                        tile.Draw(g,tileSize);
+                        tile.Draw(g, tileSize);
 
                         brush.Dispose(); // only if not cached
                     }
@@ -150,7 +152,7 @@ namespace Wc3_Combat_Game
             _drawContext?.Entities?.ForEach(p => p.Draw(g, _drawContext));
 
 
-            if (_controller.CurrentState == GameState.GameOver || _controller.CurrentState == GameState.Victory)
+            if(_controller.CurrentState == GameState.GameOver || _controller.CurrentState == GameState.Victory)
             {
                 g.ResetTransform();
 
@@ -165,6 +167,13 @@ namespace Wc3_Combat_Game
 
 
             }
+
+            if(_controller.IsPaused())
+            {
+                // Draw a semi-transparent overlay to indicate pause state
+                using var overlayBrush = new SolidBrush(Color.FromArgb(128, Color.Gray));
+                g.FillRectangle(overlayBrush, this.ClientRectangle);
+            }
         }
 
         public void RegisterPlayer(Unit playerUnit)
@@ -174,5 +183,32 @@ namespace Wc3_Combat_Game
         }
 
         private void DisposeCustomResources() => _gridFont?.Dispose();
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if(keyData == Keys.Escape)
+            {
+                // Handle Escape key to close the game
+                Close(); // or Application.Exit() if you want to exit the application
+                return true; // Indicate that we've handled this key press
+            }
+            if(keyData == Keys.P)
+            {
+                // Handle P key to toggle pause state
+                _controller.TogglePause(); // Toggle game pause state
+                return true; // Indicate that we've handled this key press
+            }
+            if(keyData == Keys.F4)
+            {
+                DebugPanel.Visible = !DebugPanel.Visible; // Toggle the debug panel visibility
+                return true; // Indicate that we've handled this key press
+            }
+            return base.ProcessCmdKey(ref msg, keyData); // Let base class handle other keys
+        }        // This method handles F4 when the DebugSettingsForm has focus and raises its event
+
+        private void DebugPathfinding_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+
+        }
     }
 }
