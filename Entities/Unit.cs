@@ -8,6 +8,7 @@ using Wc3_Combat_Game.Components.Controllers.Interface;
 using Wc3_Combat_Game.Components.Controllers;
 using AssertUtils;
 using Wc3_Combat_Game.Prototype.Weapons;
+using Wc3_Combat_Game.IO;
 
 
 namespace Wc3_Combat_Game.Entities
@@ -108,6 +109,7 @@ namespace Wc3_Combat_Game.Entities
 
         public override void Draw(Graphics g, IDrawContext context)
         {
+            base.DrawDebug(g, context);
             Controller?.DrawDebug(g, context, this);
 
             RectangleF entityRect = _position.RectFFromCenter(_sizeVector);
@@ -130,6 +132,9 @@ namespace Wc3_Combat_Game.Entities
             int barHeight = 2;
             int barOffset = 4; // gap below entity rect
             int barSpacing = 2; // gap between bars
+
+            // Colors are bad, but worry later.
+            // blends into the existing terrain.
 
             if (Life < MaxLife && Life > 0)
             {

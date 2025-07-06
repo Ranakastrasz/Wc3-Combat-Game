@@ -5,6 +5,7 @@ using System.Numerics;
 using Wc3_Combat_Game.Components.Controllers.Interface;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
 
@@ -289,6 +290,22 @@ namespace Wc3_Combat_Game.Components.Controllers
             if(!unit.IsAlive) return;
             Map? map = context.Map;
             AssertUtil.NotNull(map);
+
+            //[DebugSetting.DrawEnemyControllerState] = false,       
+            //[DebugSetting.DrawEnemyControllerFullPath] = false,    
+            //[DebugSetting.DrawEnemyControllerNextWaypoint] = false,
+            //[DebugSetting.DrawEnemyControllerLOS] = false,         
+
+            if(context.DebugSettings.Get(DebugSetting.DrawEnemyControllerState))
+            {
+                // Really need to make a state diagram. This isn't super helpful yet.
+                // Since it always just says Moving for now. But eh. 1 thing at a time.
+                string stateText = $"AI: {(ValidPath() ? "Moving" : "Idle")}";
+                using var font = new Font("Arial", 8);
+                using var brush = new SolidBrush(Color.White);
+                g.DrawString(stateText, font, brush, unit.Position.X + unit.Size, unit.Position.Y - unit.Size);
+            }
+
             if(ValidPath())
             {
                 AssertUtil.NotNull(Path); // ValidPath already does this, but compiler insists.
@@ -297,28 +314,38 @@ namespace Wc3_Combat_Game.Components.Controllers
                 Vector2 currentPointWorld = (x == nextWayPoint) ? unit.Position : map.FromGrid(Path[x-1]);
                 Vector2 nextPointWorld = map.FromGrid(Path[x]);
                
-               
-                // Draw the line segment
-                g.DrawLine(Pens.Yellow, currentPointWorld.ToPoint(), nextPointWorld.ToPoint());
+                
+                if(context.DebugSettings.Get(DebugSetting.DrawEnemyControllerNextWaypoint))
+                {
+                    // Next waypoint and line connecting it.
+                    g.DrawLine(Pens.Yellow, currentPointWorld.ToPoint(), nextPointWorld.ToPoint());
+                    Vector2 currentTargetWaypointWorld = map.FromGrid(Path![nextWayPoint]);
+                    tileSize = map.TileSize / 3; // Make it slightly larger
+                    g.FillRectangle(Brushes.Red, currentTargetWaypointWorld.X - tileSize / 2, currentTargetWaypointWorld.Y - tileSize / 2, tileSize, tileSize);
 
-                // Draw lines between path points and highlight waypoints
-                //for(int x = nextWayPoint; x < Path.Length; x++) // Start drawing from the current waypoint
-                //{
-                //    Vector2 currentPointWorld = (x == nextWayPoint) ? unit.Position : map.FromGrid(Path[x-1]);
-                //    Vector2 nextPointWorld = map.FromGrid(Path[x]);
-                //
-                //
-                //    // Draw the line segment
-                //    g.DrawLine(Pens.Yellow, currentPointWorld.ToPoint(), nextPointWorld.ToPoint());
-                //
-                //    // Draw a rectangle at each waypoint
-                //    g.FillRectangle(Brushes.Yellow, nextPointWorld.X - tileSize / 2, nextPointWorld.Y - tileSize / 2, tileSize, tileSize);
-                //}
-                // Highlight the current target waypoint in a different color
-                //Vector2 currentTargetWaypointWorld = map.FromGrid(Path![nextWayPoint]);
-                //tileSize = map.TileSize / 2; // Make it slightly larger
-                //g.FillRectangle(Brushes.Red, currentTargetWaypointWorld.X - tileSize / 2, currentTargetWaypointWorld.Y - tileSize / 2, tileSize, tileSize);
+                }
 
+                if(context.DebugSettings.Get(DebugSetting.DrawEnemyControllerFullPath))
+                {
+                    // Draw lines between path points and highlight waypoints
+                    for(x = nextWayPoint; x < Path.Length; x++) // Start drawing from the current waypoint
+                    {
+                        currentPointWorld = (x == nextWayPoint) ? unit.Position : map.FromGrid(Path[x - 1]);
+                        nextPointWorld = map.FromGrid(Path[x]);
+
+
+                        // Draw the line segment
+                        g.DrawLine(Pens.Yellow, currentPointWorld.ToPoint(), nextPointWorld.ToPoint());
+
+                        // Draw a rectangle at each waypoint
+                        g.FillRectangle(Brushes.Yellow, nextPointWorld.X - tileSize / 2, nextPointWorld.Y - tileSize / 2, tileSize, tileSize);
+                    }
+                }
+                if (context.DebugSettings.Get(DebugSetting.DrawEnemyControllerLOS))
+                {
+                    // Draw line of sight Check to next waypoint, via asking the map to draw it.
+                    map.DrawDebugLineOfSight(g, unit.Position, nextPointWorld, unit.Size);
+                }
             }
 #endif
         }

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Terrain;
 using AssertUtils;
+using Wc3_Combat_Game.IO;
+using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Entities
 {
@@ -74,6 +76,21 @@ namespace Wc3_Combat_Game.Entities
         {
             // Default: stop movement
             _velocity = Vector2.Zero;
+        }
+
+        internal new void DrawDebug(Graphics g, IDrawContext context)
+        {
+            base.DrawDebug(g, context);
+            if (context.DebugSettings.Get(DebugSetting.DrawEntityMovementVector))
+            {
+                if(_velocity != Vector2.Zero)
+                { 
+                
+                }
+                using var pen = new Pen(Color.Lime, 2);
+                var endPoint = _position + _velocity*0.1f;
+                g.DrawLine(pen, _position.ToPointF(), endPoint.ToPointF());
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ using AssertUtils;
 using System.Drawing;
 using System.Net.NetworkInformation;
 using System.Numerics;
+using System.Windows.Forms;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.IO;
@@ -18,14 +19,14 @@ namespace Wc3_Combat_Game
 
         private Camera _camera;
 
-
-        private IDrawContext? _drawContext;
+        public IDrawContext? DrawContext { get; private set; }
 
         private Font? _gridFont;
 
         #region InputHooks
         public InputManager Input { get; private set; } = new InputManager();
 
+        public bool DebugPanelVisible => DebugPanel.Visible;
 
         private void MainGameWindow_KeyDown(object? sender, KeyEventArgs e)
         {
@@ -68,15 +69,22 @@ namespace Wc3_Combat_Game
             InitializeComponent();
 
             _controller = controller;
-            _drawContext = context;
+            DrawContext = context;
 
-            this.ClientSize = GameConstants.CAMERA_BOUNDS.Size.ToSize();
+            //this.ClientSize = GameConstants.CAMERA_SCALE;
             this._camera = new Camera();
             _camera.LerpFactor = 10f;
 
             _camera.Zoom = 3;
-            _camera.Width = GameConstants.CAMERA_BOUNDS.Width;
-            _camera.Height = GameConstants.CAMERA_BOUNDS.Height;
+            _camera.Width = GameConstants.CAMERA_SCALE.Width;
+            _camera.Height = GameConstants.CAMERA_SCALE.Height;
+
+            // In GameView constructor:
+            if(GameWindow != null)
+            {
+                _camera.Width = GameWindow.ClientSize.Width;
+                _camera.Height = GameWindow.ClientSize.Height;
+            }
             //AssertUtil.NotNull(_drawContext.PlayerUnit);
             //_camera.FollowUnit(_drawContext.PlayerUnit!);
 
@@ -93,6 +101,27 @@ namespace Wc3_Combat_Game
             this.MouseUp += MainGameWindow_MouseUp;
             this.MouseMove += MainGameWindow_MouseMove;
 
+            AssertUtil.NotNull(GameWindow);
+            GameWindow.KeyDown += MainGameWindow_KeyDown;
+            GameWindow.KeyUp += MainGameWindow_KeyUp;
+            GameWindow.MouseDown += MainGameWindow_MouseDown;
+            GameWindow.MouseUp += MainGameWindow_MouseUp;
+            GameWindow.MouseMove += MainGameWindow_MouseMove;
+
+            DebugPanel.Visible = false; // Hidden by default, toggle with F4.
+
+            AssertUtil.NotNull(DebugPathfinding);
+            DebugPathfinding.Items.AddRange(DrawContext.DebugSettings.ToArray());
+            //DebugPathfinding.Items.AddRange(
+            //    ["Draw.Enemy.Controller.State",
+            //    "Draw.Enemy.MovementVector",
+            //    "Draw.Enemy.FullPath",
+            //    "Draw.Enemy.NextWaypoint",
+            //    "Draw.Enemy.CollisionBox",
+            //    "Draw.Enemy.LOS"]);
+
+
+
             this.Resize += OnWindowSizeChanged;
 
             _gridFont = null;
@@ -100,19 +129,53 @@ namespace Wc3_Combat_Game
 
         }
 
+        private void GamePanel_Paint(object? sender, PaintEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         public void OnWindowSizeChanged(object? sender, EventArgs e)
         {
-            _camera.Width = ClientSize.Width;
-            _camera.Height = ClientSize.Height;
+            // Get the size of the GameWindow panel, not the Form's client area
+            var bounds = GameWindow.ClientRectangle;
+
+            // Target aspect ratio (from GameConstants.CAMERA_BOUNDS)
+            float targetAspect = (float)GameConstants.CAMERA_SCALE.Width / GameConstants.CAMERA_SCALE.Height;
+            float windowAspect = (float)bounds.Width / bounds.Height;
+
+            int newWidth, newHeight;
+
+            if(windowAspect > targetAspect)
+            {
+                // Window is wider than target: pillarbox
+                newHeight = bounds.Height;
+                newWidth = (int)(newHeight * targetAspect);
+            }
+            else
+            {
+                // Window is taller than target: letterbox
+                newWidth = bounds.Width;
+                newHeight = (int)(newWidth / targetAspect);
+            }
+
+            // Set camera to fit inside GameWindow, preserving aspect ratio
+            _camera.Width = newWidth;
+            _camera.Height = newHeight;
+            _camera.SnapToUnit();
         }
         public void Update(float deltaTime)
         {
             _camera.Update(deltaTime);
 
 
-            this.Invalidate();
+            GameWindow.Invalidate();
         }
         protected override void OnPaint(PaintEventArgs e)
+        {
+
+        }
+
+        private void GameWindow_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
             g.Clear(Color.Black);
@@ -124,9 +187,9 @@ namespace Wc3_Combat_Game
             Rectangle clientRect = GameWindow.ClientRectangle;
 
             // Draw Map.
-            if(_drawContext != null)
+            if(DrawContext != null)
             {
-                Map? map = _drawContext.Map;
+                Map? map = DrawContext.Map;
                 AssertUtil.NotNull(map);
 
 
@@ -149,7 +212,7 @@ namespace Wc3_Combat_Game
 
             }
 
-            _drawContext?.Entities?.ForEach(p => p.Draw(g, _drawContext));
+            DrawContext?.Entities?.ForEach(p => p.Draw(g, DrawContext));
 
 
             if(_controller.CurrentState == GameState.GameOver || _controller.CurrentState == GameState.Victory)
@@ -208,6 +271,11 @@ namespace Wc3_Combat_Game
 
         private void DebugPathfinding_ItemCheck(object sender, ItemCheckEventArgs e)
         {
+            TextBox_DebugOutput.Text = "Item with title \"" + DebugPathfinding.Items[e.Index].ToString() +
+        "\" was checked. The new check state is " + e.NewValue.ToString();
+            string itemText = DebugPathfinding.Items[e.Index].ToString() ?? "";
+            bool isChecked = e.NewValue == CheckState.Checked;
+            DrawContext?.DebugSettings.Set(itemText, isChecked);
 
         }
     }

@@ -1,8 +1,8 @@
 ﻿using AssertUtils;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
-using Timer = System.Windows.Forms.Timer;
 
+using System.Timers;
 
 namespace Wc3_Combat_Game.Core
 {
@@ -28,7 +28,7 @@ namespace Wc3_Combat_Game.Core
         public float CurrentTime => Board?.CurrentTime ?? float.NegativeInfinity;
         public InputManager ?Input => View?.Input;
 
-        private readonly Timer _gameLoopTimer;
+        private readonly System.Timers.Timer _gameLoopTimer;
 
 
         public float GlobalTime { get; private set; } = 0f;
@@ -41,7 +41,7 @@ namespace Wc3_Combat_Game.Core
         {
             // Setup game loop timer
             _gameLoopTimer = new() { Interval = GameConstants.TICK_DURATION_MS };
-            _gameLoopTimer.Tick += GameLoopTimer_Tick; // Bad method, apperantly. Not good for games.
+            _gameLoopTimer.Elapsed += GameLoopTimer_Tick;
         }
 
         public void StartTimer()
@@ -125,7 +125,8 @@ namespace Wc3_Combat_Game.Core
 
         internal bool IsPaused()
         {
-            return _paused; // Manual pause, or debug menu open.
+            AssertUtil.NotNull(View);
+            return _paused || View.DebugPanelVisible; // Manual pause, or debug menu open.
         }
     }
 }

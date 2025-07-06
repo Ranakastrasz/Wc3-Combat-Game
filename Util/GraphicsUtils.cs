@@ -19,6 +19,10 @@ namespace Wc3_Combat_Game.Util
             new((int)Math.Round(value.X), (int)Math.Round(value.Y));
         public static Point ToPoint(this Size value) =>
             new(value.Width, value.Height);
+        public static PointF ToPointF(this Vector2 value) =>
+            new(value.X, value.Y);
+        public static PointF ToPointF(this SizeF value) =>
+            new(value.Width, value.Height);
         public static Size ToSize(this Vector2 value) =>
             new((int)Math.Round(value.X), (int)Math.Round(value.Y));
         public static Size ToSize(this PointF value) =>

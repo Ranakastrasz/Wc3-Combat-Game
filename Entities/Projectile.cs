@@ -4,6 +4,7 @@ using Wc3_Combat_Game.Prototype;
 using static Wc3_Combat_Game.Core.GameConstants;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Components.Actions.Interface;
+using Wc3_Combat_Game.IO;
 
 namespace Wc3_Combat_Game.Entities
 {
@@ -49,7 +50,9 @@ namespace Wc3_Combat_Game.Entities
 
         public override void Draw(Graphics g, IDrawContext context)
         {
+            DrawDebug(g, context);
             base.Draw(g, context);
+            
         }
 
         protected override void OnTerrainCollision(IBoardContext context)

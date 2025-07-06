@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic;
 using System.Numerics;
 using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Entities
@@ -21,7 +22,8 @@ namespace Wc3_Combat_Game.Entities
 
         public TeamType Team;
 
-
+        // Will include like a dozen interface references,
+        // to be built by factory, allowing highly mutable entities.
 
 
         public RectangleF BoundingBox { get => _position.RectFFromCenter(_sizeVector); }
@@ -45,14 +47,30 @@ namespace Wc3_Combat_Game.Entities
 
         public virtual void Draw(Graphics g, IDrawContext context)
         {
+            DrawDebug(g, context);
+
             if (!IsAlive) return;
             RectangleF entityRect = _position.RectFFromCenter(_sizeVector);
             using var brush = new SolidBrush(_fillColor);
             g.FillRectangle(brush, entityRect);
+
+
+        }
+        internal void DrawDebug(Graphics g, IDrawContext context)
+        {
+            // Debugging info
+            if(context.DebugSettings.Get(DebugSetting.DrawEntityCollisionBox))
+            {
+                RectangleF entityRect = _position.RectFFromCenter(_sizeVector);
+                using var pen = new Pen(Color.Yellow, 1);
+                g.DrawRectangle(pen, entityRect.X, entityRect.Y, entityRect.Width, entityRect.Height);
+            }
         }
 
         public virtual void Update(float deltaTime, IBoardContext context)
-        { }
+        {
+            // Call all interfaces here. For now, nothing to do.
+        }
 
         public void Die(IBoardContext context)
         {
@@ -79,5 +97,6 @@ namespace Wc3_Combat_Game.Entities
             Vector2 between = other.Position - _position;
             return between.LengthSquared();
         }
+
     }
 }

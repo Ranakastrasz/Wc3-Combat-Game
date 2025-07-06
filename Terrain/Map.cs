@@ -334,6 +334,53 @@ namespace Wc3_Combat_Game.Terrain
             }
             throw new InvalidOperationException("No player spawn point found in the map.");
         }
+
+        internal void DrawDebugLineOfSight(Graphics g, Vector2 position, Vector2 nextPointWorld, float size)
+        {
+            // Draw the line representing the line of sight
+            using Pen linePen = new(Color.Yellow, 0.1f);
+            g.DrawLine(linePen, position.X, position.Y, nextPointWorld.X, nextPointWorld.Y);
+
+            // Draw the start and end circles to represent the "radius" (size) at each endpoint
+            if(size > 0f)
+            {
+                using Pen circlePen = new(Color.Orange, 0.08f);
+                float diameter = size * 2f;
+                g.DrawEllipse(circlePen, position.X - size, position.Y - size, diameter, diameter);
+                g.DrawEllipse(circlePen, nextPointWorld.X - size, nextPointWorld.Y - size, diameter, diameter);
+            }
+
+            // Optionally, draw the tiles that are checked for collision
+            float minX = Math.Min(position.X, nextPointWorld.X) - size;
+            float maxX = Math.Max(position.X, nextPointWorld.X) + size;
+            float minY = Math.Min(position.Y, nextPointWorld.Y) - size;
+            float maxY = Math.Max(position.Y, nextPointWorld.Y) + size;
+
+            int minTileX = (int)Math.Floor(minX / TileSize);
+            int maxTileX = (int)Math.Ceiling(maxX / TileSize) - 1;
+            int minTileY = (int)Math.Floor(minY / TileSize);
+            int maxTileY = (int)Math.Ceiling(maxY / TileSize) - 1;
+
+            minTileX = Math.Max(0, minTileX);
+            maxTileX = Math.Min(Width - 1, maxTileX);
+            minTileY = Math.Max(0, minTileY);
+            maxTileY = Math.Min(Height - 1, maxTileY);
+
+            using Pen tilePen = new(Color.Red, 0.05f);
+            for(int y = minTileY; y <= maxTileY; y++)
+            {
+                for(int x = minTileX; x <= maxTileX; x++)
+                {
+                    Tile tile = this[x, y];
+                    if(!tile.IsWalkable)
+                    {
+                        float tx = x * TileSize;
+                        float ty = y * TileSize;
+                        g.DrawRectangle(tilePen, tx, ty, TileSize, TileSize);
+                    }
+                }
+            }
+        }
     }
 }
 

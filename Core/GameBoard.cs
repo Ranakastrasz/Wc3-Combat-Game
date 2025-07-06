@@ -13,6 +13,7 @@ using Wc3_Combat_Game.Components.Actions.Interface;
 using AStar;
 using AStar.Options;
 using Wc3_Combat_Game.Prototype.Weapons;
+using Wc3_Combat_Game.IO;
 //using Wc3_Combat_Game.IO.Load.GameSchema;
 
 namespace Wc3_Combat_Game.Core
@@ -45,6 +46,10 @@ namespace Wc3_Combat_Game.Core
         public Map? Map { get; private set; }
         public PathFinder? PathFinder { get; private set; }
         public float TileSize { get; private set; }
+
+        public DebugSettings DebugSettings = new DebugSettings(); // May or may not stay here.
+        DebugSettings IDrawContext.DebugSettings => DebugSettings;
+
 
         private float _lastEnemySpawned = 0f;
 

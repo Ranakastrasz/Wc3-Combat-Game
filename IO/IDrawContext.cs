@@ -1,14 +1,16 @@
 ﻿using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Terrain;
 
-namespace Wc3_Combat_Game.Core
+namespace Wc3_Combat_Game.IO
 {
+
     public interface IDrawContext
     {
 
         Map? Map { get; }
         float CurrentTime { get; }
 
-        EntityManager<Entities.Entity> Entities { get; }
+        EntityManager<Entity> Entities { get; }
+        DebugSettings DebugSettings { get; }
     }
 }
