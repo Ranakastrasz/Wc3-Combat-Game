@@ -26,7 +26,7 @@ namespace Wc3_Combat_Game.Entities
             Map? map = context.Map;
             AssertUtil.NotNull(map);
 
-            float collisionRadius = CollisionRadius;
+            float collisionRadius = Radius;
 
             if (!map.CollidesAt(newPosition, collisionRadius))
             {

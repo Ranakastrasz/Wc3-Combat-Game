@@ -112,20 +112,18 @@ namespace Wc3_Combat_Game.Entities
             base.DrawDebug(g, context);
             Controller?.DrawDebug(g, context, this);
 
-            RectangleF entityRect = _position.RectFFromCenter(_sizeVector);
-
             if (!TimeUtils.HasElapsed(context.CurrentTime,_lastDamaged,s_DamageFlashTime))
             {
-                g.FillEllipse(Brushes.White, entityRect);
+                g.FillEllipse(Brushes.White, BoundingBox);
             }
             else if (IsAlive)
             {
                 using var brush = new SolidBrush(_fillColor);
-                g.FillEllipse(brush, entityRect);
+                g.FillEllipse(brush, BoundingBox);
             }
             else
             {
-                g.FillEllipse(Brushes.Gray, entityRect);
+                g.FillEllipse(Brushes.Gray, BoundingBox);
             }
 
             // Bar dimensions
@@ -140,19 +138,19 @@ namespace Wc3_Combat_Game.Entities
             {
                 // --- Health Bar ---
                 RectangleF healthBarBackgroundRect = new RectangleF(
-                    entityRect.X,
-                    entityRect.Bottom + barOffset,
-                    entityRect.Width,
+                    BoundingBox.X,
+                    BoundingBox.Bottom + barOffset,
+                    BoundingBox.Width,
                     barHeight);
 
                 g.FillRectangle(Brushes.DarkGray, healthBarBackgroundRect);
 
                 float healthRatio = (float)Life / MaxLife;
-                int healthFillWidth = (int)(entityRect.Width * healthRatio);
+                int healthFillWidth = (int)(BoundingBox.Width * healthRatio);
 
                 RectangleF healthFillRect = new RectangleF(
-                    entityRect.X,
-                    entityRect.Bottom + barOffset,
+                    BoundingBox.X,
+                    BoundingBox.Bottom + barOffset,
                     healthFillWidth,
                     barHeight);
 
@@ -165,12 +163,12 @@ namespace Wc3_Combat_Game.Entities
             {
                 if(Weapon != null)
                 {
-                    float manaBarY = entityRect.Bottom + barOffset + barHeight + barSpacing;
+                    float manaBarY = BoundingBox.Bottom + barOffset + barHeight + barSpacing;
 
                     RectangleF manaBarBackgroundRect = new RectangleF(
-                        entityRect.X,
+                        BoundingBox.X,
                         manaBarY,
-                        entityRect.Width,
+                        BoundingBox.Width,
                         barHeight);
 
                     g.FillRectangle(Brushes.DarkGray, manaBarBackgroundRect);
@@ -207,10 +205,10 @@ namespace Wc3_Combat_Game.Entities
 
                     }
 
-                    int manaFillWidth = (int)(entityRect.Width * manaRatio);
+                    int manaFillWidth = (int)(BoundingBox.Width * manaRatio);
 
                     RectangleF manaFillRect = new RectangleF(
-                        entityRect.X,
+                        BoundingBox.X,
                         manaBarY,
                         manaFillWidth,
                         barHeight);

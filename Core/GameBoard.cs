@@ -95,7 +95,7 @@ namespace Wc3_Combat_Game.Core
             var weapon200Damage = meleeWeaponBase.SetDamage(200f);
 
             var rangedWeaponBase = new WeaponPrototypeBasic(
-                new ProjectileAction(new ProjectilePrototype(5, 225f, 4f, null, Color.DarkMagenta)),
+                new ProjectileAction(new ProjectilePrototype(2.5f, 225f, 4f, null, Color.DarkMagenta)),
                 1f,
                 150f);
 
@@ -103,11 +103,11 @@ namespace Wc3_Combat_Game.Core
 
 
             //_waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 1));
-            _waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 12f,   2f,  8f,  50f, Color.Brown  , UnitPrototype.DrawShape.Circle), 32));
-            _waves.Add(new Wave(new UnitPrototype(weapon10Damage      , 10f, 0.1f,  8f,  75f, Color.Pink   , UnitPrototype.DrawShape.Circle), 32));
-            _waves.Add(new Wave(new UnitPrototype(weapon10DamageRanged, 30f,   0f, 10f,  40f, Color.Orange , UnitPrototype.DrawShape.Square), 16));
-            _waves.Add(new Wave(new UnitPrototype(weapon25Damage      , 80f,   2f, 20f,  50f, Color.Brown  , UnitPrototype.DrawShape.Square), 8));
-            _waves.Add(new Wave(new UnitPrototype(weapon200Damage     , 400f,  0f, 30f, 100f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
+            _waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 12f,   2f,  4f,  50f, Color.Brown  , UnitPrototype.DrawShape.Circle), 32));
+            _waves.Add(new Wave(new UnitPrototype(weapon10Damage      , 10f, 0.1f,  4f,  75f, Color.Pink   , UnitPrototype.DrawShape.Circle), 32));
+            _waves.Add(new Wave(new UnitPrototype(weapon10DamageRanged, 30f,   0f, 5f,  40f, Color.Orange , UnitPrototype.DrawShape.Square), 16));
+            _waves.Add(new Wave(new UnitPrototype(weapon25Damage      , 80f,   2f, 10f,  50f, Color.Brown  , UnitPrototype.DrawShape.Square), 8));
+            _waves.Add(new Wave(new UnitPrototype(weapon200Damage     , 400f,  0f, 15f, 100f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
 
         }
 
@@ -117,7 +117,7 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(_controller.Input);
             AssertUtil.NotNull(Map);
 
-            WeaponPrototypeBasic weapon = new WeaponPrototypeBasic(new ProjectileAction(new ProjectilePrototype(5f,
+            WeaponPrototypeBasic weapon = new WeaponPrototypeBasic(new ProjectileAction(new ProjectilePrototype(2.5f,
                 600f,
                 2f,
                 new DamageAction(10f),
@@ -125,7 +125,7 @@ namespace Wc3_Combat_Game.Core
                 0.20f,
                 float.PositiveInfinity,3f);
 
-            UnitPrototype playerUnit = new((WeaponPrototype)weapon, 100f, 1f, 100f, 3f, 10f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
+            UnitPrototype playerUnit = new((WeaponPrototype)weapon, 100f, 1f, 100f, 3f, 5f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
 
             PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)Map.GetPlayerSpawn(), new PlayerController(_controller.Input), TeamType.Ally);
 
@@ -252,7 +252,7 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(PlayerUnit);
             if (!Map.WorldBounds.Contains(PlayerUnit.BoundingBox))
             {
-                var halfSize = new SizeF(PlayerUnit.Size / 2f, PlayerUnit.Size / 2f);
+                var halfSize = PlayerUnit.BoundingBox;
 
                 PlayerUnit.Position = new Vector2(
                     Math.Clamp(PlayerUnit.Position.X, Map.WorldBounds.Left + halfSize.Width, Map.WorldBounds.Right - halfSize.Width),

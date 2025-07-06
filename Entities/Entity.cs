@@ -11,9 +11,11 @@ namespace Wc3_Combat_Game.Entities
     /// </summary>
     public class Entity
     {
-        protected float _size; // Diameter
-        protected float CollisionRadius => _size / 2; // Hardcode for now.
-        protected Vector2 _sizeVector => new Vector2(_size, _size);
+        public float Radius { get; protected set; } // This will be part of the ICollidable later.
+                                                    // And IDraw, seperately, ofc.
+        public float Diameter => Radius * 2f;
+        protected Vector2 _BoundingSize => new Vector2(Diameter, Diameter);
+
         protected Vector2 _position;
         protected Color _fillColor;
         private bool _isAlive = true;
@@ -26,11 +28,11 @@ namespace Wc3_Combat_Game.Entities
         // to be built by factory, allowing highly mutable entities.
 
 
-        public RectangleF BoundingBox { get => _position.RectFFromCenter(_sizeVector); }
+        public RectangleF BoundingBox { get => _position.RectFFromCenter(_BoundingSize); }
 
-        public Entity(float size, Vector2 position, Color color)
+        public Entity(float radius, Vector2 position, Color color)
         {
-            _size = size;
+            Radius = radius;
             _position = position;
             _fillColor = color;
             Team = TeamType.Neutral;
@@ -39,7 +41,6 @@ namespace Wc3_Combat_Game.Entities
 
         // Velocity, cooldown, health, mana, etc.
         // Later
-        public float Size { get => _size; set => _size = value; }
         public Vector2 Position { get => _position; set => _position = value; }
         public bool IsAlive { get => _isAlive; set => _isAlive = value; }
 
@@ -50,9 +51,8 @@ namespace Wc3_Combat_Game.Entities
             DrawDebug(g, context);
 
             if (!IsAlive) return;
-            RectangleF entityRect = _position.RectFFromCenter(_sizeVector);
             using var brush = new SolidBrush(_fillColor);
-            g.FillRectangle(brush, entityRect);
+            g.FillRectangle(brush, BoundingBox);
 
 
         }
@@ -61,9 +61,8 @@ namespace Wc3_Combat_Game.Entities
             // Debugging info
             if(context.DebugSettings.Get(DebugSetting.DrawEntityCollisionBox))
             {
-                RectangleF entityRect = _position.RectFFromCenter(_sizeVector);
                 using var pen = new Pen(Color.Yellow, 1);
-                g.DrawRectangle(pen, entityRect.X, entityRect.Y, entityRect.Width, entityRect.Height);
+                g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
             }
         }
 
@@ -82,9 +81,7 @@ namespace Wc3_Combat_Game.Entities
 
         public bool Intersects(Entity other)
         {
-            RectangleF rect = new((PointF)_position, (SizeF)_sizeVector);
-            RectangleF otherRect = new((PointF)other._position, (SizeF)other._sizeVector);
-            return rect.IntersectsWith(otherRect);
+            return BoundingBox.IntersectsWith(other.BoundingBox);
         }
 
         public float DistanceTo(Entity other)

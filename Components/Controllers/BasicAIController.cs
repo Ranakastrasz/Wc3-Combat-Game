@@ -21,6 +21,16 @@ namespace Wc3_Combat_Game.Components.Controllers
         // Threshold for target movement to trigger path recalculation
         private const float TargetRecalculateThresholdSqr = 25f; // If target moves more than 5 units squared
 
+        private enum State
+        {
+            Idle,
+            Pathfinding,
+            Beelining
+        }
+
+        private State _currentState = State.Idle;
+
+
         public void Update(Unit unit, float deltaTime, IBoardContext context)
         {
             // Example: move toward nearest enemy
@@ -65,6 +75,7 @@ namespace Wc3_Combat_Game.Components.Controllers
 
                     if(ValidPath())
                     {
+                        _currentState = State.Pathfinding;
                         // Shortcutting: Find the furthest visible waypoint
                         int currentWaypointIndex = nextWayPoint;
                         for(int i = nextWayPoint; i < Path!.Length; i++)
@@ -115,6 +126,8 @@ namespace Wc3_Combat_Game.Components.Controllers
 
                 // Calculate steering force towards the target position (waypoint or direct target)
                 Vector2 steeringTarget = GetPartialSteeringTarget(unit, targetPos, context);
+
+                //Vector2 steeringTarget = Vector2.Normalize(targetPos - unit.Position);
 
                 // Anti-bunching: Add separation force from nearby friendly units
                 // This assumes IBoardContext can provide nearby units. You might need to implement
@@ -218,7 +231,7 @@ namespace Wc3_Combat_Game.Components.Controllers
             Point myTile = map.ToGrid(unit.Position);
             Point targetTile = map.ToGrid(targetPos);
 
-            if(map.HasLineOfSight(unit.Position, targetPos,unit.Size))
+            if(map.HasLineOfSight(unit.Position, targetPos,unit.Radius))
             {
                 // Direct line
                 return Vector2.Normalize(targetPos - unit.Position);
@@ -250,10 +263,10 @@ namespace Wc3_Combat_Game.Components.Controllers
         /// <param name="allUnits">A collection of all units in the game (or at least nearby units).</param>
         /// <param name="context">The board context.</param>
         /// <returns>A vector representing the separation force.</returns>
-        private Vector2 GetSeparationSteering(Unit unit, IEnumerable<Unit> allUnits, IBoardContext context)
+        private static Vector2 GetSeparationSteering(Unit unit, IEnumerable<Unit> allUnits, IBoardContext context)
         {
             Vector2 separationForce = Vector2.Zero;
-            float separationRadius = unit.Size * 2; // Adjust this radius as needed
+            float separationRadius = unit.Radius * 2;
             float separationRadiusSqr = separationRadius * separationRadius;
 
             foreach(Unit otherUnit in allUnits)
@@ -303,7 +316,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                 string stateText = $"AI: {(ValidPath() ? "Moving" : "Idle")}";
                 using var font = new Font("Arial", 8);
                 using var brush = new SolidBrush(Color.White);
-                g.DrawString(stateText, font, brush, unit.Position.X + unit.Size, unit.Position.Y - unit.Size);
+                g.DrawString(stateText, font, brush, unit.Position.X + unit.Radius, unit.Position.Y - unit.Radius);
             }
 
             if(ValidPath())
@@ -344,7 +357,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                 if (context.DebugSettings.Get(DebugSetting.DrawEnemyControllerLOS))
                 {
                     // Draw line of sight Check to next waypoint, via asking the map to draw it.
-                    map.DrawDebugLineOfSight(g, unit.Position, nextPointWorld, unit.Size);
+                    map.DrawDebugLineOfSight(g, unit.Position, unit.TargetPoint.Value, unit.Radius);
                 }
             }
 #endif
