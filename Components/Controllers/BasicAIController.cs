@@ -19,7 +19,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         // Store the target's position when the path was last calculated
         private Vector2 _lastTargetPosition = Vector2.Zero;
         // Threshold for target movement to trigger path recalculation
-        private const float TargetRecalculateThresholdSqr = 25f; // If target moves more than 5 units squared
+        private const float TargetRecalculateThresholdSqr = 25f; // If target moves more than 5 units.
 
         private Vector2 _targetPos;
 
@@ -27,7 +27,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         {
             Idle,
             Pathfinding,
-            Beelining
+            Shortcutting
         }
 
         private State _currentState = State.Idle;
@@ -65,19 +65,15 @@ namespace Wc3_Combat_Game.Components.Controllers
                     if(!ValidPath() || Vector2.DistanceSquared(_targetPos, _lastTargetPosition) > TargetRecalculateThresholdSqr)
                     {
                         Pathfind(unit, _targetPos, context);
-                        // Assert that a valid path was found. In a release build, this might be handled differently
+                        _currentState = State.Pathfinding;
+                        // Assert that a valid path was found. This might be expected to fail in some situations, but for now, assume it should always work.
                         // (e.g., by stopping movement or finding a new target).
-                        if (!ValidPath())
-                        {
-                            Pathfind(unit, _targetPos, context); // Do it again for debug tracking purposes
-
-                        }
                         AssertUtil.Assert(() => ValidPath(), "Pathfinding failed to find a valid path.");
+                        // would set to idle in such a failure state, maybe.
                     }
 
                     if(ValidPath())
                     {
-                        _currentState = State.Pathfinding;
                         // Shortcutting: Find the furthest visible waypoint
                         int currentWaypointIndex = nextWayPoint;
                         for(int i = nextWayPoint; i < Path!.Length; i++)
@@ -86,6 +82,8 @@ namespace Wc3_Combat_Game.Components.Controllers
                             // and if it's a valid tile to move towards (e.g., not blocked)
                             if(context.Map.HasLineOfSight(context.Map.ToGrid(unit.Position), Path[i]))
                             {
+                                if (currentWaypointIndex != i)
+                                    _currentState = State.Shortcutting; // We can see this waypoint, so we are beelining towards it.
                                 currentWaypointIndex = i; // This waypoint is visible, try to go to it
                             }
                             else
@@ -97,24 +95,29 @@ namespace Wc3_Combat_Game.Components.Controllers
 
                         _targetPos = context.Map.FromGrid(Path[currentWaypointIndex]);
 
+                        distSqrt = Vector2.DistanceSquared(unit.Position, _targetPos);
                         // If the unit is close enough to the current waypoint, advance to the next one
-                        if(Vector2.DistanceSquared(_targetPos, unit.Position) <= 4f && nextWayPoint < Path.Length - 1) // 4f is 2 units squared
+                        if(distSqrt <= 4f && nextWayPoint < Path.Length - 1) // 4f is 2 units squared. Might be too long, or I may want alternate method.
                         {
                             nextWayPoint++; // Move to the next waypoint
                             _targetPos = context.Map.FromGrid(Path[nextWayPoint]); // Update targetPos to the new waypoint
+                            _currentState = State.Pathfinding; // We are pathfinding here, not shortcutting anymore if we were previously.
                         }
                         // If we are at the last waypoint and close enough, clear the path
-                        else if(Vector2.DistanceSquared(_targetPos, unit.Position) <= 4f && nextWayPoint == Path.Length - 1)
+                        else if(distSqrt <= 4f && nextWayPoint == Path.Length - 1)
                         {
                             Path = null; // Reached the end of the path
                             nextWayPoint = 0;
                             unit.TargetPoint = unit.Position; // Stop moving
+                            _currentState = State.Idle; // Set state to idle, I guess.
+                                                        // Pretty sure this will never happen given current game assumptions.
                             return; // Path completed, no further movement needed this frame
                         }
                     }
                     else
                     {
                         Pathfind(unit, target.Position, context);
+                        _currentState = State.Pathfinding; // Reset state to pathfinding
                         AssertUtil.Assert(() => ValidPath(), "Pathfinding failed to find a valid path.");
                         // Strictly speaking, I don't think this is a good way to do this.
                         // Failure may be valid in some cases.
@@ -300,7 +303,6 @@ namespace Wc3_Combat_Game.Components.Controllers
         /// <param name="unit">The unit associated with this controller.</param>
         public void DrawDebug(Graphics g, IDrawContext context, Unit unit)
         {
-#if DEBUG
 
             if(!unit.IsAlive) return;
             Map? map = context.Map;
@@ -314,8 +316,17 @@ namespace Wc3_Combat_Game.Components.Controllers
             if(context.DebugSettings.Get(DebugSetting.DrawEnemyControllerState))
             {
                 // Really need to make a state diagram. This isn't super helpful yet.
-                // Since it always just says Moving for now. But eh. 1 thing at a time.
-                string stateText = $"AI: {(ValidPath() ? "Moving" : "Idle")}";
+
+                string stateText = $"AI: ";
+                if (_currentState == State.Idle)
+                    stateText += "Idle";
+                else if (_currentState == State.Pathfinding)
+                    stateText += "Pathfinding";
+                else if (_currentState == State.Shortcutting)
+                    stateText += "Shortcutting";
+                else
+                    stateText += "Unknown";
+
                 using var font = new Font("Arial", 8);
                 using var brush = new SolidBrush(Color.White);
                 g.DrawString(stateText, font, brush, unit.Position.X + unit.Radius, unit.Position.Y - unit.Radius);
@@ -360,10 +371,9 @@ namespace Wc3_Combat_Game.Components.Controllers
                 {
                     // Draw line of sight Check to next waypoint, via asking the map to draw it.
                     //if (unit.TargetPoint != null)
-                        map.DrawDebugLineOfSight(g, unit.Position, _targetPos, unit.Radius);
+                    map.DrawDebugLineOfSight(g, unit.Position, _targetPos, unit.Radius);
                 }
             }
-#endif
         }
     }
 }

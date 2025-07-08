@@ -1,13 +1,13 @@
 ﻿using AssertUtils;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
-
-using System.Timers;
+using System.Diagnostics;
 
 namespace Wc3_Combat_Game.Core
 {
     public class GameController
     {
+        private bool _threadOpen = false; // For sanity, til I am certain I know what Im doing here.
 
         public enum GameState
         {
@@ -29,7 +29,7 @@ namespace Wc3_Combat_Game.Core
         public InputManager ?Input => View?.Input;
 
         private readonly System.Timers.Timer _gameLoopTimer;
-
+        private readonly Stopwatch _stopwatch = new();
 
         public float GlobalTime { get; private set; } = 0f;
 
@@ -37,15 +37,18 @@ namespace Wc3_Combat_Game.Core
         
         private bool _paused;
 
+        private readonly float _tickDuration_ms = GameConstants.TICK_DURATION_MS; // Convert to seconds
+
         public GameController()
         {
             // Setup game loop timer
-            _gameLoopTimer = new() { Interval = GameConstants.TICK_DURATION_MS };
+            _gameLoopTimer = new System.Timers.Timer() { Interval = _tickDuration_ms, AutoReset = false };
             _gameLoopTimer.Elapsed += GameLoopTimer_Tick;
         }
 
         public void StartTimer()
         {
+            _stopwatch.Restart();
             _gameLoopTimer.Start();
         }
         public void OnVictory()
@@ -63,6 +66,9 @@ namespace Wc3_Combat_Game.Core
         }
         private void GameLoopTimer_Tick(object? sender, EventArgs e)
         {
+            AssertUtil.Assert(() => !_threadOpen, "Game loop timer tick called while thread is open.");
+            _threadOpen = true; // Set to true to prevent re-entrance.
+
             float SimDeltaTime; 
                 // for the gameboard's updates. Adjusted by pause and gamespeed.
             float DrawDeltaTime = GameConstants.FIXED_DELTA_TIME;
@@ -96,6 +102,15 @@ namespace Wc3_Combat_Game.Core
             }
             Input?.EndFrame();
 
+            // Restart the timer for the next tick, using elapsed time for accuracy
+            double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
+            double delay = Math.Max(1, GameConstants.TICK_DURATION_MS - elapsed);
+            //if (delay < 1) // If the delay is less than 1ms, just set it to 1ms to avoid timer issues.
+                //GameLoopTimer_Tick(sender, e); // Call immediately if we are behind schedule.
+            _stopwatch.Restart();
+            _gameLoopTimer.Interval = delay;
+            _threadOpen = false; // Set to true to prevent re-entrance.
+            _gameLoopTimer.Start();
         }
 
         public GameBoard CreateGameBoard()

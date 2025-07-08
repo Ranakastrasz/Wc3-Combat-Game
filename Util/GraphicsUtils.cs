@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -186,5 +187,56 @@ namespace Wc3_Combat_Game.Util
                 (int)Math.Round(position.Y * scale)
             ); // May have rounding issues, but should be fine for most cases.
         }
+
+        internal static void DrawCapsule(Graphics g, Vector2 pointA, Vector2 pointB, float size, Pen pen)
+        {
+            // Draw the capsule (swept circle)
+            if(size > 0f)
+            {
+                using var path = new GraphicsPath();
+
+                // Calculate direction and length
+                Vector2 dir = Vector2.Normalize(pointB - pointA);
+                float length = Vector2.Distance(pointA, pointB);
+
+                // Calculate perpendicular vector
+                Vector2 perp = new Vector2(-dir.Y, dir.X);
+
+                // Four corners of the rectangle
+                Vector2 p1 = pointA + perp * size;
+                Vector2 p2 = pointA - perp * size;
+                Vector2 p3 = pointB - perp * size;
+                Vector2 p4 = pointB + perp * size;
+
+                // Add rectangle
+                path.AddLine(p1.X, p1.Y, p4.X, p4.Y);
+                path.AddLine(p4.X, p4.Y, p3.X, p3.Y);
+                path.AddLine(p3.X, p3.Y, p2.X, p2.Y);
+                path.AddLine(p2.X, p2.Y, p1.X, p1.Y);
+
+                // Add semicircle at start
+                path.AddArc(pointA.X - size, pointA.Y - size, size * 2, size * 2,
+                    (float)(Math.Atan2(perp.Y, perp.X) * 180 / Math.PI),
+                    180);
+
+                // Add semicircle at end
+                path.AddArc(pointB.X - size, pointB.Y - size, size * 2, size * 2,
+                    (float)(Math.Atan2(-perp.Y, -perp.X) * 180 / Math.PI),
+                    180);
+
+                path.CloseFigure();
+
+                //using var fillBrush = new SolidBrush(Color.FromArgb(64, Color.Yellow));
+                //g.FillPath(fillBrush, path);
+
+                g.DrawPath(pen, path);
+            }
+            else
+            {
+                // Fallback: just draw the line
+                g.DrawLine(pen, pointA.X, pointA.Y, pointB.X, pointB.Y);
+            }
+        }
+
     }
 }

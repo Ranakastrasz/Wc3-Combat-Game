@@ -3,6 +3,9 @@ using AStar;
 using System.Diagnostics;
 using System.Numerics;
 using Wc3_Combat_Game.Util;
+using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices.Marshalling; // Add this at the top if not present
+
 namespace Wc3_Combat_Game.Terrain
 {
     public class Map
@@ -181,6 +184,11 @@ namespace Wc3_Combat_Game.Terrain
         }
         public bool HasLineOfSight(Vector2 startWorld, Vector2 targetWorld, float radius = 0f)
         {
+            return HasLineOfSight(startWorld, targetWorld, radius, null, null);
+        }
+
+        public bool HasLineOfSight(Vector2 startWorld, Vector2 targetWorld, float radius, List<Point>? debugCheckedTiles, List<Point>? debugBlockingTiles)
+        {
             // Calculate the bounding box of the "capsule" (line segment + radius) in world coordinates.
             float minX = Math.Min(startWorld.X, targetWorld.X) - radius;
             float maxX = Math.Max(startWorld.X, targetWorld.X) + radius;
@@ -219,6 +227,7 @@ namespace Wc3_Combat_Game.Terrain
                     // If the tile is an obstacle, check if the capsule intersects it.
                     if(!tile.IsWalkable)
                     {
+                        debugCheckedTiles?.Add(new Point(x, y));
                         Vector2 tileMin = new(x * TileSize, y * TileSize);
                         Vector2 tileMax = tileMin + new Vector2(TileSize);
 
@@ -226,6 +235,7 @@ namespace Wc3_Combat_Game.Terrain
                         if(GeometryUtils.CollidesCircleWithRectangle(startWorld, radius, tileMin, tileMax) ||
                             GeometryUtils.CollidesCircleWithRectangle(targetWorld, radius, tileMin, tileMax))
                         {
+                            debugBlockingTiles?.Add(new Point(x, y));
                             return false; // Start or end point's radius overlaps an obstacle
                         }
 
@@ -237,6 +247,7 @@ namespace Wc3_Combat_Game.Terrain
 
                         if(GeometryUtils.LineSegmentIntersectsAABB(startWorld, targetWorld, inflatedTileMin, inflatedTileMax))
                         {
+                            debugBlockingTiles?.Add(new Point(x, y));
                             return false; // The swept body of the capsule collides with an obstacle
                         }
                     }
@@ -337,48 +348,41 @@ namespace Wc3_Combat_Game.Terrain
 
         internal void DrawDebugLineOfSight(Graphics g, Vector2 position, Vector2 nextPointWorld, float size)
         {
-            // Draw the line representing the line of sight
-            using Pen linePen = new(Color.Yellow, 0.1f);
-            g.DrawLine(linePen, position.X, position.Y, nextPointWorld.X, nextPointWorld.Y);
+            // Initialize the lists for debugCheckedTiles and debugBlockingTiles  
+            List<Point> checkedTiles = new();
+            List<Point> blockingTiles = new();
 
-            // Draw the start and end circles to represent the "radius" (size) at each endpoint
-            if(size > 0f)
+            // Call HasLineOfSight with the initialized lists  
+            HasLineOfSight(position, nextPointWorld, size, checkedTiles, blockingTiles);
+
+            if(blockingTiles.Count > 0)
             {
-                using Pen circlePen = new(Color.Orange, 0.08f);
-                float diameter = size * 2f;
-                g.DrawEllipse(circlePen, position.X - size, position.Y - size, diameter, diameter);
-                g.DrawEllipse(circlePen, nextPointWorld.X - size, nextPointWorld.Y - size, diameter, diameter);
+                using Pen capsulePen = new(Color.Red, 0.04f);
+                GraphicsUtils.DrawCapsule(g, position, nextPointWorld, size, capsulePen);
+            }
+            else
+            {
+                using Pen capsulePen = new(Color.Yellow, 0.04f);
+                GraphicsUtils.DrawCapsule(g, position, nextPointWorld, size, capsulePen);
             }
 
-            // Draw the tiles that are checked for collision
-            float minX = Math.Min(position.X, nextPointWorld.X) - size;
-            float maxX = Math.Max(position.X, nextPointWorld.X) + size;
-            float minY = Math.Min(position.Y, nextPointWorld.Y) - size;
-            float maxY = Math.Max(position.Y, nextPointWorld.Y) + size;
+            // Draw checked tiles  
+            using Pen checkedPen = new(Color.LightBlue, 0.05f);
 
-            int minTileX = (int)Math.Floor(minX / TileSize);
-            int maxTileX = (int)Math.Ceiling(maxX / TileSize) - 1;
-            int minTileY = (int)Math.Floor(minY / TileSize);
-            int maxTileY = (int)Math.Ceiling(maxY / TileSize) - 1;
-
-            minTileX = Math.Max(0, minTileX);
-            maxTileX = Math.Min(Width - 1, maxTileX);
-            minTileY = Math.Max(0, minTileY);
-            maxTileY = Math.Min(Height - 1, maxTileY);
-
-            using Pen tilePen = new(Color.Red, 0.05f);
-            for(int y = minTileY; y <= maxTileY; y++)
+            foreach(var pt in checkedTiles)
             {
-                for(int x = minTileX; x <= maxTileX; x++)
-                {
-                    Tile tile = this[x, y];
-                    if(!tile.IsWalkable)
-                    {
-                        float tx = x * TileSize;
-                        float ty = y * TileSize;
-                        g.DrawRectangle(tilePen, tx, ty, TileSize, TileSize);
-                    }
-                }
+                float tx = pt.X * TileSize;
+                float ty = pt.Y * TileSize;
+                g.DrawRectangle(checkedPen, tx, ty, TileSize, TileSize);
+            }
+
+            // Draw blocking tiles
+            using Pen blockPen = new(Color.Red, 0.1f);
+            foreach(var pt in blockingTiles)
+            {
+                float tx = pt.X * TileSize;
+                float ty = pt.Y * TileSize;
+                g.DrawRectangle(blockPen, tx, ty, TileSize, TileSize);
             }
         }
     }
