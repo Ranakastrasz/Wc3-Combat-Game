@@ -21,6 +21,8 @@ namespace Wc3_Combat_Game.Components.Controllers
         // Threshold for target movement to trigger path recalculation
         private const float TargetRecalculateThresholdSqr = 25f; // If target moves more than 5 units squared
 
+        private Vector2 _targetPos;
+
         private enum State
         {
             Idle,
@@ -53,21 +55,21 @@ namespace Wc3_Combat_Game.Components.Controllers
                     }
                 }
 
-                Vector2 targetPos = target.Position;
+                _targetPos = target.Position;
 
                 // Pathfinding logic
                 if(context.PathFinder != null && context.Map != null)
                 {
                     // Recalculate path if no valid path exists OR
                     // if the target has moved significantly since the last path calculation
-                    if(!ValidPath() || Vector2.DistanceSquared(targetPos, _lastTargetPosition) > TargetRecalculateThresholdSqr)
+                    if(!ValidPath() || Vector2.DistanceSquared(_targetPos, _lastTargetPosition) > TargetRecalculateThresholdSqr)
                     {
-                        Pathfind(unit, targetPos, context);
+                        Pathfind(unit, _targetPos, context);
                         // Assert that a valid path was found. In a release build, this might be handled differently
                         // (e.g., by stopping movement or finding a new target).
                         if (!ValidPath())
                         {
-                            Pathfind(unit, targetPos, context); // Do it again for debug tracking purposes
+                            Pathfind(unit, _targetPos, context); // Do it again for debug tracking purposes
 
                         }
                         AssertUtil.Assert(() => ValidPath(), "Pathfinding failed to find a valid path.");
@@ -93,16 +95,16 @@ namespace Wc3_Combat_Game.Components.Controllers
                             }
                         }
 
-                        targetPos = context.Map.FromGrid(Path[currentWaypointIndex]);
+                        _targetPos = context.Map.FromGrid(Path[currentWaypointIndex]);
 
                         // If the unit is close enough to the current waypoint, advance to the next one
-                        if(Vector2.DistanceSquared(targetPos, unit.Position) <= 4f && nextWayPoint < Path.Length - 1) // 4f is 2 units squared
+                        if(Vector2.DistanceSquared(_targetPos, unit.Position) <= 4f && nextWayPoint < Path.Length - 1) // 4f is 2 units squared
                         {
                             nextWayPoint++; // Move to the next waypoint
-                            targetPos = context.Map.FromGrid(Path[nextWayPoint]); // Update targetPos to the new waypoint
+                            _targetPos = context.Map.FromGrid(Path[nextWayPoint]); // Update targetPos to the new waypoint
                         }
                         // If we are at the last waypoint and close enough, clear the path
-                        else if(Vector2.DistanceSquared(targetPos, unit.Position) <= 4f && nextWayPoint == Path.Length - 1)
+                        else if(Vector2.DistanceSquared(_targetPos, unit.Position) <= 4f && nextWayPoint == Path.Length - 1)
                         {
                             Path = null; // Reached the end of the path
                             nextWayPoint = 0;
@@ -118,14 +120,14 @@ namespace Wc3_Combat_Game.Components.Controllers
                         // Failure may be valid in some cases.
 
                         AssertUtil.NotNull(context.Map);
-                        targetPos = context.Map.FromGrid(Path![nextWayPoint]);
-                        _lastTargetPosition = targetPos; // Update the last known target position.
+                        _targetPos = context.Map.FromGrid(Path![nextWayPoint]);
+                        _lastTargetPosition = _targetPos; // Update the last known target position.
 
                     }
                 }
 
                 // Calculate steering force towards the target position (waypoint or direct target)
-                Vector2 steeringTarget = GetPartialSteeringTarget(unit, targetPos, context);
+                Vector2 steeringTarget = GetPartialSteeringTarget(unit, _targetPos, context);
 
                 //Vector2 steeringTarget = Vector2.Normalize(targetPos - unit.Position);
 
@@ -266,7 +268,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         private static Vector2 GetSeparationSteering(Unit unit, IEnumerable<Unit> allUnits, IBoardContext context)
         {
             Vector2 separationForce = Vector2.Zero;
-            float separationRadius = unit.Radius * 2;
+            float separationRadius = unit.Radius * 3;
             float separationRadiusSqr = separationRadius * separationRadius;
 
             foreach(Unit otherUnit in allUnits)
@@ -357,7 +359,8 @@ namespace Wc3_Combat_Game.Components.Controllers
                 if (context.DebugSettings.Get(DebugSetting.DrawEnemyControllerLOS))
                 {
                     // Draw line of sight Check to next waypoint, via asking the map to draw it.
-                    map.DrawDebugLineOfSight(g, unit.Position, unit.TargetPoint.Value, unit.Radius);
+                    //if (unit.TargetPoint != null)
+                        map.DrawDebugLineOfSight(g, unit.Position, _targetPos, unit.Radius);
                 }
             }
 #endif

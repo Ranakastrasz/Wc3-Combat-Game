@@ -350,7 +350,7 @@ namespace Wc3_Combat_Game.Terrain
                 g.DrawEllipse(circlePen, nextPointWorld.X - size, nextPointWorld.Y - size, diameter, diameter);
             }
 
-            // Optionally, draw the tiles that are checked for collision
+            // Draw the tiles that are checked for collision
             float minX = Math.Min(position.X, nextPointWorld.X) - size;
             float maxX = Math.Max(position.X, nextPointWorld.X) + size;
             float minY = Math.Min(position.Y, nextPointWorld.Y) - size;
