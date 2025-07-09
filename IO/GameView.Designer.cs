@@ -35,9 +35,9 @@ namespace Wc3_Combat_Game
         {
             GameWindow = new DoubleBufferedPanel();
             DebugPanel = new Panel();
-            DebugWaveChart = new Panel();
             TextBox_DebugOutput = new TextBox();
             DebugPathfinding = new CheckedListBox();
+            DebugWaveChart = new DoubleBufferedPanel();
             DebugPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -61,14 +61,6 @@ namespace Wc3_Combat_Game
             DebugPanel.Size = new Size(352, 400);
             DebugPanel.TabIndex = 1;
             // 
-            // DebugWaveChart
-            // 
-            DebugWaveChart.Location = new Point(821, 418);
-            DebugWaveChart.Name = "DebugWaveChart";
-            DebugWaveChart.Size = new Size(346, 100);
-            DebugWaveChart.TabIndex = 2;
-            DebugWaveChart.Paint += DebugWaveChart_Paint;
-            // 
             // TextBox_DebugOutput
             // 
             TextBox_DebugOutput.Location = new Point(3, 321);
@@ -86,6 +78,15 @@ namespace Wc3_Combat_Game
             DebugPathfinding.Size = new Size(346, 312);
             DebugPathfinding.TabIndex = 0;
             DebugPathfinding.ItemCheck += DebugPathfinding_ItemCheck;
+            // 
+            // DebugWaveChart
+            // 
+            DebugWaveChart.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            DebugWaveChart.Location = new Point(821, 418);
+            DebugWaveChart.Name = "DebugWaveChart";
+            DebugWaveChart.Size = new Size(346, 100);
+            DebugWaveChart.TabIndex = 2;
+            DebugWaveChart.Paint += DebugWaveChart_Paint;
             // 
             // GameView
             // 

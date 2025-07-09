@@ -39,7 +39,12 @@ namespace Wc3_Combat_Game.Core
 
         private readonly float _tickDuration_ms = GameConstants.TICK_DURATION_MS; // Convert to seconds
 
-        public Queue<double> DebugTickDurations = new Queue<double>(30); // For debugging purposes, to see how long each tick takes.
+        //public Queue<double> DebugTickDurations = new Queue<double>(600); // For debugging purposes, to see how long each tick takes.
+
+        private DateTime _lastTime; // marks the beginning the measurement began
+        private int _framesRendered; // an increasing count
+        public int Fps { get; private set; } // the FPS calculated from the last measurement
+
 
         public GameController()
         {
@@ -53,7 +58,7 @@ namespace Wc3_Combat_Game.Core
             _stopwatch.Restart();
             _gameLoopTimer.Start();
 
-            DebugTickDurations.Clear();
+            //DebugTickDurations.Clear();
         }
         public void OnVictory()
         {
@@ -72,6 +77,17 @@ namespace Wc3_Combat_Game.Core
         {
             AssertUtil.Assert(!_threadOpen, "Game loop timer tick called while thread is open.");
             _threadOpen = true; // Set to true to prevent re-entrance.
+
+            _framesRendered++;
+
+            if((DateTime.Now - _lastTime).TotalSeconds >= 1)
+            {
+                // one second has elapsed 
+
+                Fps = _framesRendered;
+                _framesRendered = 0;
+                _lastTime = DateTime.Now;
+            }
 
             float SimDeltaTime; 
                 // for the gameboard's updates. Adjusted by pause and gamespeed.
@@ -108,7 +124,7 @@ namespace Wc3_Combat_Game.Core
 
             // Restart the timer for the next tick, using elapsed time for accuracy
             double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
-            DebugTickDurations.Enqueue(elapsed);
+            //DebugTickDurations.Enqueue(elapsed);
             double delay = Math.Max(0.1, GameConstants.TICK_DURATION_MS - elapsed);
 
             _stopwatch.Restart();

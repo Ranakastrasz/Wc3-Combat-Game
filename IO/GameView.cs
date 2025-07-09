@@ -285,51 +285,57 @@ namespace Wc3_Combat_Game
             Graphics g = e.Graphics;
             // Clear the background
             g.Clear(Color.LightGray);
-
-            // Define drawing parameters
-            Pen pen = new Pen(Color.Blue, 1);
-            int panelWidth = e.ClipRectangle.Width;
-            int panelHeight = e.ClipRectangle.Height;
-
-            double[] data = _controller.DebugTickDurations.ToArray();
-
-            // Find min/max values for scaling (e.g., for SimDeltaTime)
-            double maxSimDeltaTime = 0f;
-            foreach(var point in data)
+            if (DrawContext.DebugSettings.Get(DebugSetting.ShowFPS))
             {
-                if(point > maxSimDeltaTime)
-                {
-                    maxSimDeltaTime = point;
-                }
+                g.DrawString($"FPS: {_controller.Fps}", new Font("Arial", 10), Brushes.Black, new PointF(10, 10));
+                g.DrawString($"FPS: {_controller.Fps}", new Font("Arial", 10), Brushes.Black, new PointF(10, 30));
             }
-            // Ensure maxSimDeltaTime is not zero to avoid division by zero
-            if(maxSimDeltaTime == 0) maxSimDeltaTime = GameConstants.FIXED_DELTA_TIME; // Default if no movement
-
-            // Calculate horizontal scaling (each data point takes up a certain width)
-            double x_scale = panelWidth / data.Count();
-
-            // Draw the waveform
-            for(int i = 0; i < data.Count() - 1; i++)
-            {
-                double p1 = data[i];
-                double p2 = data[i + 1];
-
-                // X coordinates are based on index
-                double x1 = i * x_scale;
-                double x2 = (i + 1) * x_scale;
-
-                // Y coordinates are based on SimDeltaTime, scaled to panel height
-                // Invert Y-axis so higher values are drawn higher on the panel (Windows Forms Y-axis is top-down)
-                double y1 = panelHeight - (p1 / maxSimDeltaTime) * panelHeight;
-                double y2 = panelHeight - (p2 / maxSimDeltaTime) * panelHeight;
-
-            // You might want to adjust the scaling factor for Y to leave some margin
-            // For example: double y1 = panelHeight - (p1 / maxSimDeltaTime) * (panelHeight * 0.9) - (panelHeight * 0.05);
-
-                g.DrawLine(pen, (int)x1, (int)y1, (int)x2, (int)y2);
-            }
-
-            pen.Dispose(); // Dispose of the pen when done
+            //_controller.Fps;
+            //
+            //// Define drawing parameters
+            //Pen pen = new Pen(Color.Blue, 1);
+            //int panelWidth = e.ClipRectangle.Width;
+            //int panelHeight = e.ClipRectangle.Height;
+            //
+            //double[] data = _controller.DebugTickDurations.ToArray();
+            //
+            //// Find min/max values for scaling (e.g., for SimDeltaTime)
+            //double maxSimDeltaTime = 0f;
+            //foreach(var point in data)
+            //{
+            //    if(point > maxSimDeltaTime)
+            //    {
+            //        maxSimDeltaTime = point;
+            //    }
+            //}
+            //// Ensure maxSimDeltaTime is not zero to avoid division by zero
+            //if(maxSimDeltaTime == 0) maxSimDeltaTime = GameConstants.FIXED_DELTA_TIME; // Default if no movement
+            //
+            //// Calculate horizontal scaling (each data point takes up a certain width)
+            //double x_scale = panelWidth / data.Count();
+            //
+            //// Draw the waveform
+            //for(int i = 0; i < data.Count() - 1; i++)
+            //{
+            //    double p1 = data[i];
+            //    double p2 = data[i + 1];
+            //
+            //    // X coordinates are based on index
+            //    double x1 = i * x_scale;
+            //    double x2 = (i + 1) * x_scale;
+            //
+            //    // Y coordinates are based on SimDeltaTime, scaled to panel height
+            //    // Invert Y-axis so higher values are drawn higher on the panel (Windows Forms Y-axis is top-down)
+            //    double y1 = panelHeight - (p1 / maxSimDeltaTime) * panelHeight;
+            //    double y2 = panelHeight - (p2 / maxSimDeltaTime) * panelHeight;
+            //
+            //// You might want to adjust the scaling factor for Y to leave some margin
+            //// For example: double y1 = panelHeight - (p1 / maxSimDeltaTime) * (panelHeight * 0.9) - (panelHeight * 0.05);
+            //
+            //    g.DrawLine(pen, (int)x1, (int)y1, (int)x2, (int)y2);
+            //}
+            //
+            //pen.Dispose(); // Dispose of the pen when done
         }
     }
 }
