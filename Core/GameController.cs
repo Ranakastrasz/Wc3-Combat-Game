@@ -39,6 +39,8 @@ namespace Wc3_Combat_Game.Core
 
         private readonly float _tickDuration_ms = GameConstants.TICK_DURATION_MS; // Convert to seconds
 
+        public Queue<double> DebugTickDurations = new Queue<double>(30); // For debugging purposes, to see how long each tick takes.
+
         public GameController()
         {
             // Setup game loop timer
@@ -50,6 +52,8 @@ namespace Wc3_Combat_Game.Core
         {
             _stopwatch.Restart();
             _gameLoopTimer.Start();
+
+            DebugTickDurations.Clear();
         }
         public void OnVictory()
         {
@@ -66,7 +70,7 @@ namespace Wc3_Combat_Game.Core
         }
         private void GameLoopTimer_Tick(object? sender, EventArgs e)
         {
-            AssertUtil.Assert(() => !_threadOpen, "Game loop timer tick called while thread is open.");
+            AssertUtil.Assert(!_threadOpen, "Game loop timer tick called while thread is open.");
             _threadOpen = true; // Set to true to prevent re-entrance.
 
             float SimDeltaTime; 
@@ -104,12 +108,12 @@ namespace Wc3_Combat_Game.Core
 
             // Restart the timer for the next tick, using elapsed time for accuracy
             double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
-            double delay = Math.Max(1, GameConstants.TICK_DURATION_MS - elapsed);
-            //if (delay < 1) // If the delay is less than 1ms, just set it to 1ms to avoid timer issues.
-                //GameLoopTimer_Tick(sender, e); // Call immediately if we are behind schedule.
+            DebugTickDurations.Enqueue(elapsed);
+            double delay = Math.Max(0.1, GameConstants.TICK_DURATION_MS - elapsed);
+
             _stopwatch.Restart();
             _gameLoopTimer.Interval = delay;
-            _threadOpen = false; // Set to true to prevent re-entrance.
+            _threadOpen = false; // Set to false to allow continuation
             _gameLoopTimer.Start();
         }
 

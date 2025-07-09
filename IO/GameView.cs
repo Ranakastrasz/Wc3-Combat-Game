@@ -8,6 +8,7 @@ using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Wc3_Combat_Game.Core.GameController;
 
 namespace Wc3_Combat_Game
@@ -167,8 +168,8 @@ namespace Wc3_Combat_Game
         {
             _camera.Update(deltaTime);
 
-
             GameWindow.Invalidate();
+            DebugWaveChart.Invalidate();
         }
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -277,6 +278,58 @@ namespace Wc3_Combat_Game
             bool isChecked = e.NewValue == CheckState.Checked;
             DrawContext?.DebugSettings.Set(itemText, isChecked);
 
+        }
+
+        private void DebugWaveChart_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            // Clear the background
+            g.Clear(Color.LightGray);
+
+            // Define drawing parameters
+            Pen pen = new Pen(Color.Blue, 1);
+            int panelWidth = e.ClipRectangle.Width;
+            int panelHeight = e.ClipRectangle.Height;
+
+            double[] data = _controller.DebugTickDurations.ToArray();
+
+            // Find min/max values for scaling (e.g., for SimDeltaTime)
+            double maxSimDeltaTime = 0f;
+            foreach(var point in data)
+            {
+                if(point > maxSimDeltaTime)
+                {
+                    maxSimDeltaTime = point;
+                }
+            }
+            // Ensure maxSimDeltaTime is not zero to avoid division by zero
+            if(maxSimDeltaTime == 0) maxSimDeltaTime = GameConstants.FIXED_DELTA_TIME; // Default if no movement
+
+            // Calculate horizontal scaling (each data point takes up a certain width)
+            double x_scale = panelWidth / data.Count();
+
+            // Draw the waveform
+            for(int i = 0; i < data.Count() - 1; i++)
+            {
+                double p1 = data[i];
+                double p2 = data[i + 1];
+
+                // X coordinates are based on index
+                double x1 = i * x_scale;
+                double x2 = (i + 1) * x_scale;
+
+                // Y coordinates are based on SimDeltaTime, scaled to panel height
+                // Invert Y-axis so higher values are drawn higher on the panel (Windows Forms Y-axis is top-down)
+                double y1 = panelHeight - (p1 / maxSimDeltaTime) * panelHeight;
+                double y2 = panelHeight - (p2 / maxSimDeltaTime) * panelHeight;
+
+            // You might want to adjust the scaling factor for Y to leave some margin
+            // For example: double y1 = panelHeight - (p1 / maxSimDeltaTime) * (panelHeight * 0.9) - (panelHeight * 0.05);
+
+                g.DrawLine(pen, (int)x1, (int)y1, (int)x2, (int)y2);
+            }
+
+            pen.Dispose(); // Dispose of the pen when done
         }
     }
 }

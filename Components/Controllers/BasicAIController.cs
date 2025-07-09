@@ -68,7 +68,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                         _currentState = State.Pathfinding;
                         // Assert that a valid path was found. This might be expected to fail in some situations, but for now, assume it should always work.
                         // (e.g., by stopping movement or finding a new target).
-                        AssertUtil.Assert(() => ValidPath(), "Pathfinding failed to find a valid path.");
+                        AssertUtil.Assert(ValidPath(), "Pathfinding failed to find a valid path.");
                         // would set to idle in such a failure state, maybe.
                     }
 
@@ -118,7 +118,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                     {
                         Pathfind(unit, target.Position, context);
                         _currentState = State.Pathfinding; // Reset state to pathfinding
-                        AssertUtil.Assert(() => ValidPath(), "Pathfinding failed to find a valid path.");
+                        AssertUtil.Assert(ValidPath(), "Pathfinding failed to find a valid path.");
                         // Strictly speaking, I don't think this is a good way to do this.
                         // Failure may be valid in some cases.
 
@@ -258,7 +258,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                     bestDir = Vector2.Normalize(map.FromGrid(neighbor) - unit.Position);
                 }
             }
-            AssertUtil.Assert(() => !bestDir.IsNaN());
+            AssertUtil.Assert(!bestDir.IsNaN());
             return bestDir;
         }
         /// <summary>

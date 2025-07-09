@@ -35,6 +35,7 @@ namespace Wc3_Combat_Game
         {
             GameWindow = new DoubleBufferedPanel();
             DebugPanel = new Panel();
+            DebugWaveChart = new Panel();
             TextBox_DebugOutput = new TextBox();
             DebugPathfinding = new CheckedListBox();
             DebugPanel.SuspendLayout();
@@ -57,12 +58,20 @@ namespace Wc3_Combat_Game
             DebugPanel.Controls.Add(DebugPathfinding);
             DebugPanel.Location = new Point(818, 12);
             DebugPanel.Name = "DebugPanel";
-            DebugPanel.Size = new Size(352, 253);
+            DebugPanel.Size = new Size(352, 400);
             DebugPanel.TabIndex = 1;
+            // 
+            // DebugWaveChart
+            // 
+            DebugWaveChart.Location = new Point(821, 418);
+            DebugWaveChart.Name = "DebugWaveChart";
+            DebugWaveChart.Size = new Size(346, 100);
+            DebugWaveChart.TabIndex = 2;
+            DebugWaveChart.Paint += DebugWaveChart_Paint;
             // 
             // TextBox_DebugOutput
             // 
-            TextBox_DebugOutput.Location = new Point(3, 167);
+            TextBox_DebugOutput.Location = new Point(3, 321);
             TextBox_DebugOutput.Multiline = true;
             TextBox_DebugOutput.Name = "TextBox_DebugOutput";
             TextBox_DebugOutput.ReadOnly = true;
@@ -74,7 +83,7 @@ namespace Wc3_Combat_Game
             DebugPathfinding.FormattingEnabled = true;
             DebugPathfinding.Location = new Point(3, 3);
             DebugPathfinding.Name = "DebugPathfinding";
-            DebugPathfinding.Size = new Size(346, 158);
+            DebugPathfinding.Size = new Size(346, 312);
             DebugPathfinding.TabIndex = 0;
             DebugPathfinding.ItemCheck += DebugPathfinding_ItemCheck;
             // 
@@ -83,6 +92,7 @@ namespace Wc3_Combat_Game
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1182, 524);
+            Controls.Add(DebugWaveChart);
             Controls.Add(DebugPanel);
             Controls.Add(GameWindow);
             Name = "GameView";
@@ -97,5 +107,6 @@ namespace Wc3_Combat_Game
         private CheckedListBox DebugPathfinding;
         private DoubleBufferedPanel GameWindow;
         private TextBox TextBox_DebugOutput;
+        private Panel DebugWaveChart;
     }
 }
