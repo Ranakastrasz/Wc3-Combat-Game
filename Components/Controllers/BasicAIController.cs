@@ -19,9 +19,10 @@ namespace Wc3_Combat_Game.Components.Controllers
         // Store the target's position when the path was last calculated
         private Vector2 _lastTargetPosition = Vector2.Zero;
         // Threshold for target movement to trigger path recalculation
-        private const float TargetRecalculateThresholdSqr = 25f; // If target moves more than 5 units.
+        private const float TargetRecalculateThresholdSqr = 1024; // If target moves more than 32 units.
 
         private Vector2 _targetPos;
+        private float _lastPathfind = 0f;
 
         private enum State
         {
@@ -64,8 +65,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                     // if the target has moved significantly since the last path calculation
                     if(!ValidPath() || Vector2.DistanceSquared(_targetPos, _lastTargetPosition) > TargetRecalculateThresholdSqr)
                     {
-                        Pathfind(unit, _targetPos, context);
-                        _currentState = State.Pathfinding;
+                        Pathfind(unit, context);
                         // Assert that a valid path was found. This might be expected to fail in some situations, but for now, assume it should always work.
                         // (e.g., by stopping movement or finding a new target).
                         AssertUtil.Assert(ValidPath(), "Pathfinding failed to find a valid path.");
@@ -116,8 +116,8 @@ namespace Wc3_Combat_Game.Components.Controllers
                     }
                     else
                     {
-                        Pathfind(unit, target.Position, context);
-                        _currentState = State.Pathfinding; // Reset state to pathfinding
+                        Pathfind(unit, context); // Try to pathfind again.
+
                         AssertUtil.Assert(ValidPath(), "Pathfinding failed to find a valid path.");
                         // Strictly speaking, I don't think this is a good way to do this.
                         // Failure may be valid in some cases.
@@ -146,7 +146,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                     .ToList(); // Get all friendly units
 
                 separationForce = GetSeparationSteering(unit, entities, context);
-                separationForce *= 0.25f;
+                separationForce *= 1f;
 
                 // Combine steering forces (path following + separation).
                 // You might want to weight these forces based on priority.
@@ -168,6 +168,14 @@ namespace Wc3_Combat_Game.Components.Controllers
                 // No target, Keep doing what you're doing.
                 // Well, ideally, follow the path properly, but That should really be a method call.
             }
+        }
+
+        private void Pathfind(Unit unit, IBoardContext context)
+        {
+            Pathfind(unit, _targetPos, context);
+            _currentState = State.Pathfinding;
+            _lastPathfind = context.CurrentTime;
+            _lastTargetPosition = _targetPos; // Update the last known target position.
         }
 
         /// <summary>
@@ -271,7 +279,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         private static Vector2 GetSeparationSteering(Unit unit, IEnumerable<Unit> allUnits, IBoardContext context)
         {
             Vector2 separationForce = Vector2.Zero;
-            float separationRadius = unit.Radius * 3;
+            float separationRadius = unit.Radius * 4;
             float separationRadiusSqr = separationRadius * separationRadius;
 
             foreach(Unit otherUnit in allUnits)
@@ -326,6 +334,9 @@ namespace Wc3_Combat_Game.Components.Controllers
                     stateText += "Shortcutting";
                 else
                     stateText += "Unknown";
+
+                if (!TimeUtils.HasElapsed(context.CurrentTime, _lastPathfind, 0.1f))
+                    stateText += "\n (Path refreshed)";
 
                 using var font = new Font("Arial", 8);
                 using var brush = new SolidBrush(Color.White);
