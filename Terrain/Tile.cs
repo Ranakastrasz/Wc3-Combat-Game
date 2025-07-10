@@ -26,15 +26,12 @@ namespace Wc3_Combat_Game.Terrain
         public char GetChar => Type.Ascii;
         public Color GetColor => Type.Color;
 
-        public void Draw(Graphics g, float scale)
+        public void Draw(Graphics g, float scale, Brush brush)
         {
-            using (Brush brush = new SolidBrush(GetColor))
-            {
-                var location = GraphicsUtils.Scale(Position, scale);
-                var size = new Size((int)scale, (int)scale);
-                var rect = new Rectangle(location, size);
-                g.FillRectangle(brush, rect);
-            }
+            var location = GraphicsUtils.Scale(Position, scale);
+            var size = new Size((int)scale, (int)scale);
+            var rect = new Rectangle(location, size);
+            g.FillRectangle(brush, rect);
         }
     }
 }

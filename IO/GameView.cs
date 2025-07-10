@@ -23,7 +23,6 @@ namespace Wc3_Combat_Game
 
         public IDrawContext? DrawContext { get; private set; }
 
-        private Font? _gridFont;
 
         // In GameView.cs, add these:
         private readonly Stopwatch _paintStopwatch = new Stopwatch();
@@ -131,7 +130,6 @@ namespace Wc3_Combat_Game
 
             this.Resize += OnWindowSizeChanged;
 
-            _gridFont = null;
             this.KeyPreview = true; // For debug form purposes.
 
         }
@@ -181,7 +179,6 @@ namespace Wc3_Combat_Game
         {
 
         }
-
         private void GameWindow_Paint(object sender, PaintEventArgs e)
         {
             _paintStopwatch.Restart(); // Start measuring
@@ -209,13 +206,14 @@ namespace Wc3_Combat_Game
                     for(int x = 0; x < map.TileMap.GetLength(0); x++)
                     {
                         Tile tile = map.TileMap[x, y];
-                        Brush brush = new SolidBrush(tile.GetColor); // optionally cache these
+                        Color tileColor = tile.GetColor;
+
+                        var brush = DrawContext.DrawCache.GetOrCreateBrush(tileColor);
 
                         //g.FillRectangle(brush,x*tileSize,y*tileSize,tileSize,tileSize);
                         // Tell tiles to draw themselves.
-                        tile.Draw(g, tileSize);
+                        tile.Draw(g, tileSize, brush);
 
-                        brush.Dispose(); // only if not cached
                     }
                 }
 
@@ -253,7 +251,7 @@ namespace Wc3_Combat_Game
             lock(PaintDurationsLock)
             {
                 DebugPaintDurations.Enqueue(elapsed);
-                if(DebugPaintDurations.Count > 60) // Keep reasonable size
+                if(DebugPaintDurations.Count > 600) // Keep reasonable size
                 {
                     DebugPaintDurations.Dequeue();
                 }
@@ -266,8 +264,9 @@ namespace Wc3_Combat_Game
             _camera.SnapToUnit(playerUnit);
         }
 
-        private void DisposeCustomResources() => _gridFont?.Dispose();
-
+        private void DisposeCustomResources()
+        {
+        }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if(keyData == Keys.Escape)
@@ -299,104 +298,128 @@ namespace Wc3_Combat_Game
             DrawContext?.DebugSettings.Set(itemText, isChecked);
 
         }
+        // Helper method for drawing a single waveform chart
+        private void DrawWaveform(Graphics g, double[] data, Pen pen, Rectangle chartBounds, double maxOverallDuration)
+        {
+            if(data.Length < 2 || maxOverallDuration <= 0)
+            {
+                return; // Not enough data or invalid max duration to draw
+            }
+
+            // Scale X to fit the width of the chartBounds
+            double x_scale = (double)chartBounds.Width / data.Length;
+
+            // Draw the waveform
+            for(int i = 0; i < data.Length - 1; i++)
+            {
+                double p1 = data[i];
+                double p2 = data[i + 1];
+
+                // Scale Y to fit the height of the chartBounds, relative to maxOverallDuration
+                // Invert Y-axis so higher values are drawn higher on the panel (Windows Forms Y-axis is top-down)
+                // Adjust Y to be relative to the chartBounds.Y (top of this specific chart's area)
+                double y1 = chartBounds.Y + chartBounds.Height - (p1 / maxOverallDuration) * chartBounds.Height;
+                double y2 = chartBounds.Y + chartBounds.Height - (p2 / maxOverallDuration) * chartBounds.Height;
+
+                // Ensure y coordinates stay within bounds if values are negative or exceed max
+                y1 = Math.Max(chartBounds.Y, Math.Min(chartBounds.Y + chartBounds.Height, y1));
+                y2 = Math.Max(chartBounds.Y, Math.Min(chartBounds.Y + chartBounds.Height, y2));
+
+                
+
+                double x1 = chartBounds.X + i * x_scale;
+                double x2 = chartBounds.X + (i + 1) * x_scale;
+
+                g.DrawLine(pen, (int)(chartBounds.X + x1), (int)y1, (int)(chartBounds.X + x2), (int)y2);
+            }
+        }
 
         private void DebugWaveChart_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            // Clear the background
             g.Clear(Color.LightGray);
-
-            if (DrawContext.DebugSettings.Get(DebugSetting.ShowFPS))
+            AssertUtil.NotNull(DrawContext);
+            if(DrawContext.DebugSettings.Get(DebugSetting.ShowFPS))
             {
-                g.DrawString($"FPS: {_controller.Fps}", new Font("Arial", 10), Brushes.Black, new PointF(10, 10));
-                //g.DrawString($"FPS: {_controller.Fps}", new Font("Arial", 10), Brushes.Black, new PointF(10, 30));
+                // Draw FPS counter
+                using(var font = new Font("Arial", 10)) // Using 'using' for proper disposal
+                {
+                    g.DrawString($"FPS: {_controller.Fps}", font, Brushes.Black, new PointF(10, 10));
+                }
             }
 
-
-            // Safely get a snapshot of the data
-            double[] TickData;
-            double[] PaintData;
+            // Safely get snapshots of the data from both threads
+            double[] tickData;
+            double[] paintData;
             lock(_controller.TickDurationsLock) // Use the lock object from the controller
             {
-                TickData = _controller.DebugTickDurations.ToArray();
+                tickData = _controller.DebugTickDurations.ToArray();
             }
             lock(PaintDurationsLock) // Use the lock object from the GameView
             {
-                PaintData = DebugPaintDurations.ToArray();
-            }   
+                paintData = DebugPaintDurations.ToArray();
+            }
 
-            // Define drawing parameters
-            Pen pen = new Pen(Color.Blue, 1);
+            // Ensure data arrays have the same length for sum/difference calculations
+            // Use the smaller length if they happen to be different (shouldn't if collected consistently)
+            int dataLength = Math.Min(tickData.Length, paintData.Length);
+
+            double[] sumData = new double[dataLength];
+            double[] differenceData = new double[dataLength];
+
+            for(int i = 0; i < dataLength; i++)
+            {
+                sumData[i] = tickData[i] + paintData[i];
+                differenceData[i] = tickData[i] - paintData[i];
+            }
+
+            // Calculate the overall maximum duration for consistent vertical scaling across all charts
+            // This considers the max of all positive values across all datasets, including absolute differences
+            double maxOverallDuration = 0f;
+            if(tickData.Length > 0) maxOverallDuration = Math.Max(maxOverallDuration, tickData.Max());
+            if(paintData.Length > 0) maxOverallDuration = Math.Max(maxOverallDuration, paintData.Max());
+            if(sumData.Length > 0) maxOverallDuration = Math.Max(maxOverallDuration, sumData.Max());
+            if(differenceData.Length > 0) maxOverallDuration = Math.Max(maxOverallDuration, differenceData.Max(d => Math.Abs(d))); // Max absolute difference
+
+            // Ensure maxOverallDuration is not zero to avoid division by zero
+            if(maxOverallDuration == 0) maxOverallDuration = GameConstants.TICK_DURATION_MS * 2; // Default if no data or all zeros
+
             int panelWidth = e.ClipRectangle.Width;
             int panelHeight = e.ClipRectangle.Height;
+            int chartHeight = panelHeight / 4; // Divide panel into 4 vertical sections
 
-            // Find min/max values for scaling (e.g., for SimDeltaTime)
-            double maxTickDuration = 0f;
-            if(TickData.Length > 0)
+            // Define chart bounds and draw each waveform
+            // Chart 1: Game Tick Durations (Blue)
+            using(Pen tickPen = new Pen(Color.Blue, 1))
             {
-                maxTickDuration = TickData.Max(); // Using LINQ's Max() for convenience
-            }
-            // Ensure maxTickDuration is not zero to avoid division by zero
-            if(maxTickDuration == 0) maxTickDuration = GameConstants.TICK_DURATION_MS * 2; // Default if no data or all zeros
-
-            // Calculate horizontal scaling (each data point takes up a certain width)
-            double x_scale = (double)panelWidth / TickData.Length;
-
-            // Draw the waveform
-            for(int i = 0; i < TickData.Length - 1; i++)
-            {
-                double p1 = TickData[i];
-                double p2 = TickData[i + 1];
-
-                // X coordinates are based on index
-                double x1 = i * x_scale;
-                double x2 = (i + 1) * x_scale;
-
-                // Y coordinates are based on tick duration, scaled to panel height
-                // Invert Y-axis so higher values are drawn higher on the panel (Windows Forms Y-axis is top-down)
-                double y1 = panelHeight - (p1 / maxTickDuration) * panelHeight;
-                double y2 = panelHeight - (p2 / maxTickDuration) * panelHeight;
-
-                g.DrawLine(pen, (int)x1, (int)y1, (int)x2, (int)y2);
+                Rectangle tickChartBounds = new Rectangle(0, 0 * chartHeight, panelWidth, chartHeight);
+                DrawWaveform(g, tickData, tickPen, tickChartBounds, maxOverallDuration);
+                g.DrawString("Game Tick (ms)", new Font("Arial", 8), Brushes.Black, new PointF(tickChartBounds.X + 5, tickChartBounds.Y + 5));
             }
 
-            pen.Dispose();
-
-
-            // Define drawing parameters
-            pen = new Pen(Color.Red, 1);
-
-            // Find min/max values for scaling (e.g., for SimDeltaTime)
-            maxTickDuration = 0f;
-            if(PaintData.Length > 0)
+            // Chart 2: Paint Durations (Red)
+            using(Pen paintPen = new Pen(Color.Red, 1))
             {
-                maxTickDuration = PaintData.Max(); // Using LINQ's Max() for convenience
-            }
-            // Ensure maxTickDuration is not zero to avoid division by zero
-            if(maxTickDuration == 0) maxTickDuration = GameConstants.TICK_DURATION_MS * 2; // Default if no data or all zeros
-
-            // Calculate horizontal scaling (each data point takes up a certain width)
-            x_scale = (double)panelWidth / PaintData.Length;
-
-            // Draw the waveform
-            for(int i = 0; i < PaintData.Length - 1; i++)
-            {
-                double p1 = PaintData[i];
-                double p2 = PaintData[i + 1];
-
-                // X coordinates are based on index
-                double x1 = i * x_scale;
-                double x2 = (i + 1) * x_scale;
-
-                // Y coordinates are based on tick duration, scaled to panel height
-                // Invert Y-axis so higher values are drawn higher on the panel (Windows Forms Y-axis is top-down)
-                double y1 = panelHeight - (p1 / maxTickDuration) * panelHeight;
-                double y2 = panelHeight - (p2 / maxTickDuration) * panelHeight;
-
-                g.DrawLine(pen, (int)x1, (int)y1, (int)x2, (int)y2);
+                Rectangle paintChartBounds = new Rectangle(0, 1 * chartHeight, panelWidth, chartHeight);
+                DrawWaveform(g, paintData, paintPen, paintChartBounds, maxOverallDuration);
+                g.DrawString("Paint (ms)", new Font("Arial", 8), Brushes.Black, new PointF(paintChartBounds.X + 5, paintChartBounds.Y + 5));
             }
 
-            pen.Dispose();
+            // Chart 3: Sum (Tick + Paint) Durations (Green)
+            using(Pen sumPen = new Pen(Color.Green, 1))
+            {
+                Rectangle sumChartBounds = new Rectangle(0, 2 * chartHeight, panelWidth, chartHeight);
+                DrawWaveform(g, sumData, sumPen, sumChartBounds, maxOverallDuration);
+                g.DrawString("Sum (ms)", new Font("Arial", 8), Brushes.Black, new PointF(sumChartBounds.X + 5, sumChartBounds.Y + 5));
+            }
+
+            // Chart 4: Difference (Tick - Paint) Durations (Orange)
+            using(Pen diffPen = new Pen(Color.Orange, 1))
+            {
+                Rectangle diffChartBounds = new Rectangle(0, 3 * chartHeight, panelWidth, chartHeight);
+                DrawWaveform(g, differenceData, diffPen, diffChartBounds, maxOverallDuration);
+                g.DrawString("Difference (ms)", new Font("Arial", 8), Brushes.Black, new PointF(diffChartBounds.X + 5, diffChartBounds.Y + 5));
+            }
         }
     }
 }

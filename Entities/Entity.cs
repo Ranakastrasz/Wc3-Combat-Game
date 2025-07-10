@@ -11,6 +11,8 @@ namespace Wc3_Combat_Game.Entities
     /// </summary>
     public class Entity
     {
+
+
         public float Radius { get; protected set; } // This will be part of the ICollidable later.
                                                     // And IDraw, seperately, ofc.
         public float Diameter => Radius * 2f;
@@ -51,7 +53,9 @@ namespace Wc3_Combat_Game.Entities
             DrawDebug(g, context);
 
             if (!IsAlive) return;
-            using var brush = new SolidBrush(_fillColor);
+            var brush = context.DrawCache.GetOrCreateBrush(_fillColor);
+
+
             g.FillRectangle(brush, BoundingBox);
 
 

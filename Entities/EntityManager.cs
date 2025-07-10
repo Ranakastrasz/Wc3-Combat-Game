@@ -62,5 +62,11 @@ namespace Wc3_Combat_Game.Entities
         {
             return _entities.Where(e => e.GetType() == type);
         }
+
+        public void Clear()
+        {
+            lock(_entityLock)
+                _entities.Clear();
+        }
     }
 }

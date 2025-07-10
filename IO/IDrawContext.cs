@@ -12,5 +12,7 @@ namespace Wc3_Combat_Game.IO
 
         EntityManager<Entity> Entities { get; }
         DebugSettings DebugSettings { get; }
+
+        DrawCache DrawCache { get; }
     }
 }

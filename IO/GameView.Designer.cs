@@ -21,7 +21,7 @@ namespace Wc3_Combat_Game
                 DisposeCustomResources();
                 components.Dispose();
             }
-            base.Dispose(disposing); // Causes bad thread call error.
+            base.Dispose(disposing);
         }
 
 

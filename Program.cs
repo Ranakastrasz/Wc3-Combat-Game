@@ -67,6 +67,10 @@ namespace Wc3_Combat_Game
                 // When this finishes, GameOver/Victory. Probably need to handle here.
                 // and, Allow restarting the game.
             }
+
+            game.Board.Dispose(); // Cleanup.
+            // Might need other cleanup later. Dunno.
+
         }
         public static void ListClasses()
         {

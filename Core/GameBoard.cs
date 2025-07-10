@@ -18,7 +18,7 @@ using Wc3_Combat_Game.IO;
 
 namespace Wc3_Combat_Game.Core
 {
-    public class GameBoard : IBoardContext, IDrawContext
+    public class GameBoard : IBoardContext, IDrawContext, IDisposable
     {
         private readonly GameController? _controller;
 
@@ -49,7 +49,8 @@ namespace Wc3_Combat_Game.Core
 
         public DebugSettings DebugSettings = new DebugSettings(); // May or may not stay here.
         DebugSettings IDrawContext.DebugSettings => DebugSettings;
-
+        
+        public DrawCache DrawCache { get; private set; }
 
         private float _lastEnemySpawned = 0f;
 
@@ -58,7 +59,9 @@ namespace Wc3_Combat_Game.Core
         {
             Map = null;
             PathFinder = null;
+            DrawCache = new DrawCache();
         }
+
 
         // Optional constructor that sets the controller and initializes dependent things
         public GameBoard(GameController? controller) : this()
@@ -273,5 +276,14 @@ namespace Wc3_Combat_Game.Core
             Entities.Add(u);
         }
 
+        public void Dispose()
+        {
+            DrawCache.Dispose();
+
+
+            //Entities.Clear(); // Don't think I really need to do this anyway.
+            //Units.Clear();
+            //Projectiles.Clear();
+        }
     }
 }
