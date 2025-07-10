@@ -39,7 +39,8 @@ namespace Wc3_Combat_Game.Core
 
         private readonly float _tickDuration_ms = GameConstants.TICK_DURATION_MS; // Convert to seconds
 
-        //public Queue<double> DebugTickDurations = new Queue<double>(600); // For debugging purposes, to see how long each tick takes.
+        public readonly object TickDurationsLock = new object();
+        public Queue<double> DebugTickDurations = new Queue<double>(600); // For debugging purposes, to see how long each tick takes.
 
         private DateTime _lastTime; // marks the beginning the measurement began
         private int _framesRendered; // an increasing count
@@ -58,7 +59,10 @@ namespace Wc3_Combat_Game.Core
             _stopwatch.Restart();
             _gameLoopTimer.Start();
 
-            //DebugTickDurations.Clear();
+            lock(TickDurationsLock)
+            {
+                DebugTickDurations.Clear();
+            }
         }
         public void OnVictory()
         {
@@ -124,7 +128,17 @@ namespace Wc3_Combat_Game.Core
 
             // Restart the timer for the next tick, using elapsed time for accuracy
             double elapsed = _stopwatch.Elapsed.TotalMilliseconds;
-            //DebugTickDurations.Enqueue(elapsed);
+
+            lock(TickDurationsLock)
+            {
+                DebugTickDurations.Enqueue(elapsed);
+                // Keep the queue from growing indefinitely
+                if(DebugTickDurations.Count > 60) // Max 10 seconds of data at 60 FPS
+                {
+                    DebugTickDurations.Dequeue();
+                }
+            }
+
             double delay = Math.Max(0.1, GameConstants.TICK_DURATION_MS - elapsed);
 
             _stopwatch.Restart();

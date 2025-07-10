@@ -1,4 +1,5 @@
 using AssertUtils;
+using System.Diagnostics;
 using System.Drawing;
 using System.Net.NetworkInformation;
 using System.Numerics;
@@ -23,6 +24,11 @@ namespace Wc3_Combat_Game
         public IDrawContext? DrawContext { get; private set; }
 
         private Font? _gridFont;
+
+        // In GameView.cs, add these:
+        private readonly Stopwatch _paintStopwatch = new Stopwatch();
+        public readonly object PaintDurationsLock = new object();
+        public Queue<double> DebugPaintDurations = new Queue<double>(60); // For rendering durations
 
         #region InputHooks
         public InputManager Input { get; private set; } = new InputManager();
@@ -178,6 +184,8 @@ namespace Wc3_Combat_Game
 
         private void GameWindow_Paint(object sender, PaintEventArgs e)
         {
+            _paintStopwatch.Restart(); // Start measuring
+
             Graphics g = e.Graphics;
             g.Clear(Color.Black);
 
@@ -238,6 +246,18 @@ namespace Wc3_Combat_Game
                 using var overlayBrush = new SolidBrush(Color.FromArgb(128, Color.Gray));
                 g.FillRectangle(overlayBrush, this.ClientRectangle);
             }
+
+            // Safely enqueue the elapsed paint time
+            _paintStopwatch.Stop();
+            double elapsed = _paintStopwatch.Elapsed.TotalMilliseconds;
+            lock(PaintDurationsLock)
+            {
+                DebugPaintDurations.Enqueue(elapsed);
+                if(DebugPaintDurations.Count > 60) // Keep reasonable size
+                {
+                    DebugPaintDurations.Dequeue();
+                }
+            }
         }
 
         public void RegisterPlayer(Unit playerUnit)
@@ -285,57 +305,98 @@ namespace Wc3_Combat_Game
             Graphics g = e.Graphics;
             // Clear the background
             g.Clear(Color.LightGray);
+
             if (DrawContext.DebugSettings.Get(DebugSetting.ShowFPS))
             {
                 g.DrawString($"FPS: {_controller.Fps}", new Font("Arial", 10), Brushes.Black, new PointF(10, 10));
-                g.DrawString($"FPS: {_controller.Fps}", new Font("Arial", 10), Brushes.Black, new PointF(10, 30));
+                //g.DrawString($"FPS: {_controller.Fps}", new Font("Arial", 10), Brushes.Black, new PointF(10, 30));
             }
-            //_controller.Fps;
-            //
-            //// Define drawing parameters
-            //Pen pen = new Pen(Color.Blue, 1);
-            //int panelWidth = e.ClipRectangle.Width;
-            //int panelHeight = e.ClipRectangle.Height;
-            //
-            //double[] data = _controller.DebugTickDurations.ToArray();
-            //
-            //// Find min/max values for scaling (e.g., for SimDeltaTime)
-            //double maxSimDeltaTime = 0f;
-            //foreach(var point in data)
-            //{
-            //    if(point > maxSimDeltaTime)
-            //    {
-            //        maxSimDeltaTime = point;
-            //    }
-            //}
-            //// Ensure maxSimDeltaTime is not zero to avoid division by zero
-            //if(maxSimDeltaTime == 0) maxSimDeltaTime = GameConstants.FIXED_DELTA_TIME; // Default if no movement
-            //
-            //// Calculate horizontal scaling (each data point takes up a certain width)
-            //double x_scale = panelWidth / data.Count();
-            //
-            //// Draw the waveform
-            //for(int i = 0; i < data.Count() - 1; i++)
-            //{
-            //    double p1 = data[i];
-            //    double p2 = data[i + 1];
-            //
-            //    // X coordinates are based on index
-            //    double x1 = i * x_scale;
-            //    double x2 = (i + 1) * x_scale;
-            //
-            //    // Y coordinates are based on SimDeltaTime, scaled to panel height
-            //    // Invert Y-axis so higher values are drawn higher on the panel (Windows Forms Y-axis is top-down)
-            //    double y1 = panelHeight - (p1 / maxSimDeltaTime) * panelHeight;
-            //    double y2 = panelHeight - (p2 / maxSimDeltaTime) * panelHeight;
-            //
-            //// You might want to adjust the scaling factor for Y to leave some margin
-            //// For example: double y1 = panelHeight - (p1 / maxSimDeltaTime) * (panelHeight * 0.9) - (panelHeight * 0.05);
-            //
-            //    g.DrawLine(pen, (int)x1, (int)y1, (int)x2, (int)y2);
-            //}
-            //
-            //pen.Dispose(); // Dispose of the pen when done
+
+
+            // Safely get a snapshot of the data
+            double[] TickData;
+            double[] PaintData;
+            lock(_controller.TickDurationsLock) // Use the lock object from the controller
+            {
+                TickData = _controller.DebugTickDurations.ToArray();
+            }
+            lock(PaintDurationsLock) // Use the lock object from the GameView
+            {
+                PaintData = DebugPaintDurations.ToArray();
+            }   
+
+            // Define drawing parameters
+            Pen pen = new Pen(Color.Blue, 1);
+            int panelWidth = e.ClipRectangle.Width;
+            int panelHeight = e.ClipRectangle.Height;
+
+            // Find min/max values for scaling (e.g., for SimDeltaTime)
+            double maxTickDuration = 0f;
+            if(TickData.Length > 0)
+            {
+                maxTickDuration = TickData.Max(); // Using LINQ's Max() for convenience
+            }
+            // Ensure maxTickDuration is not zero to avoid division by zero
+            if(maxTickDuration == 0) maxTickDuration = GameConstants.TICK_DURATION_MS * 2; // Default if no data or all zeros
+
+            // Calculate horizontal scaling (each data point takes up a certain width)
+            double x_scale = (double)panelWidth / TickData.Length;
+
+            // Draw the waveform
+            for(int i = 0; i < TickData.Length - 1; i++)
+            {
+                double p1 = TickData[i];
+                double p2 = TickData[i + 1];
+
+                // X coordinates are based on index
+                double x1 = i * x_scale;
+                double x2 = (i + 1) * x_scale;
+
+                // Y coordinates are based on tick duration, scaled to panel height
+                // Invert Y-axis so higher values are drawn higher on the panel (Windows Forms Y-axis is top-down)
+                double y1 = panelHeight - (p1 / maxTickDuration) * panelHeight;
+                double y2 = panelHeight - (p2 / maxTickDuration) * panelHeight;
+
+                g.DrawLine(pen, (int)x1, (int)y1, (int)x2, (int)y2);
+            }
+
+            pen.Dispose();
+
+
+            // Define drawing parameters
+            pen = new Pen(Color.Red, 1);
+
+            // Find min/max values for scaling (e.g., for SimDeltaTime)
+            maxTickDuration = 0f;
+            if(PaintData.Length > 0)
+            {
+                maxTickDuration = PaintData.Max(); // Using LINQ's Max() for convenience
+            }
+            // Ensure maxTickDuration is not zero to avoid division by zero
+            if(maxTickDuration == 0) maxTickDuration = GameConstants.TICK_DURATION_MS * 2; // Default if no data or all zeros
+
+            // Calculate horizontal scaling (each data point takes up a certain width)
+            x_scale = (double)panelWidth / PaintData.Length;
+
+            // Draw the waveform
+            for(int i = 0; i < PaintData.Length - 1; i++)
+            {
+                double p1 = PaintData[i];
+                double p2 = PaintData[i + 1];
+
+                // X coordinates are based on index
+                double x1 = i * x_scale;
+                double x2 = (i + 1) * x_scale;
+
+                // Y coordinates are based on tick duration, scaled to panel height
+                // Invert Y-axis so higher values are drawn higher on the panel (Windows Forms Y-axis is top-down)
+                double y1 = panelHeight - (p1 / maxTickDuration) * panelHeight;
+                double y2 = panelHeight - (p2 / maxTickDuration) * panelHeight;
+
+                g.DrawLine(pen, (int)x1, (int)y1, (int)x2, (int)y2);
+            }
+
+            pen.Dispose();
         }
     }
 }
