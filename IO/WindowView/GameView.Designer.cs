@@ -1,5 +1,4 @@
-﻿
-using Wc3_Combat_Game.IO;
+﻿using Wc3_Combat_Game.IO.WindowView;
 
 namespace Wc3_Combat_Game
 {

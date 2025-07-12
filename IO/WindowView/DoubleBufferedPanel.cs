@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wc3_Combat_Game.IO
+namespace Wc3_Combat_Game.IO.WindowView
 {
     /// <summary>
     /// Wrapper to workaround flickering issues with Panel controls by enabling double buffering.
     /// </summary>
-    internal class DoubleBufferedPanel: System.Windows.Forms.Panel
+    internal class DoubleBufferedPanel: Panel
     {
         public DoubleBufferedPanel()
         {
