@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.Numerics;
 using Wc3_Combat_Game.Util;
 using System.Drawing.Drawing2D;
-using System.Runtime.InteropServices.Marshalling; // Add this at the top if not present
+using System.Runtime.InteropServices.Marshalling;
+using Wc3_Combat_Game.IO; // Add this at the top if not present
 
 namespace Wc3_Combat_Game.Terrain
 {
@@ -13,11 +14,16 @@ namespace Wc3_Combat_Game.Terrain
 
         public Tile[,] TileMap;
         public GameWorldGrid PathfinderGrid;
-        public float TileSize { get; set; }
+
+        private float _tileSize;
+        public float TileSize { get => _tileSize; set => _tileSize = value; }
         public RectangleF WorldBounds { get; internal set; }
 
         public int Width; // X, 0
         public int Height; // Y, 1 
+
+        public TileMapRenderer? TileMapRenderer;
+
 
         Map(Tile[,] tileMap, float tileSize)
         {
@@ -58,12 +64,12 @@ namespace Wc3_Combat_Game.Terrain
             }
 
             Tile[,] tileMap = new Tile[mapString[0].Length, mapString.Length];
-            for (int y = 0; y < mapString.Length; y++)
+            for(int y = 0; y < mapString.Length; y++)
             {
-                for (int x = 0; x < mapString[y].Length; x++)
+                for(int x = 0; x < mapString[y].Length; x++)
                 {
                     char c = mapString[y][x];
-                    tileMap[x, y] = new(TileType.FromChar(c),new(x,y));
+                    tileMap[x, y] = new(TileType.FromChar(c), new(x, y));
                 }
             }
 
@@ -90,11 +96,11 @@ namespace Wc3_Combat_Game.Terrain
         internal List<Point> GetTilesMatching(char chr)
         {
             List<Point> matchingTiles = new();
-            for (int y = 0; y < Height; y++)
+            for(int y = 0; y < Height; y++)
             {
-                for (int x = 0; x < Width; x++)
+                for(int x = 0; x < Width; x++)
                 {
-                    if (TileMap[x, y].GetChar == chr)
+                    if(TileMap[x, y].GetChar == chr)
                     {
                         matchingTiles.Add(new Point(x, y));
                     }
@@ -108,7 +114,7 @@ namespace Wc3_Combat_Game.Terrain
             int x = (int)Math.Floor(worldPosition.X / TileSize);
             int y = (int)Math.Floor(worldPosition.Y / TileSize);
 
-            return new(x,y);
+            return new(x, y);
         }
 
         public Vector2 FromGrid(int x, int y)
@@ -263,14 +269,14 @@ namespace Wc3_Combat_Game.Terrain
             int[] dx = [ 0, 1, 0,-1];
             int[] dy = [-1, 0, 1, 0];
 
-            for (int i = 0; i < 4; i++)
+            for(int i = 0; i < 4; i++)
             {
                 int nx = x + dx[i];
                 int ny = y + dy[i];
 
-                if (nx >= 0 && nx < Width && ny >= 0 && ny < Height)
+                if(nx >= 0 && nx < Width && ny >= 0 && ny < Height)
                 {
-                    adjacent.Add(new Point(nx,ny));
+                    adjacent.Add(new Point(nx, ny));
                 }
             }
             return adjacent;
@@ -289,9 +295,9 @@ namespace Wc3_Combat_Game.Terrain
 
         public void UpdatePathing()
         {
-            for (int y = 0; y < TileMap.GetLength(1); y++)
+            for(int y = 0; y < TileMap.GetLength(1); y++)
             {
-                for (int x = 0; x < TileMap.GetLength(0); x++)
+                for(int x = 0; x < TileMap.GetLength(0); x++)
                 {
                     Tile tile = TileMap[x, y];
                     PathfinderGrid[x, y] = tile.IsWalkable ? (short)1 : (short)0;
@@ -384,6 +390,30 @@ namespace Wc3_Combat_Game.Terrain
                 float ty = pt.Y * TileSize;
                 g.DrawRectangle(blockPen, tx, ty, TileSize, TileSize);
             }
+        }
+
+        public void Draw(Graphics g, IDrawContext context)
+        {
+
+            for(int y = 0; y < TileMap.GetLength(1); y++)
+            {
+                for(int x = 0; x < TileMap.GetLength(0); x++)
+                {
+                    Tile tile = TileMap[x, y];
+                    Color tileColor = tile.GetColor;
+
+                    var brush = context.DrawCache.GetOrCreateBrush(tileColor);
+
+                    // Tell tiles to draw themselves.
+                    tile.Draw(g, TileSize, brush);
+
+                }
+            }
+            //if(TileMapRenderer == null)
+            //{
+            //    TileMapRenderer = new TileMapRenderer((int)TileSize, TileMap);
+            //}
+            //TileMapRenderer.Draw(g, context);
         }
     }
 }

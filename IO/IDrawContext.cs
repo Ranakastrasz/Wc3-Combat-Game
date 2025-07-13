@@ -10,6 +10,7 @@ namespace Wc3_Combat_Game.IO
         Map? Map { get; }
         float CurrentTime { get; }
 
+        Camera? Camera { get; }
         EntityManager<Entity> Entities { get; }
         DebugSettings DebugSettings { get; }
 

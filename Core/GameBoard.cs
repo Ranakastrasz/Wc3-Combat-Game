@@ -33,6 +33,7 @@ namespace Wc3_Combat_Game.Core
 
         private List<Vector2> spawnPoints = new();
 
+        Camera? IDrawContext.Camera => _controller?.View?.Camera;
 
         // Entities.
         public Unit? PlayerUnit { get; private set; }

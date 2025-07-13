@@ -34,6 +34,8 @@ namespace Wc3_Combat_Game
 
         public bool DebugPanelVisible => DebugPanel.Visible;
 
+        public Camera Camera { get => _camera; set => _camera = value; }
+
         private void MainGameWindow_KeyDown(object? sender, KeyEventArgs e)
         {
             Input.OnKeyDown(e.KeyCode);
@@ -78,7 +80,7 @@ namespace Wc3_Combat_Game
             DrawContext = context;
 
             //this.ClientSize = GameConstants.CAMERA_SCALE;
-            this._camera = new Camera();
+            _camera = new Camera();
             _camera.LerpFactor = 10f;
 
             _camera.Zoom = 3;
@@ -190,36 +192,20 @@ namespace Wc3_Combat_Game
             using var transform = _camera.GetTransform();
             g.Transform = transform;
 
-            Rectangle clientRect = GameWindow.ClientRectangle;
-
             // Draw Map.
             if(DrawContext != null)
             {
                 Map? map = DrawContext.Map;
                 AssertUtil.NotNull(map);
 
-
-                float tileSize = map.TileSize;
-
-                for(int y = 0; y < map.TileMap.GetLength(1); y++)
-                {
-                    for(int x = 0; x < map.TileMap.GetLength(0); x++)
-                    {
-                        Tile tile = map.TileMap[x, y];
-                        Color tileColor = tile.GetColor;
-
-                        var brush = DrawContext.DrawCache.GetOrCreateBrush(tileColor);
-
-                        //g.FillRectangle(brush,x*tileSize,y*tileSize,tileSize,tileSize);
-                        // Tell tiles to draw themselves.
-                        tile.Draw(g, tileSize, brush);
-
-                    }
-                }
-
+                map.Draw(g, DrawContext);
             }
 
-            DrawContext?.Entities?.ForEach(p => p.Draw(g, DrawContext));
+
+            //Rectangle clientRect = GameWindow.ClientRectangle;
+
+
+                DrawContext?.Entities?.ForEach(p => p.Draw(g, DrawContext));
 
 
             if(_controller.CurrentState == GameState.GameOver || _controller.CurrentState == GameState.Victory)
