@@ -1,6 +1,7 @@
 using AssertUtils;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Net.NetworkInformation;
 using System.Numerics;
 using System.Windows.Forms;
@@ -143,31 +144,34 @@ namespace Wc3_Combat_Game
 
         public void OnWindowSizeChanged(object? sender, EventArgs e)
         {
-            // Get the size of the GameWindow panel, not the Form's client area
-            var bounds = GameWindow.ClientRectangle;
+            //// Get the size of the GameWindow panel, not the Form's client area
+            //var bounds = GameWindow.ClientRectangle;
+            //
+            //// Target aspect ratio (from GameConstants.CAMERA_BOUNDS)
+            //float targetAspect = (float)GameConstants.CAMERA_SCALE.Width / GameConstants.CAMERA_SCALE.Height;
+            //float windowAspect = (float)bounds.Width / bounds.Height;
+            //
+            //int newWidth, newHeight;
+            //
+            //if(windowAspect > targetAspect)
+            //{
+            //    // Window is wider than target: pillarbox
+            //    newHeight = bounds.Height;
+            //    newWidth = (int)(newHeight * targetAspect);
+            //}
+            //else
+            //{
+            //    // Window is taller than target: letterbox
+            //    newWidth = bounds.Width;
+            //    newHeight = (int)(newWidth / targetAspect);
+            //}
+            //
+            //// Set camera to fit inside GameWindow, preserving aspect ratio
+            //_camera.Width = newWidth;
+            //_camera.Height = newHeight;
+            _camera.Width = GameWindow.ClientSize.Width;
+            _camera.Height = GameWindow.ClientSize.Height;
 
-            // Target aspect ratio (from GameConstants.CAMERA_BOUNDS)
-            float targetAspect = (float)GameConstants.CAMERA_SCALE.Width / GameConstants.CAMERA_SCALE.Height;
-            float windowAspect = (float)bounds.Width / bounds.Height;
-
-            int newWidth, newHeight;
-
-            if(windowAspect > targetAspect)
-            {
-                // Window is wider than target: pillarbox
-                newHeight = bounds.Height;
-                newWidth = (int)(newHeight * targetAspect);
-            }
-            else
-            {
-                // Window is taller than target: letterbox
-                newWidth = bounds.Width;
-                newHeight = (int)(newWidth / targetAspect);
-            }
-
-            // Set camera to fit inside GameWindow, preserving aspect ratio
-            _camera.Width = newWidth;
-            _camera.Height = newHeight;
             _camera.SnapToUnit();
         }
         public void Update(float deltaTime)
@@ -175,7 +179,8 @@ namespace Wc3_Combat_Game
             _camera.Update(deltaTime);
 
             GameWindow.Invalidate();
-            DebugWaveChart.Invalidate();
+            if (DrawContext != null && DrawContext.DebugSettings.Get(DebugSetting.ShowFPS)) // not 100% FPS, but eh, close enough.
+                DebugWaveChart.Invalidate();
         }
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -183,6 +188,7 @@ namespace Wc3_Combat_Game
         }
         private void GameWindow_Paint(object sender, PaintEventArgs e)
         {
+
             _paintStopwatch.Restart(); // Start measuring
 
             Graphics g = e.Graphics;
@@ -224,10 +230,20 @@ namespace Wc3_Combat_Game
 
             }
 
+            AssertUtil.NotNull(DrawContext);
+            if (DrawContext.DebugSettings.Get(DebugSetting.ShowCameraBounds))
+            {
+                // Draw camera bounds in world space (inverted Y for Windows Forms)
+                var cameraBounds = _camera.Viewport;
+                using var cameraPen = new Pen(Color.Magenta, 2);
+                g.DrawRectangle(cameraPen, cameraBounds.X, cameraBounds.Y, cameraBounds.Width, cameraBounds.Height);
+            }
+
             if(_controller.IsPaused())
             {
                 // Draw a semi-transparent overlay to indicate pause state
                 using var overlayBrush = new SolidBrush(Color.FromArgb(128, Color.Gray));
+                g.Transform = new Matrix(); // Reset Transform to Identity.
                 g.FillRectangle(overlayBrush, this.ClientRectangle);
             }
 
@@ -407,5 +423,7 @@ namespace Wc3_Combat_Game
                 g.DrawString("Difference (ms)", new Font("Arial", 8), Brushes.Black, new PointF(diffChartBounds.X + 5, diffChartBounds.Y + 5));
             }
         }
+
+
     }
 }

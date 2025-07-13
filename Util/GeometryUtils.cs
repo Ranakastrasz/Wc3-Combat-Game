@@ -45,6 +45,10 @@ namespace Wc3_Combat_Game.Util
         public static float DistanceSquared(Point from, Point to) =>
             Vector2.DistanceSquared(from.ToVector2(), to.ToVector2());
 
+        public static bool Collides(RectangleF a, RectangleF b) =>
+            a.Left < b.Right && a.Right > b.Left &&
+            a.Top < b.Bottom && a.Bottom > b.Top;
+
         /// <summary>
         /// Checks if a circle collides with a single axis-aligned rectangle.
         /// </summary>

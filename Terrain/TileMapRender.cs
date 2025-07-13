@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AssertUtils;
+using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Wc3_Combat_Game.IO;
+using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Terrain
 {
@@ -33,6 +35,7 @@ namespace Wc3_Combat_Game.Terrain
 
         public void Draw(Graphics g, IDrawContext context)
         {
+            AssertUtil.NotNull(context.Camera);
             float cameraScale = context.Camera.Zoom;
             Vector2 cameraPosition = context.Camera.Position;
 
@@ -44,68 +47,15 @@ namespace Wc3_Combat_Game.Terrain
 
             if(_backgroundBitmap != null)
             {
-                // *** IMPORTANT: Temporarily adjust the Graphics object's transform for drawing the bitmap ***
+                GraphicsState oldState = g.Save();
+                g.Transform = new Matrix(); // Reset Transform to Identity.
 
-                // 1. Save the original transform of 'g'
-                Matrix originalTransform = g.Transform;
+                Vector2 screenPoint = context.Camera.WorldPointToScreenPoint(new Vector2());
+                g.InterpolationMode = InterpolationMode.NearestNeighbor; // Or Bilinear
+                g.SmoothingMode = SmoothingMode.None; // Or AntiAlias for other elements if needed
+                g.DrawImageUnscaled(_backgroundBitmap, screenPoint.ToPoint());
 
-                // 2. Create a new transform for drawing the bitmap.
-                // The bitmap is already scaled to 'cameraScale'.
-                // We only need to translate it to the correct position on the screen.
-                // The camera's position is its *center* in world coordinates.
-                // We need to translate the bitmap so its (0,0) world coordinate aligns
-                // with the top-left of the camera's view on the screen.
-
-                // Calculate the screen's top-left world coordinate based on camera position and zoom.
-                // Assuming 'g.VisibleClipBounds.Width' and 'Height' give the actual pixel dimensions of the drawing area.
-                // Note: g.VisibleClipBounds is affected by g.Transform.
-                // It's safer to get the actual client size from the GameWindow_Paint method
-                // and pass it down, or have DrawContext provide it.
-                // For this example, let's assume screen dimensions are available (e.g., via context or passed in).
-                // Let's assume you'll pass `ClientSize.Width` and `ClientSize.Height` from `GameWindow_Paint`
-                // to `Map.Draw`, and then to `TileMapRenderer.Draw`.
-
-                // For now, let's assume screen dimensions are available directly or through a property
-                // on DrawContext, e.g., context.ScreenWidth, context.ScreenHeight.
-                // If not, you'll need to pass them down from GameWindow_Paint.
-                // For this example, I'll use placeholders for screen dimensions.
-                float screenWidth = g.ClipBounds.Width; // This is problematic if g is already scaled
-                float screenHeight = g.ClipBounds.Height; // This is problematic if g is already scaled
-
-                // The most reliable way to get screen dimensions is to pass them from GameWindow_Paint.
-                // So, let's adjust the signature of Draw:
-                // public void Draw(Graphics g, IDrawContext context, int screenWidth, int screenHeight)
-                // And in GameWindow_Paint: map.Draw(g, DrawContext, ClientSize.Width, ClientSize.Height);
-
-                // Let's assume screenWidth and screenHeight are passed to this Draw method.
-                // (I'll add them to the signature for clarity in the final code block).
-
-                // Calculate the world coordinates of the top-left of the screen view.
-                // CameraPosition is the center of the view.
-                float worldViewTopLeftX = cameraPosition.X - (screenWidth / 2f / cameraScale);
-                float worldViewTopLeftY = cameraPosition.Y - (screenHeight / 2f / cameraScale);
-
-                // Create a translation matrix to position the bitmap.
-                // The bitmap's (0,0) corresponds to world (0,0).
-                // We need to shift the drawing origin so that the portion of the bitmap
-                // starting at `worldViewTopLeftX, worldViewTopLeftY` aligns with the screen's (0,0).
-                Matrix bitmapDrawTransform = new Matrix();
-                bitmapDrawTransform.Translate(
-                    -worldViewTopLeftX * cameraScale, // Translate by the negative of the world top-left, scaled
-                    -worldViewTopLeftY * cameraScale
-                );
-
-                // Apply this temporary transform
-                g.Transform = bitmapDrawTransform;
-
-                // Draw the pre-scaled bitmap at its own origin (0,0).
-                // Since the bitmap is already at the correct scale, and 'g' is only translated,
-                // DrawImage will perform a fast pixel copy.
-                g.DrawImage(_backgroundBitmap, 0, 0);
-
-                // 3. Restore the original transform of 'g'
-                // This is crucial so subsequent drawing (entities, UI) uses the camera's full transform.
-                g.Transform = originalTransform;
+                g.Restore(oldState);
             }
         }
 

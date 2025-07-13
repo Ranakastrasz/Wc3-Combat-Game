@@ -8,9 +8,7 @@
         DrawEnemyControllerFullPath,
         DrawEnemyControllerNextWaypoint,
         DrawEnemyControllerLOS,
-        //DrawTowerRange, // no towers in game.
-        //DrawTowerTargetLine,
-        //DrawTowerCooldown,
+        DrawMapCollisionTiles,
         //DrawProjectileHomingLine, // Could be interesting
         //DrawProjectileTargetLine, // Not even sure what this would do.
         ShowEntityBounds,
@@ -19,6 +17,7 @@
         ShowFPS,
         ShowGameTime,
         ShowCameraInfo,
+        ShowCameraBounds,
         ShowInputInfo
     }
 
@@ -32,9 +31,7 @@
             [DebugSetting.DrawEnemyControllerFullPath] = "Draw.Entity.Controller.FullPath",
             [DebugSetting.DrawEnemyControllerNextWaypoint] = "Draw.Entity.Controller.NextWaypoint",
             [DebugSetting.DrawEnemyControllerLOS] = "Draw.Entity.Controller.LOS",
-            //[DebugSetting.DrawTowerRange] = "Draw.Tower.Range",
-            //[DebugSetting.DrawTowerTargetLine] = "Draw.Tower.TargetLine",
-            //[DebugSetting.DrawTowerCooldown] = "Draw.Tower.Cooldown",
+            [DebugSetting.DrawMapCollisionTiles] = "Draw.Map.CollisionTiles",
             //[DebugSetting.DrawProjectileHomingLine] = "Draw.Projectile.HomingLine",
             //[DebugSetting.DrawProjectileTargetLine] = "Draw.Projectile.TargetLine",
             [DebugSetting.ShowEntityBounds] = "Show.EntityBounds",
@@ -43,6 +40,7 @@
             [DebugSetting.ShowFPS] = "Show.FPS",
             [DebugSetting.ShowGameTime] = "Show.GameTime",
             [DebugSetting.ShowCameraInfo] = "Show.CameraInfo",
+            [DebugSetting.ShowCameraBounds] = "Show.CameraBounds",
             [DebugSetting.ShowInputInfo] = "Show.InputInfo"
         };
 
@@ -73,21 +71,23 @@
         {
             [DebugSetting.DrawEntityMovementVector] = false,        // Implemented
             [DebugSetting.DrawEntityCollisionBox] = false,          // Implemented
-            [DebugSetting.DrawEnemyControllerState] = false,       
-            [DebugSetting.DrawEnemyControllerFullPath] = false,    
-            [DebugSetting.DrawEnemyControllerNextWaypoint] = false,
-            [DebugSetting.DrawEnemyControllerLOS] = false,         
+            [DebugSetting.DrawEnemyControllerState] = false,        // Implemented
+            [DebugSetting.DrawEnemyControllerFullPath] = false,     // Implemented
+            [DebugSetting.DrawEnemyControllerNextWaypoint] = false, // Implemented
+            [DebugSetting.DrawEnemyControllerLOS] = false,          // Implemented
+            [DebugSetting.DrawMapCollisionTiles] = false,           // Implemented
             //[DebugSetting.DrawTowerRange] = false,
             //[DebugSetting.DrawTowerTargetLine] = false,
             //[DebugSetting.DrawTowerCooldown] = false,
             //[DebugSetting.DrawProjectileHomingLine] = false,
             //[DebugSetting.DrawProjectileTargetLine] = false,
-            [DebugSetting.ShowEntityBounds] = false,
+            [DebugSetting.ShowEntityBounds] = false,                // Implemented
             [DebugSetting.ShowEntityIDs] = false,
             [DebugSetting.ShowEntityCount] = false,
             [DebugSetting.ShowFPS] = false,
             [DebugSetting.ShowGameTime] = false,
             [DebugSetting.ShowCameraInfo] = false,
+            [DebugSetting.ShowCameraBounds] = false,
             [DebugSetting.ShowInputInfo] = false,
         };
 

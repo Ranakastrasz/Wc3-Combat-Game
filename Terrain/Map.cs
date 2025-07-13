@@ -401,12 +401,10 @@ namespace Wc3_Combat_Game.Terrain
                 {
                     Tile tile = TileMap[x, y];
                     Color tileColor = tile.GetColor;
-
-                    var brush = context.DrawCache.GetOrCreateBrush(tileColor);
-
+            
                     // Tell tiles to draw themselves.
-                    tile.Draw(g, TileSize, brush);
-
+                    tile.Draw(g, context);
+            
                 }
             }
             //if(TileMapRenderer == null)
@@ -414,6 +412,28 @@ namespace Wc3_Combat_Game.Terrain
             //    TileMapRenderer = new TileMapRenderer((int)TileSize, TileMap);
             //}
             //TileMapRenderer.Draw(g, context);
+            //
+            if(context.DebugSettings.Get(DebugSetting.DrawMapCollisionTiles))
+            {
+                DebugDrawCollisionTiles(g, context);
+            }
+        }
+
+        public void DebugDrawCollisionTiles(Graphics g, IDrawContext context)
+        {
+            for(int y = 0; y < TileMap.GetLength(1); y++)
+            {
+                for(int x = 0; x < TileMap.GetLength(0); x++)
+                {
+                    Tile tile = TileMap[x, y];
+                    if(!tile.IsWalkable)
+                    {
+                        var brush = Brushes.Red;
+                        // Tell tiles to draw themselves.
+                        tile.Draw(g, context);
+                    }
+                }
+            }
         }
     }
 }

@@ -17,6 +17,8 @@ namespace Wc3_Combat_Game.IO
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            spriteBatch = new SpriteBatch(GraphicsDevice);
         }
         protected override void Initialize()
         {

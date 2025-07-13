@@ -69,5 +69,15 @@ namespace Wc3_Combat_Game.IO
         {
             Position = GetPositionCentered(position);
         }
+
+        public Vector2 WorldPointToScreenPoint(Vector2 worldPoint)
+        { 
+            return (worldPoint - Position) * Zoom;
+        }
+        
+        public Vector2 ScreenPointToWorldPoint(Vector2 screenPoint)
+        {
+            return (screenPoint / Zoom) + Position;
+        }
     }
 }

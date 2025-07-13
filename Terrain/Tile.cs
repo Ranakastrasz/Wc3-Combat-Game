@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AssertUtils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -27,12 +28,27 @@ namespace Wc3_Combat_Game.Terrain
         public char GetChar => Type.Ascii;
         public Color GetColor => Type.Color;
 
-        public void Draw(Graphics g, float scale, Brush brush)
+        public void Draw(Graphics g, IDrawContext context)
         {
+            AssertUtil.NotNull(context.Map);
+            AssertUtil.NotNull(context.Camera);
+            float scale = context.Map.TileSize ;
+
+
+
             var location = GraphicsUtils.Scale(Position, scale);
-            var size = new Size((int)scale, (int)scale);
-            var rect = new Rectangle(location, size);
-            g.FillRectangle(brush, rect);
+            var size = new SizeF(scale, scale);
+            var rect = new RectangleF(location, size);
+
+
+            var camera = context.Camera.Viewport;
+
+            if(GeometryUtils.Collides(rect, camera))
+            {
+
+                Brush brush = context.DrawCache.GetOrCreateBrush(GetColor);
+                g.FillRectangle(brush, rect);
+            }
         }
     }
 }
