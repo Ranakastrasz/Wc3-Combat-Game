@@ -79,7 +79,8 @@ namespace Wc3_Combat_Game.Entities
 
             if(!IsAlive)
             {
-                MoveSpeed *= 0.95f; // Needs deltaTime Scaled, but good enough for now, and has no game effect yet.
+            //    MoveSpeed *= 0.95f;
+                base.Update(deltaTime, context); // Includes movement and collision.
                 return;
             }
             if(context.Map?[context.Map.ToGrid(Position)].GetChar == 'F')
