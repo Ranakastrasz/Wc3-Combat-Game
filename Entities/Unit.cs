@@ -22,7 +22,7 @@ namespace Wc3_Combat_Game.Entities
         UnitPrototype Prototype;
 
         public IUnitController? Controller = null;
-        public Unit? Target { get; set; }
+        public Unit? TargetUnit { get; set; }
 
         public IWeapon? Weapon; // needs to be a weapon list instead.
 

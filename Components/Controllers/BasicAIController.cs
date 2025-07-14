@@ -1,6 +1,7 @@
 ﻿using AssertUtils;
 using AStar;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Wc3_Combat_Game.Components.Controllers.Interface;
 using Wc3_Combat_Game.Core;
@@ -14,168 +15,271 @@ namespace Wc3_Combat_Game.Components.Controllers
     class BasicAIController: IUnitController
     {
         public Point[]? Path = null;
-        public int nextWayPoint = 0;
+        public int CurrentWaypoint = 0;
 
         // Store the target's position when the path was last calculated
         private Vector2 _lastTargetPosition = Vector2.Zero;
         // Threshold for target movement to trigger path recalculation
         private const float TargetRecalculateThresholdSqr = 1024; // If target moves more than 32 units.
 
-        private Vector2 _targetPos;
+        private Vector2 _TargetPosition;
         private float _lastPathfind = 0f;
 
         private enum State
         {
             Idle,
-            Pathfinding,
-            Shortcutting
+            PathFinding,
+            PathFollowing,
+            DirectPursuit
         }
 
-        private State _currentState = State.Idle;
+        private State _currentState = State.PathFinding;
 
 
         public void Update(Unit unit, float deltaTime, IBoardContext context)
         {
-            // Example: move toward nearest enemy
-            //Unit target = FindNearestEnemy(unit);
+            if(deltaTime <= 0f) return; // No time has passed, no update needed.
             if(!unit.IsAlive)
             {
-                unit.MoveSpeed *= 0.95f;
+                unit.MoveSpeed *= 0.95f; // Needs deltaTime Scaled, but good enough for now, and has no game effect yet.
+                return;
             }
-            Unit? target = unit.Target;
-            if(unit.IsAlive && target != null)
+
+            Unit? targetUnit = TargetUnitValid(unit.TargetUnit) ? unit.TargetUnit : null;
+
+            // State changes first.
+            switch(_currentState)
             {
-                float distSqrt = unit.DistanceSquaredTo(target);
-                if(unit.Weapon != null)
+                case State.Idle:
+                    // Does nothing. May include auto aggression or something later
+                    break;
+                case State.PathFinding:
                 {
-                    if(distSqrt <= unit.Weapon.AttackRangeSqr
-                        && context.Map?.HasLineOfSight(context.Map.ToGrid(unit.Position), context.Map.ToGrid(target.Position)) == true)
-                    {
-                        unit.Weapon.TryShootEntity(unit, target, context);
-                        return;
-                    }
+                    // No current path. Even if we have a path, this means it is invalid.
+                    Pathfind(unit, context); // Pathfind. This also changes the state appropriately. 
+                    break;
                 }
-
-                _targetPos = target.Position;
-
-                // Pathfinding logic
-                if(context.PathFinder != null && context.Map != null)
+                case State.PathFollowing:
                 {
-                    // Recalculate path if no valid path exists OR
-                    // if the target has moved significantly since the last path calculation
-                    if(!ValidPath() || Vector2.DistanceSquared(_targetPos, _lastTargetPosition) > TargetRecalculateThresholdSqr)
-                    {
-                        Pathfind(unit, context);
-                        // Assert that a valid path was found. This might be expected to fail in some situations, but for now, assume it should always work.
-                        // (e.g., by stopping movement or finding a new target).
-                        AssertUtil.Assert(ValidPath(), "Pathfinding failed to find a valid path.");
-                        // would set to idle in such a failure state, maybe.
-                    }
-
                     if(ValidPath())
                     {
-                        // Shortcutting: Find the furthest visible waypoint
-                        int currentWaypointIndex = nextWayPoint;
-                        for(int i = nextWayPoint; i < Path!.Length; i++)
+                        // If we can see the next waypoint, skip to it.
+                        if(context.Map?.HasLineOfSight(context.Map.ToGrid(unit.Position), Path![CurrentWaypoint + 1]) == true)
                         {
-                            // Check if the unit has line of sight to this waypoint
-                            // and if it's a valid tile to move towards (e.g., not blocked)
-                            if(context.Map.HasLineOfSight(context.Map.ToGrid(unit.Position), Path[i]))
-                            {
-                                if (currentWaypointIndex != i)
-                                    _currentState = State.Shortcutting; // We can see this waypoint, so we are beelining towards it.
-                                currentWaypointIndex = i; // This waypoint is visible, try to go to it
-                            }
-                            else
-                            {
-                                // If we lose LOS to the current waypoint, stop looking further
-                                break;
-                            }
+                            CurrentWaypoint++;
                         }
-
-                        _targetPos = context.Map.FromGrid(Path[currentWaypointIndex]);
-
-                        distSqrt = Vector2.DistanceSquared(unit.Position, _targetPos);
-                        // If the unit is close enough to the current waypoint, advance to the next one
-                        if(distSqrt <= 4f && nextWayPoint < Path.Length - 1) // 4f is 2 units squared. Might be too long, or I may want alternate method.
+                        _TargetPosition = context.Map!.FromGrid(Path![CurrentWaypoint]);
+                    }
+                    else
+                    {
+                        _currentState = State.PathFinding; // Lost path somehow, try to repath.
+                    }
+                    break;
+                }
+                case State.DirectPursuit:
+                {
+                    if(targetUnit != null)
+                    {
+                        AssertUtil.NotNull(context.Map);
+                        if(context.Map.HasLineOfSight(unit.Position, targetUnit.Position, unit.Radius))
                         {
-                            nextWayPoint++; // Move to the next waypoint
-                            _targetPos = context.Map.FromGrid(Path[nextWayPoint]); // Update targetPos to the new waypoint
-                            _currentState = State.Pathfinding; // We are pathfinding here, not shortcutting anymore if we were previously.
+                            // Continue direct pursuit.
+                            _TargetPosition = targetUnit.Position;
                         }
-                        // If we are at the last waypoint and close enough, clear the path
-                        else if(distSqrt <= 4f && nextWayPoint == Path.Length - 1)
+                        else
                         {
-                            Path = null; // Reached the end of the path
-                            nextWayPoint = 0;
-                            unit.TargetPoint = unit.Position; // Stop moving
-                            _currentState = State.Idle; // Set state to idle, I guess.
-                                                        // Pretty sure this will never happen given current game assumptions.
-                            return; // Path completed, no further movement needed this frame
+                            // Lost target. Repath.
+                            _currentState = State.PathFinding;
                         }
                     }
                     else
                     {
-                        Pathfind(unit, context); // Try to pathfind again.
-
-                        AssertUtil.Assert(ValidPath(), "Pathfinding failed to find a valid path.");
-                        // Strictly speaking, I don't think this is a good way to do this.
-                        // Failure may be valid in some cases.
-
-                        AssertUtil.NotNull(context.Map);
-                        _targetPos = context.Map.FromGrid(Path![nextWayPoint]);
-                        _lastTargetPosition = _targetPos; // Update the last known target position.
-
+                        _currentState = State.Idle; // No valid target, give up.
                     }
+                    break;
                 }
-
-                // Calculate steering force towards the target position (waypoint or direct target)
-                Vector2 steeringTarget = GetPartialSteeringTarget(unit, _targetPos, context);
-
-                //Vector2 steeringTarget = Vector2.Normalize(targetPos - unit.Position);
-
-                // Anti-bunching: Add separation force from nearby friendly units
-                // This assumes IBoardContext can provide nearby units. You might need to implement
-                // a method like GetNearbyUnits(unit.Position, separationRadius) in IBoardContext.
-                // For demonstration, let's assume context.GetAllUnits() exists and we filter.
-                Vector2 separationForce = Vector2.Zero;
-                
-                IEnumerable<Unit> entities = context.Entities.Entities
-                    .OfType<Unit>()
-                    .Where(u => u.IsAlive && u.Team.IsFriendlyTo(unit.Team))
-                    .ToList(); // Get all friendly units
-
-                separationForce = GetSeparationSteering(unit, entities, context);
-                separationForce *= 1f;
-
-                // Combine steering forces (path following + separation).
-                // You might want to weight these forces based on priority.
-                Vector2 combinedSteering = Vector2.Normalize(steeringTarget + separationForce);
-
-
-                if(combinedSteering != Vector2.Zero) // Ensure we have a direction to move
+                default:
                 {
-                    Vector2 dir = combinedSteering * unit.MoveSpeed * deltaTime; // Multiply by deltaTime for frame-rate independence
-                    unit.TargetPoint = unit.Position + dir;
-                }
-                else
-                {
-                    unit.TargetPoint = unit.Position; // No movement needed.
+                    Debug.Assert(false, "Unknown AI State");
+                    break;
                 }
             }
-            else
-            {
-                // No target, Keep doing what you're doing.
-                // Well, ideally, follow the path properly, but That should really be a method call.
-            }
+
+            
+
+            //    Unit? target = unit.Target;
+
+            //if(target != null)
+            //{
+            //    float distSqrt = unit.DistanceSquaredTo(target);
+            //    _TargetPosition = target.Position;
+            //
+            //    if(unit.Weapon != null)
+            //    {
+            //        if(distSqrt <= unit.Weapon.AttackRangeSqr
+            //            && context.Map?.HasLineOfSight(context.Map.ToGrid(unit.Position), context.Map.ToGrid(target.Position)) == true)
+            //        {
+            //            unit.Weapon.TryShootEntity(unit, target, context);
+            //            // Might have to mess with control states, but the unit's movement automatically slows during cooldown, so for now, no need.
+            //            // And, the weapon likely controls that slowdown later.
+            //        }
+            //        // Might query the Weapon if I should be even trying to move or not. Later.
+            //
+            //    }
+            //
+            //
+            //    // Pathfinding logic
+            //    if(context.PathFinder != null && context.Map != null)
+            //    {
+            //        // Whole thing breaks if you don't have a Pathfinder and a map.
+            //
+            //        if(_currentState == State.Idle)
+            //        {
+            //            Pathfind(unit, context);
+            //            AssertUtil.Assert(ValidPath(), "Pathfinding failed to find a valid path.");
+            //            // would set to idle in such a failure state, maybe.
+            //        }
+            //        else if(_currentState == State.FollowingPath)
+            //        { 
+            //            // Was pathfinding. Look Ahead, and validate.
+            //            if(ValidPath())
+            //            {
+            //                // If we have a valid path, check if we can shortcut to the next waypoint.
+            //                if(context.Map.HasLineOfSight(context.Map.ToGrid(unit.Position), Path![CurrentWaypoint+1]))
+            //                {
+            //                    // We can see the next waypoint directly, so it is our new current waypoint.
+            //                    CurrentWaypoint++;
+            //                    // This is still pathfinding.
+            //                }
+            //            }
+            //            else
+            //            {
+            //                // Lost our path somehow. Repath.
+            //                Pathfind(unit, context);
+            //                AssertUtil.Assert(ValidPath(), "Pathfinding failed to find a valid path.");
+            //            }
+            //        }
+            //
+            //        // Recalculate path if no valid path exists OR
+            //        // if the target has moved significantly since the last path calculation
+            //        if(!ValidPath() || Vector2.DistanceSquared(_TargetPosition, _lastTargetPosition) > TargetRecalculateThresholdSqr)
+            //        {
+            //            Pathfind(unit, context);
+            //            // Assert that a valid path was found. This might be expected to fail in some situations, but for now, assume it should always work.
+            //            // (e.g., by stopping movement or finding a new target).
+            //            AssertUtil.Assert(ValidPath(), "Pathfinding failed to find a valid path.");
+            //            // would set to idle in such a failure state, maybe.
+            //        }
+            //
+            //        if(ValidPath())
+            //        {
+            //            // Shortcutting: Find the furthest visible waypoint
+            //            int currentWaypointIndex = CurrentWaypoint;
+            //            for(int i = CurrentWaypoint; i < Path!.Length; i++)
+            //            {
+            //                // Check if the unit has line of sight to this waypoint
+            //                // and if it's a valid tile to move towards (e.g., not blocked)
+            //                if(context.Map.HasLineOfSight(context.Map.ToGrid(unit.Position), Path[i]))
+            //                {
+            //                    if (currentWaypointIndex != i)
+            //                        _currentState = State.ApproachingTarget; // We can see this waypoint, so we are beelining towards it.
+            //                    currentWaypointIndex = i; // This waypoint is visible, try to go to it
+            //                }
+            //                else
+            //                {
+            //                    // If we lose LOS to the current waypoint, stop looking further
+            //                    break;
+            //                }
+            //            }
+            //
+            //            _TargetPosition = context.Map.FromGrid(Path[currentWaypointIndex]);
+            //
+            //            distSqrt = Vector2.DistanceSquared(unit.Position, _TargetPosition);
+            //            // If the unit is close enough to the current waypoint, advance to the next one
+            //            if(distSqrt <= 4f && CurrentWaypoint < Path.Length - 1) // 4f is 2 units squared. Might be too long, or I may want alternate method.
+            //            {
+            //                CurrentWaypoint++; // Move to the next waypoint
+            //                _TargetPosition = context.Map.FromGrid(Path[CurrentWaypoint]); // Update targetPos to the new waypoint
+            //                _currentState = State.FollowingPath; // We are pathfinding here, not shortcutting anymore if we were previously.
+            //            }
+            //            // If we are at the last waypoint and close enough, clear the path
+            //            else if(distSqrt <= 4f && CurrentWaypoint == Path.Length - 1)
+            //            {
+            //                Path = null; // Reached the end of the path
+            //                CurrentWaypoint = 0;
+            //                unit.TargetPoint = unit.Position; // Stop moving
+            //                _currentState = State.Idle; // Set state to idle, I guess.
+            //                                            // Pretty sure this will never happen given current game assumptions.
+            //                return; // Path completed, no further movement needed this frame
+            //            }
+            //        }
+            //        else
+            //        {
+            //            Pathfind(unit, context); // Try to pathfind again.
+            //
+            //            AssertUtil.Assert(ValidPath(), "Pathfinding failed to find a valid path.");
+            //            // Strictly speaking, I don't think this is a good way to do this.
+            //            // Failure may be valid in some cases.
+            //
+            //            AssertUtil.NotNull(context.Map);
+            //            _TargetPosition = context.Map.FromGrid(Path![CurrentWaypoint]);
+            //            _lastTargetPosition = _TargetPosition; // Update the last known target position.
+            //
+            //        }
+            //    }
+            //
+            //    // Calculate steering force towards the target position (waypoint or direct target)
+            //    Vector2 steeringTarget = GetPartialSteeringTarget(unit, _TargetPosition, context);
+            //
+            //    //Vector2 steeringTarget = Vector2.Normalize(targetPos - unit.Position);
+            //
+            //    // Anti-bunching: Add separation force from nearby friendly units
+            //    // This assumes IBoardContext can provide nearby units. You might need to implement
+            //    // a method like GetNearbyUnits(unit.Position, separationRadius) in IBoardContext.
+            //    // For demonstration, let's assume context.GetAllUnits() exists and we filter.
+            //    Vector2 separationForce = Vector2.Zero;
+            //    
+            //    IEnumerable<Unit> entities = context.Entities.Entities
+            //        .OfType<Unit>()
+            //        .Where(u => u.IsAlive && u.Team.IsFriendlyTo(unit.Team))
+            //        .ToList(); // Get all friendly units
+            //
+            //    separationForce = GetSeparationSteering(unit, entities, context);
+            //    separationForce *= 1f;
+            //
+            //    // Combine steering forces (path following + separation).
+            //    // You might want to weight these forces based on priority.
+            //    Vector2 combinedSteering = Vector2.Normalize(steeringTarget + separationForce);
+            //
+            //
+            //    if(combinedSteering != Vector2.Zero) // Ensure we have a direction to move
+            //    {
+            //        Vector2 dir = combinedSteering * unit.MoveSpeed * deltaTime; // Multiply by deltaTime for frame-rate independence
+            //        unit.TargetPoint = unit.Position + dir;
+            //    }
+            //    else
+            //    {
+            //        unit.TargetPoint = unit.Position; // No movement needed.
+            //    }
+            //}
+            //else
+            //{
+            //    // No target, Keep doing what you're doing.
+            //    // Well, ideally, follow the path properly, but That should really be a method call.
+            //}
+        }
+
+        private static bool TargetUnitValid(Unit? targetUnit)
+        {
+            return targetUnit != null && targetUnit.IsAlive;
         }
 
         private void Pathfind(Unit unit, IBoardContext context)
         {
-            Pathfind(unit, _targetPos, context);
-            _currentState = State.Pathfinding;
+            Pathfind(unit, _TargetPosition, context);
+            _currentState = ValidPath() ? State.PathFollowing : State.Idle;
             _lastPathfind = context.CurrentTime;
-            _lastTargetPosition = _targetPos; // Update the last known target position.
+            _lastTargetPosition = _TargetPosition; // Update the last known target position.
         }
 
         /// <summary>
@@ -184,7 +288,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         /// <returns>True if a valid path exists, false otherwise.</returns>
         public bool ValidPath()
         {
-            return Path != null && Path.Length > 0 && nextWayPoint < Path.Length;
+            return Path != null && Path.Length > 0 && CurrentWaypoint < Path.Length;
         }
 
         /// <summary>
@@ -210,11 +314,11 @@ namespace Wc3_Combat_Game.Components.Controllers
                 {
                     Debug.Assert(map[point].IsWalkable, $"Path contains non-walkable tile at {point}");
                 }
-                nextWayPoint = 0;
+                CurrentWaypoint = 0;
 
                 if(Path[0] == startTile && Path.Length > 1)
                 {
-                    nextWayPoint = 1; // Skip first waypoint if it's the current tile.
+                    CurrentWaypoint = 1; // Skip first waypoint if it's the current tile.
                 }
 
             }
@@ -328,9 +432,9 @@ namespace Wc3_Combat_Game.Components.Controllers
                 string stateText = $"AI: ";
                 if (_currentState == State.Idle)
                     stateText += "Idle";
-                else if (_currentState == State.Pathfinding)
+                else if (_currentState == State.FollowingPath)
                     stateText += "Pathfinding";
-                else if (_currentState == State.Shortcutting)
+                else if (_currentState == State.ApproachingTarget)
                     stateText += "Shortcutting";
                 else
                     stateText += "Unknown";
@@ -347,8 +451,8 @@ namespace Wc3_Combat_Game.Components.Controllers
             {
                 AssertUtil.NotNull(Path); // ValidPath already does this, but compiler insists.
                 float tileSize = map.TileSize / 4;
-                int x = nextWayPoint;
-                Vector2 currentPointWorld = (x == nextWayPoint) ? unit.Position : map.FromGrid(Path[x-1]);
+                int x = CurrentWaypoint;
+                Vector2 currentPointWorld = (x == CurrentWaypoint) ? unit.Position : map.FromGrid(Path[x-1]);
                 Vector2 nextPointWorld = map.FromGrid(Path[x]);
                
                 
@@ -356,7 +460,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                 {
                     // Next waypoint and line connecting it.
                     g.DrawLine(Pens.Yellow, currentPointWorld.ToPoint(), nextPointWorld.ToPoint());
-                    Vector2 currentTargetWaypointWorld = map.FromGrid(Path![nextWayPoint]);
+                    Vector2 currentTargetWaypointWorld = map.FromGrid(Path![CurrentWaypoint]);
                     tileSize = map.TileSize / 3; // Make it slightly larger
                     g.FillRectangle(Brushes.Red, currentTargetWaypointWorld.X - tileSize / 2, currentTargetWaypointWorld.Y - tileSize / 2, tileSize, tileSize);
 
@@ -365,9 +469,9 @@ namespace Wc3_Combat_Game.Components.Controllers
                 if(context.DebugSettings.Get(DebugSetting.DrawEnemyControllerFullPath))
                 {
                     // Draw lines between path points and highlight waypoints
-                    for(x = nextWayPoint; x < Path.Length; x++) // Start drawing from the current waypoint
+                    for(x = CurrentWaypoint; x < Path.Length; x++) // Start drawing from the current waypoint
                     {
-                        currentPointWorld = (x == nextWayPoint) ? unit.Position : map.FromGrid(Path[x - 1]);
+                        currentPointWorld = (x == CurrentWaypoint) ? unit.Position : map.FromGrid(Path[x - 1]);
                         nextPointWorld = map.FromGrid(Path[x]);
 
 
@@ -382,7 +486,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                 {
                     // Draw line of sight Check to next waypoint, via asking the map to draw it.
                     //if (unit.TargetPoint != null)
-                    map.DrawDebugLineOfSight(g, unit.Position, _targetPos, unit.Radius);
+                    map.DrawDebugLineOfSight(g, unit.Position, _TargetPosition, unit.Radius);
                 }
             }
         }

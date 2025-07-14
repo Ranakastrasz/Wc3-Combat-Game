@@ -177,7 +177,7 @@ namespace Wc3_Combat_Game.Core
                     Vector2 spawnPoint = spawnPoints[RandomUtils.RandomIntBelow(spawnPoints.Count)]; // Poor, but for now
 
                     Unit unit = UnitFactory.SpawnUnit(_waves[_waveCurrent].Unit,spawnPoint, new BasicAIController(), TeamType.Enemy);
-                    unit.Target = PlayerUnit;
+                    unit.TargetUnit = PlayerUnit;
                     AddUnit(unit);
                     // Elite
                     if (_waveSpawnsRemaining > 0 && _waveSpawnsRemaining == _waves[_waveCurrent].CountToSpawn)
