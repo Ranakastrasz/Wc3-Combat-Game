@@ -35,6 +35,13 @@ namespace Wc3_Combat_Game.Entities
             //    _targetPoint = value;
             //}
         }
+
+        public Vector2? GetTargetPosition()
+        {
+            if (TargetUnit != null && TargetUnit.IsAlive)
+                return TargetUnit.Position;
+            return TargetPoint;
+        }
         public float MaxLife => Prototype.Life;
         public float Life { get; protected set; }
 
@@ -70,6 +77,11 @@ namespace Wc3_Combat_Game.Entities
         {
             if (deltaTime <= 0f) return; // No time has passed, no update needed.
 
+            if(!IsAlive)
+            {
+                MoveSpeed *= 0.95f; // Needs deltaTime Scaled, but good enough for now, and has no game effect yet.
+                return;
+            }
             if(context.Map?[context.Map.ToGrid(Position)].GetChar == 'F')
             {
                 // If on a fountain tile, regenerate health and mana faster.
@@ -96,8 +108,6 @@ namespace Wc3_Combat_Game.Entities
             {
                 _velocity *= 0.5f; // Slow down while shooting.
             }
-
-
 
             base.Update(deltaTime, context); // Includes movement and collision.
 

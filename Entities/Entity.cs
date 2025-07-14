@@ -11,7 +11,8 @@ namespace Wc3_Combat_Game.Entities
     /// </summary>
     public class Entity
     {
-
+        public readonly int Index = s_NextIndex++;
+        private static int s_NextIndex = 0;
 
         public float Radius { get; protected set; } // This will be part of the ICollidable later.
                                                     // And IDraw, seperately, ofc.
@@ -96,6 +97,11 @@ namespace Wc3_Combat_Game.Entities
         public float DistanceSquaredTo(Entity other)
         {
             Vector2 between = other.Position - _position;
+            return between.LengthSquared();
+        }
+        public float DistanceSquaredTo(Vector2 otherPosition)
+        {
+            Vector2 between = otherPosition - _position;
             return between.LengthSquared();
         }
 
