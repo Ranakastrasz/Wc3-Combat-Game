@@ -9,6 +9,7 @@ using Wc3_Combat_Game.Components.Controllers;
 using AssertUtils;
 using Wc3_Combat_Game.Prototype.Weapons;
 using Wc3_Combat_Game.IO;
+using Wc3_Combat_Game.Terrain;
 
 
 namespace Wc3_Combat_Game.Entities
@@ -17,7 +18,7 @@ namespace Wc3_Combat_Game.Entities
     /// Represents a living or interactive game unit with health and actions.
     /// Inherits from Entity.
     /// </summary>
-    public class Unit : MobileEntity
+    public class Unit: MobileEntity
     {
         UnitPrototype Prototype;
 
@@ -38,7 +39,7 @@ namespace Wc3_Combat_Game.Entities
 
         public Vector2? GetTargetPosition()
         {
-            if (TargetUnit != null && TargetUnit.IsAlive)
+            if(TargetUnit != null && TargetUnit.IsAlive)
                 return TargetUnit.Position;
             return TargetPoint;
         }
@@ -58,14 +59,14 @@ namespace Wc3_Combat_Game.Entities
 
         public float MoveSpeed { get; set; }
 
-        public Unit(UnitPrototype prototype, Vector2 position) : base(prototype.Size, position, prototype.FillColor)
+        public Unit(UnitPrototype prototype, Vector2 position) : base(prototype.Radius, position, prototype.FillColor)
         {
             Prototype = prototype;
             Life = prototype.Life;
             Mana = prototype.Mana;
             MoveSpeed = prototype.Speed;
 
-            if (prototype.Weapon is WeaponPrototypeBasic basic)
+            if(prototype.Weapon is WeaponPrototypeBasic basic)
             {
                 Weapon = new BasicWeapon(basic);
             }
@@ -75,11 +76,11 @@ namespace Wc3_Combat_Game.Entities
 
         public override void Update(float deltaTime, IBoardContext context)
         {
-            if (deltaTime <= 0f) return; // No time has passed, no update needed.
+            if(deltaTime <= 0f) return; // No time has passed, no update needed.
 
             if(!IsAlive)
             {
-            //    MoveSpeed *= 0.95f;
+                //    MoveSpeed *= 0.95f;
                 base.Update(deltaTime, context); // Includes movement and collision.
                 return;
             }
@@ -95,12 +96,12 @@ namespace Wc3_Combat_Game.Entities
                 Mana = MathF.Min(Mana + ManaRegen * deltaTime, MaxMana);
             }
 
-                Controller?.Update(this, deltaTime, context);
+            Controller?.Update(this, deltaTime, context);
 
             if(TargetPoint != null)
             {
                 Vector2 moveVector = (Vector2)TargetPoint - Position;
-                if(Vector2.DistanceSquared(Position, (Vector2)TargetPoint) < MoveSpeed*deltaTime)
+                if(Vector2.DistanceSquared(Position, (Vector2)TargetPoint) < MoveSpeed * deltaTime)
                     _velocity = moveVector / deltaTime; // Just reach the point this frame.
                 else
                     _velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
@@ -123,11 +124,11 @@ namespace Wc3_Combat_Game.Entities
             base.DrawDebug(g, context);
             Controller?.DrawDebug(g, context, this);
 
-            if (!TimeUtils.HasElapsed(context.CurrentTime,_lastDamaged,s_DamageFlashTime))
+            if(!TimeUtils.HasElapsed(context.CurrentTime, _lastDamaged, s_DamageFlashTime))
             {
                 g.FillEllipse(Brushes.White, BoundingBox);
             }
-            else if (IsAlive)
+            else if(IsAlive)
             {
                 using var brush = new SolidBrush(_fillColor);
                 g.FillEllipse(brush, BoundingBox);
@@ -145,7 +146,7 @@ namespace Wc3_Combat_Game.Entities
             // Colors are bad, but worry later.
             // blends into the existing terrain.
 
-            if (Life < MaxLife && Life > 0)
+            if(Life < MaxLife && Life > 0)
             {
                 // --- Health Bar ---
                 RectangleF healthBarBackgroundRect = new RectangleF(
@@ -170,7 +171,7 @@ namespace Wc3_Combat_Game.Entities
             }
             // --- Mana Bar (below health) ---
             // --- More of a cooldown bar. For player only.
-            if (Team == TeamType.Ally)
+            if(Team == TeamType.Ally)
             {
                 if(Weapon != null)
                 {
@@ -233,11 +234,22 @@ namespace Wc3_Combat_Game.Entities
         {
             Life -= amount;
             _lastDamaged = context.CurrentTime;
-            if (Life <= 0f)
+            if(Life <= 0f)
             {
                 Life = 0;
                 Die(context);
             }
+        }
+
+        public bool HasClearPathTo(Vector2 targetPosition, IBoardContext context)
+        {
+            AssertUtil.NotNull(context.Map);
+            if(context.Map.HasLineOfSight(Position, targetPosition, Radius))
+            {
+                return true;
+
+            }
+            return false;
         }
     }
     static class UnitFactory

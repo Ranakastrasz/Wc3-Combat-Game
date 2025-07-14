@@ -17,7 +17,9 @@ namespace Wc3_Combat_Game.Prototype
         public readonly float LifeRegen;
         public readonly float Mana = 0f;
         public readonly float ManaRegen = 0f;
-        public readonly float Size;
+        public readonly float Radius;
+        public readonly float Mass;
+        public readonly float PushPriority;
         public readonly float Speed;
         public readonly Color FillColor;
         public readonly WeaponPrototype Weapon;
@@ -28,19 +30,21 @@ namespace Wc3_Combat_Game.Prototype
         }
         public readonly DrawShape Shape;
 
-        public UnitPrototype(WeaponPrototype weapon, float maxHealth, float healthRegen, float size, float speed, Color fillColor, DrawShape shape)
+        public UnitPrototype(WeaponPrototype weapon, float maxHealth, float healthRegen, float radius, float speed, Color fillColor, DrawShape shape)
         {
             Weapon = weapon;
             Life = maxHealth;
             LifeRegen = healthRegen;
-            Size = size;
+            Radius = radius;
+            Mass = radius * radius; // Simple mass calculation based on radius (area for 2D).
+            PushPriority = Mass;
             Speed = speed;
             Shape = shape;
             FillColor = fillColor;
         }
 
-        public UnitPrototype(WeaponPrototype weapon, float maxHealth, float healthRegen, float mana, float manaRegen, float size, float speed, Color fillColor, DrawShape shape)
-            : this(weapon, maxHealth, healthRegen, size, speed, fillColor, DrawShape.Square)
+        public UnitPrototype(WeaponPrototype weapon, float maxHealth, float healthRegen, float mana, float manaRegen, float radius, float speed, Color fillColor, DrawShape shape = DrawShape.Square)
+            : this(weapon, maxHealth, healthRegen, radius, speed, fillColor, shape)
         {
             Mana = mana;
             ManaRegen = manaRegen;

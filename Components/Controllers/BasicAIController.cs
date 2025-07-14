@@ -20,10 +20,20 @@ namespace Wc3_Combat_Game.Components.Controllers
         // Store the target's position when the path was last calculated
         private Vector2 _lastTargetPosition = Vector2.Zero;
         // Threshold for target movement to trigger path recalculation
-        private const float TargetRecalculateThresholdSqr = 1024; // If target moves more than 32 units.
+        private const float TargetRecalculateThresholdSqr = 32*32; // If target moves more than 32 units.
+        private const float SeparationDistanceSqr = 20f*20f; // Minimum distance to maintain from other friendly units.
+
 
         private Vector2 _TargetMovePosition;
         private float _lastPathfind = 0f;
+        private const float PathRecalculationInterval = 0.5f; // Minimum time between path recalculations.
+
+        private float _lastLostPath = 0f;
+        private const float RecoveryDelay = 1f; // Time to wait after losing path before trying to recover.
+        private float _lastPartialSteering = 0; 
+
+        private const float WaypointTolerance = 2f*2f; // Distance to final waypoint to consider "arrived"
+
 
         private enum State
         {
@@ -39,7 +49,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         public void Update(Unit unit, float deltaTime, IBoardContext context)
         {
             if(deltaTime <= 0f) return; // No time has passed, no update needed.
-
+            AssertUtil.NotNull(context.Map);
             _TargetMovePosition = unit.Position;
 
             if(!TargetUnitValid(unit.TargetUnit) || unit.GetTargetPosition() is not Vector2 targetPosition)
@@ -59,7 +69,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                 case State.PathFinding:
                 {
                     // No current path. Even if we have a path, this means it is invalid.
-                    if(Pathfind(unit, context))
+                    if(TryPathfind(unit, context))
                     {
                         _currentState = State.PathFollowing;
                     }
@@ -78,7 +88,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                     }
                     if(_lastTargetPosition != targetPosition 
                         && Vector2.DistanceSquared(_lastTargetPosition, targetPosition) > TargetRecalculateThresholdSqr
-                        && TimeUtils.HasElapsed(context.CurrentTime, _lastPathfind, 2f)) // Limit to 1 per 2 seconds.
+                        && TimeUtils.HasElapsed(context.CurrentTime, _lastPathfind, PathRecalculationInterval)) // Limit to 1 per 2 seconds.
                     {
                         // Target has moved significantly since last path calculation. Repath.
                         _currentState = State.PathFinding;
@@ -91,7 +101,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                         if(CurrentWaypoint < Path!.Length - 1) // Ensure there is a next waypoint
                         {
                             var nextWaypoint = Path![CurrentWaypoint + 1];
-                            if(context.Map?.HasLineOfSight(context.Map.ToGrid(unit.Position), nextWaypoint) == true)
+                            if(unit.HasClearPathTo(context.Map.FromGrid(nextWaypoint),context))
                             {
                                 CurrentWaypoint++;
                             }
@@ -100,7 +110,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                         { 
                             // No further waypoints available. Check for when we arrive, then re-pathfind.
                             float distSqr = Vector2.DistanceSquared(unit.Position, context.Map!.FromGrid(Path![CurrentWaypoint]));
-                            if (distSqr <= 4f) // 2 units
+                            if (distSqr <= WaypointTolerance)
                             {
                                 // Reached the end of the path. Since we didn't spot the target,
                                 // but still have one, build a new path.
@@ -109,20 +119,36 @@ namespace Wc3_Combat_Game.Components.Controllers
                         }
 
                         // Failsafe: check LOS to current waypoint. If blocked, re-path.
-                        if(context.Map?.HasLineOfSight(context.Map.ToGrid(unit.Position), Path[CurrentWaypoint]) != true)
+                        if(!unit.HasClearPathTo(context.Map.FromGrid(Path[CurrentWaypoint]), context))
                         {
                             if(CurrentWaypoint != 0)
                             {
                                 // Check previous waypoint, to see if recovery is possible.
                                 Point lastWaypoint = Path![CurrentWaypoint-1];
-                                if(context.Map != null && context.Map.HasLineOfSight(context.Map.ToGrid(unit.Position), lastWaypoint))
+                                if(unit.HasClearPathTo(context.Map.FromGrid(lastWaypoint), context))
                                 {
                                     CurrentWaypoint--;
                                 }
                                 else
                                 {
-                                    // Can't reach last waypoint either.
-                                    _currentState = State.PathFinding;
+                                    if(_lastLostPath == 0) // first time losing path
+                                    {
+                                        _lastLostPath = context.CurrentTime;
+                                        // fallback steering now
+                                        GetPartialSteeringTarget(unit, _TargetMovePosition, context);
+                                        _lastPartialSteering = context.CurrentTime;
+                                    }
+                                    else if(TimeUtils.HasElapsed(context.CurrentTime, _lastLostPath, RecoveryDelay))
+                                    {
+                                        _currentState = State.PathFinding; // delay expired, try to repath
+                                        _lastLostPath = 0; // reset timer
+                                    }
+                                    else
+                                    {
+                                        // Still waiting for delay, fallback steering
+                                        GetPartialSteeringTarget(unit, _TargetMovePosition, context);
+                                        _lastPartialSteering = context.CurrentTime;
+                                    }
                                 }
 
                             }
@@ -164,6 +190,7 @@ namespace Wc3_Combat_Game.Components.Controllers
             }
 
             // Action phase: Attack if possible, then move towards target position.
+            // Ideally, you delegate this to the unit, I.e. Unit.TryShootEntity/Point.
             if(unit.Weapon != null && canSeeTarget)
             {
                 float distSqr = unit.DistanceSquaredTo(targetPosition);
@@ -176,27 +203,42 @@ namespace Wc3_Combat_Game.Components.Controllers
 
             if(_TargetMovePosition != unit.Position)
             {
-                Vector2 steeringTarget = GetPartialSteeringTarget(unit, _TargetMovePosition, context);
-                // Anti-bunching: Add separation force from nearby friendly units
-                Vector2 separationForce = Vector2.Zero;
+                Vector2 steeringTarget = Vector2.Normalize(_TargetMovePosition - unit.Position);
+
+                // Get friendly units for separation
                 IEnumerable<Unit> entities = context.Entities.Entities
                     .OfType<Unit>()
                     .Where(u => u.IsAlive && u.Team.IsFriendlyTo(unit.Team))
-                    .ToList(); // Get all friendly units
-                separationForce = GetSeparationSteering(unit, entities, context);
-                separationForce *= 1f;
-                // Combine steering forces (path following + separation).
-                // You might want to weight these forces based on priority.
-                Vector2 combinedSteering = Vector2.Normalize(steeringTarget + separationForce);
-                if(combinedSteering != Vector2.Zero) // Ensure we have a direction to move
-                {
-                    Vector2 dir = combinedSteering * unit.MoveSpeed * deltaTime; // Multiply by deltaTime for frame-rate independence
-                    unit.TargetPoint = unit.Position + dir;
-                }
+                    .ToList();
+
+                Vector2 separationForce = GetSeparationSteering(unit, entities, context);
+
+                // Decompose separation
+                float forwardDot = Vector2.Dot(steeringTarget, separationForce);
+                Vector2 forwardComponent = steeringTarget * MathF.Min(forwardDot, 0f); // Clamp to ≤ 0
+                Vector2 lateralComponent = separationForce - forwardComponent;
+
+                // Tunable weights
+                float forwardOppositionWeight = 1.0f;  // How much to slow when blocked
+                float lateralSeparationWeight = 1.5f;  // How much to sidestep
+
+                // Apply weighted components
+                Vector2 adjustedSeparation =
+                    forwardComponent * forwardOppositionWeight +
+                    lateralComponent * lateralSeparationWeight;
+
+                // Combine with target movement
+                Vector2 combined = steeringTarget + adjustedSeparation;
+
+                // Normalize if needed
+                if(combined.LengthSquared() < 0.01f)
+                    combined = steeringTarget; // Don't stop completely unless really necessary
                 else
-                {
-                    unit.TargetPoint = unit.Position; // No movement needed.
-                }
+                    combined = Vector2.Normalize(combined);
+
+                // Move the unit
+                Vector2 dir = combined * unit.MoveSpeed * deltaTime;
+                unit.TargetPoint = unit.Position + dir;
             }
             else
             {
@@ -207,7 +249,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         private bool CanSeeTarget(Unit unit, IBoardContext context)
         {
             Vector2? targetPosition = unit.GetTargetPosition();
-            return targetPosition != null && context.Map.HasLineOfSight(unit.Position, targetPosition.Value, unit.Radius);
+            return targetPosition != null && unit.HasClearPathTo(targetPosition.Value, context);
         }
 
         private static bool TargetUnitValid(Unit? targetUnit)
@@ -224,7 +266,7 @@ namespace Wc3_Combat_Game.Components.Controllers
             return Path != null && Path.Length > 0 && CurrentWaypoint < Path.Length;
         }
 
-        private bool Pathfind(Unit unit, IBoardContext context)
+        private bool TryPathfind(Unit unit, IBoardContext context)
         {
             Vector2? targetPos = unit.GetTargetPosition();
             if (targetPos == null) return false; // No target to pathfind to.
@@ -273,48 +315,39 @@ namespace Wc3_Combat_Game.Components.Controllers
         }
 
         /// <summary>
-        /// Calculates a steering vector towards a target position, applying shortcutting if line of sight is clear.
+        /// Calculates a steering vector towards a target position
         /// </summary>
         /// <param name="myPos">The current position of the unit.</param>
         /// <param name="targetPos">The target world position.</param>
         /// <param name="context">The board context providing map information.</param>
         /// <returns>A normalized steering vector, or Vector2.Zero if already at target.</returns>
-         public static Vector2 GetPartialSteeringTarget(Unit unit, Vector2 targetPos, IBoardContext context)
+        public static Vector2 GetPartialSteeringTarget(Unit unit, Vector2 targetPos, IBoardContext context)
         {
-
-            Map? map = context.Map;
-            AssertUtil.NotNull(map);
+            var map = context.Map!;
             if(unit.Position == targetPos)
-            {
-                return Vector2.Zero; // Already at the target position.
-            }
+                return Vector2.Zero;
 
             Point myTile = map.ToGrid(unit.Position);
             Point targetTile = map.ToGrid(targetPos);
 
-            if(map.HasLineOfSight(unit.Position, targetPos,unit.Radius))
-            {
-                // Direct line
+            if(map.HasLineOfSight(unit.Position, targetPos, unit.Radius))
                 return Vector2.Normalize(targetPos - unit.Position);
-            }
 
             Vector2 bestDir = Vector2.Zero;
             float bestDist = float.MaxValue;
 
             foreach(Point neighbor in map.GetAdjacentTiles(myTile))
             {
-                //Vector2Int offset = neighbor - myTile;
                 if(!map[neighbor].IsWalkable)
                     continue;
 
-                float dist = GeometryUtils.DistanceSquared(targetTile, neighbor);
+                float dist = Vector2.DistanceSquared(new Vector2(neighbor.X, neighbor.Y), new Vector2(targetTile.X, targetTile.Y));
                 if(dist < bestDist)
                 {
                     bestDist = dist;
                     bestDir = Vector2.Normalize(map.FromGrid(neighbor) - unit.Position);
                 }
             }
-            AssertUtil.Assert(!bestDir.IsNaN());
             return bestDir;
         }
         /// <summary>
@@ -397,7 +430,8 @@ namespace Wc3_Combat_Game.Components.Controllers
 
                 if (!TimeUtils.HasElapsed(context.CurrentTime, _lastPathfind, 0.1f))
                     stateText += "\n (Path refreshed)";
-
+                if (!TimeUtils.HasElapsed(context.CurrentTime, _lastPartialSteering, 0.1f))
+                    stateText += "\n (Partial steering active)";
                 using var font = new Font("Arial", 8);
                 using var brush = new SolidBrush(Color.White);
                 g.DrawString(stateText, font, brush, unit.Position.X + unit.Radius, unit.Position.Y - unit.Radius);
@@ -459,7 +493,10 @@ namespace Wc3_Combat_Game.Components.Controllers
                 if (context.DebugSettings.Get(DebugSetting.DrawEnemyControllerLOS))
                 {
                     // Draw line of sight Check to next waypoint, via asking the map to draw it.
-                    map.DrawDebugLineOfSight(g, unit.Position, _TargetMovePosition, unit.Radius);
+                    if (_currentState == State.PathFollowing)
+                        map.DrawDebugLineOfSight(g, unit.Position, context.Map.FromGrid(Path[CurrentWaypoint]), unit.Radius);
+                    else if (_currentState == State.DirectPursuit)
+                        map.DrawDebugLineOfSight(g, unit.Position, unit.GetTargetPosition().Value, unit.Radius);
                 }
             }
         }

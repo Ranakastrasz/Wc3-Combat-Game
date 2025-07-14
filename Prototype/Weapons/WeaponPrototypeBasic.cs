@@ -37,7 +37,7 @@ namespace Wc3_Combat_Game.Prototype.Weapons
                 case ProjectileAction projEffect: // Created a projectile. That projectile deals damage.
                     var oldProj = projEffect.Prototype;
                     var newProj = new ProjectilePrototype(
-                        oldProj.Size,
+                        oldProj.Radius,
                         oldProj.Speed,
                         oldProj.Lifespan,
                         new DamageAction(damage),

@@ -11,8 +11,7 @@
         DrawMapCollisionTiles,
         //DrawProjectileHomingLine, // Could be interesting
         //DrawProjectileTargetLine, // Not even sure what this would do.
-        ShowEntityBounds,
-        ShowEntityIDs,
+        DrawEntityIDs,
         ShowEntityCount,
         ShowFPS,
         ShowGameTime,
@@ -34,8 +33,7 @@
             [DebugSetting.DrawMapCollisionTiles] = "Draw.Map.CollisionTiles",
             //[DebugSetting.DrawProjectileHomingLine] = "Draw.Projectile.HomingLine",
             //[DebugSetting.DrawProjectileTargetLine] = "Draw.Projectile.TargetLine",
-            [DebugSetting.ShowEntityBounds] = "Show.EntityBounds",
-            [DebugSetting.ShowEntityIDs] = "Show.EntityIDs",
+            [DebugSetting.DrawEntityIDs] = "Show.EntityIDs",
             [DebugSetting.ShowEntityCount] = "Show.EntityCount",
             [DebugSetting.ShowFPS] = "Show.FPS",
             [DebugSetting.ShowGameTime] = "Show.GameTime",
@@ -81,8 +79,7 @@
             //[DebugSetting.DrawTowerCooldown] = false,
             //[DebugSetting.DrawProjectileHomingLine] = false,
             //[DebugSetting.DrawProjectileTargetLine] = false,
-            [DebugSetting.ShowEntityBounds] = false,                // Implemented
-            [DebugSetting.ShowEntityIDs] = false,
+            [DebugSetting.DrawEntityIDs] = false,
             [DebugSetting.ShowEntityCount] = false,
             [DebugSetting.ShowFPS] = false,
             [DebugSetting.ShowGameTime] = false,

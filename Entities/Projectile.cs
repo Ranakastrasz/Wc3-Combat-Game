@@ -21,7 +21,7 @@ namespace Wc3_Combat_Game.Entities
         public Entity? Caster;
 
 
-        public Projectile(ProjectilePrototype prototype, Entity? caster, Vector2 position, Vector2 direction): base(prototype.Size, position, prototype.FillColor)
+        public Projectile(ProjectilePrototype prototype, Entity? caster, Vector2 position, Vector2 direction): base(prototype.Radius, position, prototype.FillColor)
         {
             _prototype = prototype;
             Caster = caster;

@@ -28,47 +28,30 @@ namespace Wc3_Combat_Game.Entities
 
             float collisionRadius = Radius;
 
-            if (!map.CollidesAt(newPosition, collisionRadius))
+            // Try full movement first
+            if(map.HasLineOfSight(_position, newPosition, collisionRadius))
             {
                 _position = newPosition;
-                // not ideal, but good enough for now.
+                return;
             }
+
+            // Try X-only
+            Vector2 xOnly = _position + new Vector2(_velocity.X * deltaTime, 0);
+            bool xOk = map.HasLineOfSight(_position, xOnly, collisionRadius);
+
+            // Try Y-only
+            Vector2 yOnly = _position + new Vector2(0, _velocity.Y * deltaTime);
+            bool yOk = map.HasLineOfSight(_position, yOnly, collisionRadius);
+
+            if(xOk)
+                _position += new Vector2(_velocity.X * deltaTime, 0);
+            else if(yOk)
+                _position += new Vector2(0, _velocity.Y * deltaTime);
             else
-            {
-                float moveX = _velocity.X * deltaTime;
-                float moveY = _velocity.Y * deltaTime;
+            { } // Cannot move.
+            //AssertUtil.Assert(map.CollidesAt(_position, collisionRadius) == false, "Post-collision position is colliding!");
 
-
-                float xDirection = Math.Sign(moveX);
-                float allowedMoveX = 0;
-                if(moveX != 0)
-                {
-                    float step = 0.1f * xDirection;
-                    for(float delta = 0; Math.Abs(delta) < Math.Abs(moveX); delta += step)
-                    {
-                        Vector2 testPos = _position + new Vector2(delta, 0);
-                        if(map.CollidesAt(testPos, collisionRadius))
-                            break;
-                        allowedMoveX = delta;
-                    }
-                }
-
-                float yDirection = Math.Sign(moveY);
-                float allowedMoveY = 0;
-                if(moveY != 0)
-                {
-                    float step = 0.1f * yDirection;
-                    for(float delta = 0; Math.Abs(delta) < Math.Abs(moveY); delta += step)
-                    {
-                        Vector2 testPos = _position + new Vector2(0, delta);
-                        if(map.CollidesAt(testPos, collisionRadius))
-                            break;
-                        allowedMoveY = delta;
-                    }
-                }
-                _position += new Vector2(allowedMoveX, allowedMoveY);
-                OnTerrainCollision(context);
-            }
+            OnTerrainCollision(context);
 
         }
 

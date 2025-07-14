@@ -98,20 +98,25 @@ namespace Wc3_Combat_Game.Core
             var weapon25Damage = meleeWeaponBase.SetDamage(25f);
             var weapon200Damage = meleeWeaponBase.SetDamage(200f);
 
-            var rangedWeaponBase = new WeaponPrototypeBasic(
-                new ProjectileAction(new ProjectilePrototype(2.5f, 225f, 4f, null, Color.DarkMagenta)),
-                1f,
-                150f);
+            var weapon10DamageRanged = new WeaponPrototypeBasic(
+                new ProjectileAction(new ProjectilePrototype(2.5f, 225f, 4f, new DamageAction(10f), Color.DarkMagenta)),
+                0.5f,
+                150f,10f); // For some reason, this doesnt end up using mana. Dunno why.
 
-            var weapon10DamageRanged = rangedWeaponBase.SetDamage(10f);
+            var weapon10DamageRangedRapid = new WeaponPrototypeBasic(
+                new ProjectileAction(new ProjectilePrototype(5f, 375f, 4f, new DamageAction(10f), Color.Black)),
+                0.25f,
+                500f);
 
+
+            var wave3Unit = new UnitPrototype(weapon10DamageRanged, 30f,   0f, 10f,0.5f, 5f,  40f, Color.Orange , UnitPrototype.DrawShape.Square);
 
             //_waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 1));
             _waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 12f,   2f,  4f,  50f, Color.Brown  , UnitPrototype.DrawShape.Circle), 32));
             _waves.Add(new Wave(new UnitPrototype(weapon10Damage      , 10f, 0.1f,  4f,  75f, Color.Pink   , UnitPrototype.DrawShape.Circle), 32));
-            _waves.Add(new Wave(new UnitPrototype(weapon10DamageRanged, 30f,   0f, 5f,  40f, Color.Orange , UnitPrototype.DrawShape.Square), 16));
+            _waves.Add(new Wave(wave3Unit, 16));
             _waves.Add(new Wave(new UnitPrototype(weapon25Damage      , 80f,   2f, 10f,  50f, Color.Brown  , UnitPrototype.DrawShape.Square), 8));
-            _waves.Add(new Wave(new UnitPrototype(weapon200Damage     , 400f,  0f, 15f, 100f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
+            _waves.Add(new Wave(new UnitPrototype(weapon10DamageRangedRapid, 400f, 0f, 15f, 100f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
 
         }
 

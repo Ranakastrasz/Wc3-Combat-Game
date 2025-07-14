@@ -11,7 +11,7 @@ namespace Wc3_Combat_Game.Prototype
 {
     public class ProjectilePrototype
     {
-        public float Size;
+        public float Radius;
         public float Speed;
         public float Lifespan;
         public IGameplayAction? ImpactEffect;
@@ -20,7 +20,7 @@ namespace Wc3_Combat_Game.Prototype
 
         public ProjectilePrototype(float size, float speed, float lifespan, IGameplayAction? impactEffect, Color fillColor)
         { 
-            Size = size;
+            Radius = size;
             Speed = speed;
             Lifespan = lifespan;
             ImpactEffect = impactEffect;
@@ -30,7 +30,7 @@ namespace Wc3_Combat_Game.Prototype
         public static ProjectilePrototype Clone(ProjectilePrototype projectile)
         {
             AssertUtil.NotNull(projectile);
-            return new ProjectilePrototype(projectile.Size, projectile.Speed, projectile.Lifespan, projectile.ImpactEffect, projectile.FillColor);
+            return new ProjectilePrototype(projectile.Radius, projectile.Speed, projectile.Lifespan, projectile.ImpactEffect, projectile.FillColor);
         }
     }
 }
