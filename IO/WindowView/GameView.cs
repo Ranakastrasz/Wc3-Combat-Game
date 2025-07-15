@@ -235,14 +235,15 @@ namespace Wc3_Combat_Game
             {
                 // Draw camera bounds in world space (inverted Y for Windows Forms)
                 var cameraBounds = _camera.Viewport;
-                using var cameraPen = new Pen(Color.Magenta, 2);
+                var cameraPen = DrawContext.DrawCache.GetPen(Color.Magenta, 2);
                 g.DrawRectangle(cameraPen, cameraBounds.X, cameraBounds.Y, cameraBounds.Width, cameraBounds.Height);
             }
 
             if(_controller.IsPaused())
             {
                 // Draw a semi-transparent overlay to indicate pause state
-                using var overlayBrush = new SolidBrush(Color.FromArgb(128, Color.Gray));
+
+                var overlayBrush = DrawContext.DrawCache.GetSolidBrush(Color.FromArgb(128, Color.Gray));
                 g.Transform = new Matrix(); // Reset Transform to Identity.
                 g.FillRectangle(overlayBrush, this.ClientRectangle);
             }
@@ -341,13 +342,12 @@ namespace Wc3_Combat_Game
             Graphics g = e.Graphics;
             g.Clear(Color.LightGray);
             AssertUtil.NotNull(DrawContext);
+            Font font = DrawContext.DrawCache.GetFont("Arial", 8);
+
             if(DrawContext.DebugSettings.Get(DebugSetting.ShowFPS))
             {
                 // Draw FPS counter
-                using(var font = new Font("Arial", 10)) // Using 'using' for proper disposal
-                {
-                    g.DrawString($"FPS: {_controller.Fps}", font, Brushes.Black, new PointF(10, 10));
-                }
+                g.DrawString($"FPS: {_controller.Fps}", font, Brushes.Black, new PointF(10, 10));
             }
 
             // Safely get snapshots of the data from both threads
@@ -361,67 +361,65 @@ namespace Wc3_Combat_Game
             {
                 paintData = DebugPaintDurations.ToArray();
             }
+            // Disable composites for now. Not really nessesary.
 
             // Ensure data arrays have the same length for sum/difference calculations
             // Use the smaller length if they happen to be different (shouldn't if collected consistently)
-            int dataLength = Math.Min(tickData.Length, paintData.Length);
-
-            double[] sumData = new double[dataLength];
-            double[] differenceData = new double[dataLength];
-
-            for(int i = 0; i < dataLength; i++)
-            {
-                sumData[i] = tickData[i] + paintData[i];
-                differenceData[i] = tickData[i] - paintData[i];
-            }
+            //int dataLength = Math.Min(tickData.Length, paintData.Length);
+            //
+            //double[] sumData = new double[dataLength];
+            //double[] differenceData = new double[dataLength];
+            //
+            //for(int i = 0; i < dataLength; i++)
+            //{
+            //    sumData[i] = tickData[i] + paintData[i];
+            //    differenceData[i] = tickData[i] - paintData[i];
+            //}
 
             // Calculate the overall maximum duration for consistent vertical scaling across all charts
             // This considers the max of all positive values across all datasets, including absolute differences
             double maxOverallDuration = 0f;
             if(tickData.Length > 0) maxOverallDuration = Math.Max(maxOverallDuration, tickData.Max());
             if(paintData.Length > 0) maxOverallDuration = Math.Max(maxOverallDuration, paintData.Max());
-            if(sumData.Length > 0) maxOverallDuration = Math.Max(maxOverallDuration, sumData.Max());
-            if(differenceData.Length > 0) maxOverallDuration = Math.Max(maxOverallDuration, differenceData.Max(d => Math.Abs(d))); // Max absolute difference
+            //if(sumData.Length > 0) maxOverallDuration = Math.Max(maxOverallDuration, sumData.Max());
+            //if(differenceData.Length > 0) maxOverallDuration = Math.Max(maxOverallDuration, differenceData.Max(d => Math.Abs(d))); // Max absolute difference
 
             // Ensure maxOverallDuration is not zero to avoid division by zero
             if(maxOverallDuration == 0) maxOverallDuration = GameConstants.TICK_DURATION_MS * 2; // Default if no data or all zeros
 
             int panelWidth = e.ClipRectangle.Width;
             int panelHeight = e.ClipRectangle.Height;
-            int chartHeight = panelHeight / 4; // Divide panel into 4 vertical sections
+            int chartHeight = panelHeight / 5; // Divide panel into 5 vertical sections
 
             // Define chart bounds and draw each waveform
             // Chart 1: Game Tick Durations (Blue)
-            using(Pen tickPen = new Pen(Color.Blue, 1))
-            {
-                Rectangle tickChartBounds = new Rectangle(0, 0 * chartHeight, panelWidth, chartHeight);
-                DrawWaveform(g, tickData, tickPen, tickChartBounds, maxOverallDuration);
-                g.DrawString("Game Tick (ms)", new Font("Arial", 8), Brushes.Black, new PointF(tickChartBounds.X + 5, tickChartBounds.Y + 5));
-            }
+            Pen tickPen = DrawContext.DrawCache.GetPen(Color.Blue);
+
+            Rectangle tickChartBounds = new Rectangle(0, 1 * chartHeight, panelWidth, chartHeight);
+            DrawWaveform(g, tickData, tickPen, tickChartBounds, maxOverallDuration);
+            g.DrawString("Game Tick (ms)", font, Brushes.Black, new PointF(tickChartBounds.X + 5, tickChartBounds.Y + 5));
+
 
             // Chart 2: Paint Durations (Red)
-            using(Pen paintPen = new Pen(Color.Red, 1))
-            {
-                Rectangle paintChartBounds = new Rectangle(0, 1 * chartHeight, panelWidth, chartHeight);
-                DrawWaveform(g, paintData, paintPen, paintChartBounds, maxOverallDuration);
-                g.DrawString("Paint (ms)", new Font("Arial", 8), Brushes.Black, new PointF(paintChartBounds.X + 5, paintChartBounds.Y + 5));
-            }
+            Pen paintPen = DrawContext.DrawCache.GetPen(Color.Red);
+            Rectangle paintChartBounds = new Rectangle(0, 2 * chartHeight, panelWidth, chartHeight);
+            DrawWaveform(g, paintData, paintPen, paintChartBounds, maxOverallDuration);
+            g.DrawString("Paint (ms)", font, Brushes.Black, new PointF(paintChartBounds.X + 5, paintChartBounds.Y + 5));
 
-            // Chart 3: Sum (Tick + Paint) Durations (Green)
-            using(Pen sumPen = new Pen(Color.Green, 1))
-            {
-                Rectangle sumChartBounds = new Rectangle(0, 2 * chartHeight, panelWidth, chartHeight);
-                DrawWaveform(g, sumData, sumPen, sumChartBounds, maxOverallDuration);
-                g.DrawString("Sum (ms)", new Font("Arial", 8), Brushes.Black, new PointF(sumChartBounds.X + 5, sumChartBounds.Y + 5));
-            }
 
-            // Chart 4: Difference (Tick - Paint) Durations (Orange)
-            using(Pen diffPen = new Pen(Color.Orange, 1))
-            {
-                Rectangle diffChartBounds = new Rectangle(0, 3 * chartHeight, panelWidth, chartHeight);
-                DrawWaveform(g, differenceData, diffPen, diffChartBounds, maxOverallDuration);
-                g.DrawString("Difference (ms)", new Font("Arial", 8), Brushes.Black, new PointF(diffChartBounds.X + 5, diffChartBounds.Y + 5));
-            }
+            //// Chart 3: Sum (Tick + Paint) Durations (Green)
+            //Pen sumPen = DrawContext.DrawCache.GetPen(Color.Green);
+            //Rectangle sumChartBounds = new Rectangle(0, 3 * chartHeight, panelWidth, chartHeight);
+            //DrawWaveform(g, sumData, sumPen, sumChartBounds, maxOverallDuration);
+            //g.DrawString("Sum (ms)", font, Brushes.Black, new PointF(sumChartBounds.X + 5, sumChartBounds.Y + 5));
+            //
+            //
+            //// Chart 4: Difference (Tick - Paint) Durations (Orange)
+            //Pen diffPen = DrawContext.DrawCache.GetPen(Color.Orange);
+            //Rectangle diffChartBounds = new Rectangle(0, 4 * chartHeight, panelWidth, chartHeight);
+            //DrawWaveform(g, differenceData, diffPen, diffChartBounds, maxOverallDuration);
+            //g.DrawString("Difference (ms)", font, Brushes.Black, new PointF(diffChartBounds.X + 5, diffChartBounds.Y + 5));
+
         }
 
 

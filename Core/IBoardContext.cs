@@ -21,6 +21,8 @@ namespace Wc3_Combat_Game.Core
 
         EntityManager<Entities.Entity> Entities { get; }
 
+        IReadOnlyList<Unit> GetFriendlyUnits(Team team);
+        IReadOnlyList<Unit> GetEnemyUnits(Team team);
 
     }
 }

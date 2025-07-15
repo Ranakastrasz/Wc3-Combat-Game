@@ -102,7 +102,7 @@ namespace Wc3_Combat_Game.Terrain
                     Tile tile = _tileMap[x, y];
 
                     // Directly draw the rectangle for the tile onto the bitmap graphics
-                    var brush = context.DrawCache.GetOrCreateBrush(tile.GetColor);
+                    var brush = context.DrawCache.GetSolidBrush(tile.GetColor);
                     Rectangle destRect = new Rectangle(x * scaledTileSize, y * scaledTileSize, scaledTileSize, scaledTileSize);
                     _bitmapGraphics.FillRectangle(brush, destRect);
                 }

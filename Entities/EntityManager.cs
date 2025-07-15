@@ -54,7 +54,7 @@ namespace Wc3_Combat_Game.Entities
                     action(entity);
         }
 
-        public IEnumerable<T> GetEntitiesByTeam(TeamType team)
+        public IEnumerable<T> GetEntitiesByTeam(Team team)
         {
             return _entities.Where(e => e.Team == team);
         }

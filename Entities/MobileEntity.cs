@@ -70,7 +70,7 @@ namespace Wc3_Combat_Game.Entities
                 { 
                 
                 }
-                using var pen = new Pen(Color.Lime, 2);
+                var pen = context.DrawCache.GetPen(Color.Lime,2);
                 var endPoint = _position + _velocity*0.1f;
                 g.DrawLine(pen, _position.ToPointF(), endPoint.ToPointF());
             }

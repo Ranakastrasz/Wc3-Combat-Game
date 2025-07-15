@@ -206,10 +206,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                 Vector2 steeringTarget = Vector2.Normalize(_TargetMovePosition - unit.Position);
 
                 // Get friendly units for separation
-                IEnumerable<Unit> entities = context.Entities.Entities
-                    .OfType<Unit>()
-                    .Where(u => u.IsAlive && u.Team.IsFriendlyTo(unit.Team))
-                    .ToList();
+                var entities = context.GetFriendlyUnits(unit.Team);
 
                 Vector2 separationForce = GetSeparationSteering(unit, entities, context);
 
@@ -432,8 +429,8 @@ namespace Wc3_Combat_Game.Components.Controllers
                     stateText += "\n (Path refreshed)";
                 if (!TimeUtils.HasElapsed(context.CurrentTime, _lastPartialSteering, 0.1f))
                     stateText += "\n (Partial steering active)";
-                using var font = new Font("Arial", 8);
-                using var brush = new SolidBrush(Color.White);
+                var font = context.DrawCache.GetFont("Arial", 2);
+                var brush = context.DrawCache.GetSolidBrush(Color.White);
                 g.DrawString(stateText, font, brush, unit.Position.X + unit.Radius, unit.Position.Y - unit.Radius);
             }
 
@@ -494,9 +491,9 @@ namespace Wc3_Combat_Game.Components.Controllers
                 {
                     // Draw line of sight Check to next waypoint, via asking the map to draw it.
                     if (_currentState == State.PathFollowing)
-                        map.DrawDebugLineOfSight(g, unit.Position, context.Map.FromGrid(Path[CurrentWaypoint]), unit.Radius);
+                        map.DrawDebugLineOfSight(g, context,  unit.Position, context.Map.FromGrid(Path[CurrentWaypoint]), unit.Radius);
                     else if (_currentState == State.DirectPursuit)
-                        map.DrawDebugLineOfSight(g, unit.Position, unit.GetTargetPosition().Value, unit.Radius);
+                        map.DrawDebugLineOfSight(g, context, unit.Position, unit.GetTargetPosition().Value, unit.Radius);
                 }
             }
         }

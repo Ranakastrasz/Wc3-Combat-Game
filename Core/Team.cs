@@ -6,28 +6,29 @@ using System.Threading.Tasks;
 
 namespace Wc3_Combat_Game.Core
 {
-    public enum TeamType
+    public enum Team
     {
         Ally,
-        Enemy,
+        Enemy, // May need something else someday, but this is valid for now.
         Neutral
     }
     public static class TeamExtensions
     {
-        public static bool IsHostileTo(this TeamType self, TeamType other)
+        public static bool IsHostileTo(this Team self, Team other)
         {
-            if (self == TeamType.Neutral || other == TeamType.Neutral)
+            if (self == Team.Neutral || other == Team.Neutral)
                 return false;
 
             return self != other;
         }
-        public static bool IsFriendlyTo(this TeamType self, TeamType other)
+        public static bool IsFriendlyTo(this Team self, Team other)
         {
-            if (self == TeamType.Neutral || other == TeamType.Neutral)
+            if (self == Team.Neutral || other == Team.Neutral)
                 return false;
 
             return self == other;
         }
+
     }
 
 }

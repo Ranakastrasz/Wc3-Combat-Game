@@ -130,7 +130,7 @@ namespace Wc3_Combat_Game.Entities
             }
             else if(IsAlive)
             {
-                using var brush = new SolidBrush(_fillColor);
+                var brush = context.DrawCache.GetSolidBrush(_fillColor);
                 g.FillEllipse(brush, BoundingBox);
             }
             else
@@ -171,7 +171,7 @@ namespace Wc3_Combat_Game.Entities
             }
             // --- Mana Bar (below health) ---
             // --- More of a cooldown bar. For player only.
-            if(Team == TeamType.Ally)
+            if(Team == Team.Ally)
             {
                 if(Weapon != null)
                 {
@@ -254,7 +254,7 @@ namespace Wc3_Combat_Game.Entities
     }
     static class UnitFactory
     {
-        public static Unit SpawnUnit(UnitPrototype prototype, Vector2 position, IUnitController controller, TeamType team)
+        public static Unit SpawnUnit(UnitPrototype prototype, Vector2 position, IUnitController controller, Team team)
         {
             Unit unit = new Unit(prototype, position)
             {

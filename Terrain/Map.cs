@@ -352,7 +352,7 @@ namespace Wc3_Combat_Game.Terrain
             throw new InvalidOperationException("No player spawn point found in the map.");
         }
 
-        internal void DrawDebugLineOfSight(Graphics g, Vector2 position, Vector2 nextPointWorld, float size)
+        internal void DrawDebugLineOfSight(Graphics g, IDrawContext context, Vector2 position, Vector2 nextPointWorld, float size)
         {
             // Initialize the lists for debugCheckedTiles and debugBlockingTiles  
             List<Point> checkedTiles = new();
@@ -361,34 +361,35 @@ namespace Wc3_Combat_Game.Terrain
             // Call HasLineOfSight with the initialized lists  
             HasLineOfSight(position, nextPointWorld, size, checkedTiles, blockingTiles);
 
+            Pen pen;
             if(blockingTiles.Count > 0)
             {
-                using Pen capsulePen = new(Color.Red, 0.04f);
-                GraphicsUtils.DrawCapsule(g, position, nextPointWorld, size, capsulePen);
+                pen = context.DrawCache.GetPen(Color.Red, 0.04f);
+                GraphicsUtils.DrawCapsule(g, position, nextPointWorld, size, pen);
             }
             else
             {
-                using Pen capsulePen = new(Color.Yellow, 0.04f);
-                GraphicsUtils.DrawCapsule(g, position, nextPointWorld, size, capsulePen);
+                pen = context.DrawCache.GetPen(Color.LimeGreen, 0.04f);
+                GraphicsUtils.DrawCapsule(g, position, nextPointWorld, size, pen);
             }
 
             // Draw checked tiles  
-            using Pen checkedPen = new(Color.LightBlue, 0.05f);
+            pen = context.DrawCache.GetPen(Color.LightBlue, 0.05f);
 
             foreach(var pt in checkedTiles)
             {
                 float tx = pt.X * TileSize;
                 float ty = pt.Y * TileSize;
-                g.DrawRectangle(checkedPen, tx, ty, TileSize, TileSize);
+                g.DrawRectangle(pen, tx, ty, TileSize, TileSize);
             }
 
             // Draw blocking tiles
-            using Pen blockPen = new(Color.Red, 0.1f);
+            pen = context.DrawCache.GetPen(Color.Red, 0.1f);
             foreach(var pt in blockingTiles)
             {
                 float tx = pt.X * TileSize;
                 float ty = pt.Y * TileSize;
-                g.DrawRectangle(blockPen, tx, ty, TileSize, TileSize);
+                g.DrawRectangle(pen, tx, ty, TileSize, TileSize);
             }
         }
 
@@ -405,33 +406,6 @@ namespace Wc3_Combat_Game.Terrain
                     // Tell tiles to draw themselves.
                     tile.Draw(g, context);
             
-                }
-            }
-            //if(TileMapRenderer == null)
-            //{
-            //    TileMapRenderer = new TileMapRenderer((int)TileSize, TileMap);
-            //}
-            //TileMapRenderer.Draw(g, context);
-            //
-            if(context.DebugSettings.Get(DebugSetting.DrawMapCollisionTiles))
-            {
-                DebugDrawCollisionTiles(g, context);
-            }
-        }
-
-        public void DebugDrawCollisionTiles(Graphics g, IDrawContext context)
-        {
-            for(int y = 0; y < TileMap.GetLength(1); y++)
-            {
-                for(int x = 0; x < TileMap.GetLength(0); x++)
-                {
-                    Tile tile = TileMap[x, y];
-                    if(!tile.IsWalkable)
-                    {
-                        var brush = Brushes.Red;
-                        // Tell tiles to draw themselves.
-                        tile.Draw(g, context);
-                    }
                 }
             }
         }

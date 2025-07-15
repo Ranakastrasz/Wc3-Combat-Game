@@ -21,23 +21,25 @@ namespace Wc3_Combat_Game
 
             GameController game = new GameController();
 
-            //EnemySchema enemyData = new();
 
-            //string FilePath = Path.Combine(AppContext.BaseDirectory, "GameData\\EnemyData.json");
 
-            //enemyData = GameDataLoader.LoadSchema(FilePath) ?? throw new InvalidOperationException("Failed to load game schema.");
-            
-            // Ok now we have the game schema loader, now to make the prototypes.
 
+            Console.WriteLine("Type 'listclasses' to list all classes and properties in the assembly, or press Enter to start the game.");
+            string? input = Console.ReadLine();
+            if (input?.ToLower() == "listclasses")
+            {
+                ListClasses(); // Debugging utility to list all classes and properties in the assembly
+                return;
+            }
+
+
+            // otherwise continue with the game
 
             game.CreateGameBoard();
             AssertUtil.NotNull(game.Board);
-          
-            // Setup wave units and counts Old
+
             game.Board.InitWaves();
-            
-            //EntityPrototyper.InitEnemies(enemyData ?? throw new InvalidOperationException("enemyData not found in game schema."));
-               
+
 
             game.CreateGameView();
             AssertUtil.NotNull(game.View);
@@ -48,22 +50,15 @@ namespace Wc3_Combat_Game
             AssertUtil.NotNull(game.Board.PlayerUnit);
             game.View.RegisterPlayer(game.Board.PlayerUnit);
 
-
-            game.StartGame();
-
-            game.StartTimer();
-
-            Console.WriteLine("Type 'listclasses' to list all classes and properties in the assembly, or press Enter to start the game.");
-            string? input = Console.ReadLine();
-            if (input?.ToLower() == "listclasses")
-            {
-                ListClasses(); // Debugging utility to list all classes and properties in the assembly
-                return;
-            }
-            // otherwise continue with the game
             if(game.View != null)
             {
+                
+
+                game.StartGame();
+
+                game.StartTimer();
                 Application.Run(game.View);
+
                 // When this finishes, GameOver/Victory. Probably need to handle here.
                 // and, Allow restarting the game.
             }

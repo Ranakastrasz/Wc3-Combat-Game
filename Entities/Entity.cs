@@ -25,7 +25,7 @@ namespace Wc3_Combat_Game.Entities
         float _lastKilled = float.NegativeInfinity;
         protected float _despawnDelay = GameConstants.FIXED_DELTA_TIME;
 
-        public TeamType Team;
+        public Team Team;
 
         // Will include like a dozen interface references,
         // to be built by factory, allowing highly mutable entities.
@@ -38,7 +38,7 @@ namespace Wc3_Combat_Game.Entities
             Radius = radius;
             _position = position;
             _fillColor = color;
-            Team = TeamType.Neutral;
+            Team = Team.Neutral;
         }
 
 
@@ -54,7 +54,7 @@ namespace Wc3_Combat_Game.Entities
             DrawDebug(g, context);
 
             if (!IsAlive) return;
-            var brush = context.DrawCache.GetOrCreateBrush(_fillColor);
+            var brush = context.DrawCache.GetSolidBrush(_fillColor);
 
 
             g.FillRectangle(brush, BoundingBox);
@@ -66,7 +66,7 @@ namespace Wc3_Combat_Game.Entities
             // Debugging info
             if(context.DebugSettings.Get(DebugSetting.DrawEntityCollisionBox))
             {
-                using var pen = new Pen(Color.Yellow, 1);
+                var pen = context.DrawCache.GetPen(Color.Yellow, 1);
                 g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
             }
         }

@@ -1,19 +1,20 @@
-﻿using System.Numerics;
-using Wc3_Combat_Game.Entities;
-using Wc3_Combat_Game.Prototype;
-using Wc3_Combat_Game.Util;
-using static Wc3_Combat_Game.Core.GameConstants;
-using Wc3_Combat_Game.Terrain;
-using System.Data;
-using Wc3_Combat_Game.Waves;
-using AssertUtils;
-using Wc3_Combat_Game.Components.Controllers;
-using Wc3_Combat_Game.Components.Actions;
-using Wc3_Combat_Game.Components.Actions.Interface;
+﻿using AssertUtils;
 using AStar;
 using AStar.Options;
-using Wc3_Combat_Game.Prototype.Weapons;
+using System.Collections.Generic;
+using System.Data;
+using System.Numerics;
+using Wc3_Combat_Game.Components.Actions;
+using Wc3_Combat_Game.Components.Actions.Interface;
+using Wc3_Combat_Game.Components.Controllers;
+using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.IO;
+using Wc3_Combat_Game.Prototype;
+using Wc3_Combat_Game.Prototype.Weapons;
+using Wc3_Combat_Game.Terrain;
+using Wc3_Combat_Game.Util;
+using Wc3_Combat_Game.Waves;
+using static Wc3_Combat_Game.Core.GameConstants;
 //using Wc3_Combat_Game.IO.Load.GameSchema;
 
 namespace Wc3_Combat_Game.Core
@@ -43,6 +44,82 @@ namespace Wc3_Combat_Game.Core
 
         public EntityManager<Entities.Entity> Entities { get; private set; } = new();
 
+        private float _lastCacheUpdateTime = float.NegativeInfinity;
+        private Dictionary<Team, List<Unit>> _friendlyUnitsCache = new Dictionary<Team, List<Unit>>();
+        private Dictionary<Team, List<Unit>> _enemyUnitsCache = new Dictionary<Team, List<Unit>>();
+
+        public IReadOnlyList<Unit> GetFriendlyUnits(Team team)
+        {
+            if(_lastCacheUpdateTime < CurrentTime) // Every tick.
+                UpdateCaches();
+            if(_friendlyUnitsCache.TryGetValue(team, out List<Unit>? list))
+                return list;
+            return Array.Empty<Unit>(); // Return an empty array if team not found (no units for it)
+
+        }
+
+        public IReadOnlyList<Unit> GetEnemyUnits(Team team)
+        {
+            if(_lastCacheUpdateTime < CurrentTime)
+                UpdateCaches();
+            if(_enemyUnitsCache.TryGetValue(team, out List<Unit>? list))
+                return list;
+            return Array.Empty<Unit>();
+        }
+        private void UpdateCaches()
+        {
+            _lastCacheUpdateTime = CurrentTime;
+
+            // Step 1: Ensure all possible teams have their lists initialized
+            foreach(Team team in Enum.GetValues<Team>())
+            {
+                if(!_friendlyUnitsCache.TryGetValue(team, out List<Unit>? friendlyUnits))
+                {
+                    _friendlyUnitsCache[team] = new List<Unit>();
+                }
+                else
+                {
+                    friendlyUnits.Clear(); // Clear for reuse
+                }
+
+                if(!_enemyUnitsCache.TryGetValue(team, out List<Unit>? enemyUnits))
+                {
+                    _enemyUnitsCache[team] = new List<Unit>();
+                }
+                else
+                {
+                    _enemyUnitsCache[team].Clear(); // Clear for reuse
+                }
+            }
+
+            // Step 2: Populate the caches based on unit relationships
+            foreach(var currentUnit in Units.Entities.Where(u => u.IsAlive))
+            {
+                foreach(var otherUnit in Units.Entities.Where(u => u.IsAlive))
+                {
+                    if(currentUnit == otherUnit)
+                    {
+                        // A unit is always friendly to itself.
+                        _friendlyUnitsCache[currentUnit.Team].Add(otherUnit);
+                    }
+                    else if(currentUnit.Team.IsFriendlyTo(otherUnit.Team))
+                    {
+                        // currentUnit considers otherUnit friendly, so add otherUnit to currentUnit's friendly list
+                        _friendlyUnitsCache[currentUnit.Team].Add(otherUnit);
+                    }
+                    else if(currentUnit.Team.IsHostileTo(otherUnit.Team))
+                    {
+                        // currentUnit considers otherUnit hostile, so add otherUnit to currentUnit's enemy list
+                        _enemyUnitsCache[currentUnit.Team].Add(otherUnit);
+                    }
+                }
+            }
+        }
+
+        //
+        //IEnumerable<Unit> entities = context.Entities.Entities
+        //            .OfType<Unit>()
+        //            .Where(u => u.IsAlive && u.Team.IsFriendlyTo(unit.Team));
 
         public Map? Map { get; private set; }
         public PathFinder? PathFinder { get; private set; }
@@ -136,16 +213,13 @@ namespace Wc3_Combat_Game.Core
 
             UnitPrototype playerUnit = new((WeaponPrototype)weapon, 100f, 1f, 100f, 3f, 5f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
 
-            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)Map.GetPlayerSpawn(), new PlayerController(_controller.Input), TeamType.Ally);
+            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)Map.GetPlayerSpawn(), new PlayerController(_controller.Input), Team.Ally);
 
 
             AddUnit(PlayerUnit);
         }
 
         
-
-
-
         private bool CheckGameOverCondition(IBoardContext context)
         {
             AssertUtil.NotNull(PlayerUnit);
@@ -170,6 +244,7 @@ namespace Wc3_Combat_Game.Core
 
         public void Update(float deltaTime)
         {
+            if(deltaTime <= 0) return;
             CurrentTime += deltaTime;
 
 
@@ -181,7 +256,7 @@ namespace Wc3_Combat_Game.Core
                     _waveSpawnsRemaining--;
                     Vector2 spawnPoint = spawnPoints[RandomUtils.RandomIntBelow(spawnPoints.Count)]; // Poor, but for now
 
-                    Unit unit = UnitFactory.SpawnUnit(_waves[_waveCurrent].Unit,spawnPoint, new BasicAIController(), TeamType.Enemy);
+                    Unit unit = UnitFactory.SpawnUnit(_waves[_waveCurrent].Unit,spawnPoint, new BasicAIController(), Team.Enemy);
                     unit.TargetUnit = PlayerUnit;
                     AddUnit(unit);
                     // Elite
@@ -193,10 +268,10 @@ namespace Wc3_Combat_Game.Core
                         // unit.Damage *= 4;
                         // I probably need to... Do something to register units as unique.
                         // I can't just set these values.
-
+                        
                     }
                 }
-                else if (!Units.Entities.Any(s => s.IsAlive && s.Team == TeamType.Enemy))
+                else if (!Units.Entities.Any(s => s.IsAlive && s.Team == Team.Enemy))
                 {
                     // Should be .Count, but also needs a boss tag check. Later.
                     // After all, we do next wave when less than 1/8th remain, or less than 8, maybe. dunno. 
@@ -218,6 +293,7 @@ namespace Wc3_Combat_Game.Core
 
             Units.UpdateAll(deltaTime, this);
             Projectiles.UpdateAll(deltaTime, this);
+
             // Separate required, because units can create projectiles.
             // Admittedly, eventually projectiles will be able to create projectiles, Starburst or Delayed cast.
             // so a method to do this right is needed.
@@ -291,5 +367,6 @@ namespace Wc3_Combat_Game.Core
             //Units.Clear();
             //Projectiles.Clear();
         }
+
     }
 }

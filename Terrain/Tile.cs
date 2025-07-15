@@ -46,9 +46,19 @@ namespace Wc3_Combat_Game.Terrain
             if(GeometryUtils.Collides(rect, camera))
             {
 
-                Brush brush = context.DrawCache.GetOrCreateBrush(GetColor);
+                Brush brush = context.DrawCache.GetSolidBrush(GetColor);
                 g.FillRectangle(brush, rect);
+
+                if (context.DebugSettings.Get(DebugSetting.DrawMapCollisionTiles))
+                {
+                    if (!IsWalkable)
+                    {
+                        var pen = context.DrawCache.GetPen(Color.Red, 1);
+                        g.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height);
+                    }
+                }
             }
         }
+
     }
 }
