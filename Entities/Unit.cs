@@ -6,6 +6,7 @@ using Wc3_Combat_Game.Components.Controllers.Interface;
 using Wc3_Combat_Game.Components.Weapons;
 using Wc3_Combat_Game.Components.Weapons.Interface;
 using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.Entities.Components;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Prototype;
 using Wc3_Combat_Game.Prototype.Weapons;
@@ -59,7 +60,7 @@ namespace Wc3_Combat_Game.Entities
 
         public float MoveSpeed { get; set; }
 
-        public Unit(UnitPrototype prototype, Vector2 position) : base(prototype.Radius, position, prototype.FillColor)
+        public Unit(UnitPrototype prototype, Vector2 position) : base(prototype.Radius, position)
         {
             Prototype = prototype;
             Life = prototype.Life;
@@ -71,6 +72,37 @@ namespace Wc3_Combat_Game.Entities
                 Weapon = new BasicWeapon(basic);
             }
             _despawnDelay = 1f; // For units specifically.
+
+            Func<IDrawContext, Color> getColor = (context) =>
+            {
+                
+                if(!TimeUtils.HasElapsed(context.CurrentTime, _lastDamaged, s_DamageFlashTime))
+                {
+                    return prototype.DamagedColor;
+                }
+                else if(IsAlive)
+                {
+                    return prototype.Color;
+                }
+                else
+                {
+                    return Color.Gray;
+                }
+
+            };
+            switch (Prototype.Shape)
+            {
+                case UnitPrototype.DrawShape.Square:
+                    _drawableComponent = new RectangleDrawable(getColor, () => Position, () => Radius * 2, () => true);
+                    break;
+                case UnitPrototype.DrawShape.Circle:
+                    _drawableComponent = new CircleDrawable(getColor,  () => Position, () => Radius, () => true);
+                    break;
+                default:
+                    AssertUtil.Assert(false, "Unit.prototype.Shape is Invalid", true, "Create Unit");
+                    break;
+            }
+
         }
 
 
@@ -121,22 +153,23 @@ namespace Wc3_Combat_Game.Entities
 
         public override void Draw(Graphics g, IDrawContext context)
         {
-            base.DrawDebug(g, context);
+            base.Draw(g, context);
+            //base.DrawDebug(g, context);
             Controller?.DrawDebug(g, context, this);
 
-            if(!TimeUtils.HasElapsed(context.CurrentTime, _lastDamaged, s_DamageFlashTime))
-            {
-                g.FillEllipse(Brushes.White, BoundingBox);
-            }
-            else if(IsAlive)
-            {
-                var brush = context.DrawCache.GetSolidBrush(_fillColor);
-                g.FillEllipse(brush, BoundingBox);
-            }
-            else
-            {
-                g.FillEllipse(Brushes.Gray, BoundingBox);
-            }
+            //if(!TimeUtils.HasElapsed(context.CurrentTime, _lastDamaged, s_DamageFlashTime))
+            //{
+            //    g.FillEllipse(Brushes.White, BoundingBox);
+            //}
+            //else if(IsAlive)
+            //{
+            //    var brush = context.DrawCache.GetSolidBrush(_fillColor);
+            //    g.FillEllipse(brush, BoundingBox);
+            //}
+            //else
+            //{
+            //    g.FillEllipse(Brushes.Gray, BoundingBox);
+            //}
 
             // Bar dimensions
             int barHeight = 2;

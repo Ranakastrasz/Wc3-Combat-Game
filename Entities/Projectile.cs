@@ -2,6 +2,7 @@
 
 using Wc3_Combat_Game.Components.Actions.Interface;
 using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.Entities.Components;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Prototype;
 using Wc3_Combat_Game.Util;
@@ -23,13 +24,14 @@ namespace Wc3_Combat_Game.Entities
         public Entity? Caster;
 
 
-        public Projectile(ProjectilePrototype prototype, Entity? caster, Vector2 position, Vector2 direction) : base(prototype.Radius, position, prototype.FillColor)
+        public Projectile(ProjectilePrototype prototype, Entity? caster, Vector2 position, Vector2 direction) : base(prototype.Radius, position)
         {
             _prototype = prototype;
             Caster = caster;
             _velocity = GeometryUtils.NormalizeAndScale(direction, prototype.Speed);
             _timeToLive = prototype.Lifespan;
 
+            _drawableComponent = new CircleDrawable((context) => _prototype.FillColor, () => _position, () => _prototype.Radius, () => IsAlive);
         }
 
         //        public Vector2 Velocity { get => _velocity; set => _velocity = value; }

@@ -4,8 +4,7 @@ namespace Wc3_Combat_Game.Components.Drawable
 {
     internal interface IDrawable
     {
-        // Draw, Draw debug, maybe prototype, or prototype is from it's owner.
-        // Dunno what else.
+        protected Func<bool> GetVisible { get; }
 
 
         public abstract void Draw(Graphics g, IDrawContext context);

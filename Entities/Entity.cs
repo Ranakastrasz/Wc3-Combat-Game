@@ -1,6 +1,8 @@
 ﻿using System.Numerics;
 
+using Wc3_Combat_Game.Components.Drawable;
 using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.Entities.Components;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
 
@@ -16,11 +18,13 @@ namespace Wc3_Combat_Game.Entities
 
         public float Radius { get; protected set; } // This will be part of the ICollidable later.
                                                     // And IDraw, seperately, ofc.
+
+        public DrawableComponent? _drawableComponent { get; protected set; }
+
         public float Diameter => Radius * 2f;
         protected Vector2 _BoundingSize => new Vector2(Diameter, Diameter);
 
         protected Vector2 _position;
-        protected Color _fillColor;
         private bool _isAlive = true;
         float _lastKilled = float.NegativeInfinity;
         protected float _despawnDelay = GameConstants.FIXED_DELTA_TIME;
@@ -33,11 +37,12 @@ namespace Wc3_Combat_Game.Entities
 
         public RectangleF BoundingBox { get => _position.RectFFromCenter(_BoundingSize); }
 
-        public Entity(float radius, Vector2 position, Color color)
+        public Entity(float radius, Vector2 position)
         {
             Radius = radius;
             _position = position;
-            _fillColor = color;
+            _drawableComponent = null; //new RectangleDrawable(() => color, () => _position, () => Diameter);
+
             Team = Team.Neutral;
         }
 
@@ -53,12 +58,12 @@ namespace Wc3_Combat_Game.Entities
         {
             DrawDebug(g, context);
 
-            if(!IsAlive) return;
-            var brush = context.DrawCache.GetSolidBrush(_fillColor);
+            //if(!IsAlive) return;
+            //var brush = context.DrawCache.GetSolidBrush(_fillColor);
 
 
-            g.FillRectangle(brush, BoundingBox);
-
+            //g.FillRectangle(brush, BoundingBox);
+            _drawableComponent?.Draw(g, context);
 
         }
         internal void DrawDebug(Graphics g, IDrawContext context)

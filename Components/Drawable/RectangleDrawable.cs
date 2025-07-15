@@ -8,13 +8,11 @@ namespace Wc3_Combat_Game.Entities.Components
 {
     public class RectangleDrawable: DrawableComponent
     {
-        private readonly Func<Vector2> _getPosition;
         private readonly Func<float> _getDiameter;
 
-        public RectangleDrawable(Color color, Func<Vector2> getPosition, Func<float> getDiameter)
-            : base(color)
+        public RectangleDrawable(Func<IDrawContext, Color> getColor, Func<Vector2> getPosition, Func<float> getDiameter, Func<bool> getVisible)
+            : base(getColor, getPosition, getVisible)
         {
-            _getPosition = getPosition;
             _getDiameter = getDiameter;
         }
 
@@ -25,12 +23,14 @@ namespace Wc3_Combat_Game.Entities.Components
             //    return;
             //}
 
+            if(!GetVisible()) return;
+
             Vector2 position = _getPosition();
             float diameter = _getDiameter();
             Vector2 boundingSize = new Vector2(diameter, diameter);
             RectangleF boundingBox = position.RectFFromCenter(boundingSize);
 
-            var brush = context.DrawCache.GetSolidBrush(_drawColor);
+            var brush = context.DrawCache.GetSolidBrush(_getColor(context));
             g.FillRectangle(brush, boundingBox);
         }
     }

@@ -16,7 +16,9 @@ namespace Wc3_Combat_Game.Prototype
         public readonly float Mass;
         public readonly float PushPriority;
         public readonly float Speed;
-        public readonly Color FillColor;
+        public readonly Color Color;
+        public readonly Color DamagedColor;
+        public readonly Color DeadColor;
         public readonly WeaponPrototype Weapon;
         public enum DrawShape // Probably don't want it here specificially.
         {
@@ -35,7 +37,9 @@ namespace Wc3_Combat_Game.Prototype
             PushPriority = Mass;
             Speed = speed;
             Shape = shape;
-            FillColor = fillColor;
+            Color = fillColor;
+            DamagedColor = Color.White;
+            DeadColor = Color.Gray;
         }
 
         public UnitPrototype(WeaponPrototype weapon, float maxHealth, float healthRegen, float mana, float manaRegen, float radius, float speed, Color fillColor, DrawShape shape = DrawShape.Square)
