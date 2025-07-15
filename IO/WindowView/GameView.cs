@@ -1,16 +1,14 @@
-using AssertUtils;
 using System.Diagnostics;
-using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Net.NetworkInformation;
 using System.Numerics;
-using System.Windows.Forms;
+
+using AssertUtils;
+
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Terrain;
-using Wc3_Combat_Game.Util;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 using static Wc3_Combat_Game.Core.GameController;
 
 namespace Wc3_Combat_Game
@@ -179,12 +177,8 @@ namespace Wc3_Combat_Game
             _camera.Update(deltaTime);
 
             GameWindow.Invalidate();
-            if (DrawContext != null && DrawContext.DebugSettings.Get(DebugSetting.ShowFPS)) // not 100% FPS, but eh, close enough.
+            if(DrawContext != null && DrawContext.DebugSettings.Get(DebugSetting.ShowFPS)) // not 100% FPS, but eh, close enough.
                 DebugWaveChart.Invalidate();
-        }
-        protected override void OnPaint(PaintEventArgs e)
-        {
-
         }
         private void GameWindow_Paint(object sender, PaintEventArgs e)
         {
@@ -211,7 +205,7 @@ namespace Wc3_Combat_Game
             //Rectangle clientRect = GameWindow.ClientRectangle;
 
 
-                DrawContext?.Entities?.ForEach(p => p.Draw(g, DrawContext));
+            DrawContext?.Entities?.ForEach(p => p.Draw(g, DrawContext));
 
 
             if(_controller.CurrentState == GameState.GameOver || _controller.CurrentState == GameState.Victory)
@@ -231,7 +225,7 @@ namespace Wc3_Combat_Game
             }
 
             AssertUtil.NotNull(DrawContext);
-            if (DrawContext.DebugSettings.Get(DebugSetting.ShowCameraBounds))
+            if(DrawContext.DebugSettings.Get(DebugSetting.ShowCameraBounds))
             {
                 // Draw camera bounds in world space (inverted Y for Windows Forms)
                 var cameraBounds = _camera.Viewport;
@@ -328,7 +322,7 @@ namespace Wc3_Combat_Game
                 y1 = Math.Max(chartBounds.Y, Math.Min(chartBounds.Y + chartBounds.Height, y1));
                 y2 = Math.Max(chartBounds.Y, Math.Min(chartBounds.Y + chartBounds.Height, y2));
 
-                
+
 
                 double x1 = chartBounds.X + i * x_scale;
                 double x2 = chartBounds.X + (i + 1) * x_scale;

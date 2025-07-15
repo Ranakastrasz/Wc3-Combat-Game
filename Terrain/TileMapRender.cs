@@ -1,11 +1,8 @@
-﻿using AssertUtils;
-using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Linq;
+﻿using System.Drawing.Drawing2D;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+
+using AssertUtils;
+
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
 
@@ -26,7 +23,7 @@ namespace Wc3_Combat_Game.Terrain
         public TileMapRenderer(int tileSize, Tile[,] tileMap)
         {
             _tileSize = tileSize;
-            
+
             Width = tileMap.Length > 0 ? tileMap.GetLength(0) : 0;
             Height = tileMap.Length > 0 ? tileMap.GetLength(1) : 0;
 

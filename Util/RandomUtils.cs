@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Wc3_Combat_Game.Util
+﻿namespace Wc3_Combat_Game.Util
 {
     internal static class RandomUtils
     {
@@ -31,21 +25,21 @@ namespace Wc3_Combat_Game.Util
             float perimeter = 2 * (width + height);
             float t = (float)(RandomUtils.Instance.NextDouble() * perimeter);
 
-            if (t < width)
+            if(t < width)
             {
                 // Top edge (left → right)
                 return new PointF(left + t, top);
             }
             t -= width;
 
-            if (t < height)
+            if(t < height)
             {
                 // Right edge (top → bottom)
                 return new PointF(right, top + t);
             }
             t -= height;
 
-            if (t < width)
+            if(t < width)
             {
                 // Bottom edge (right → left)
                 return new PointF(right - t, bottom);
@@ -66,7 +60,7 @@ namespace Wc3_Combat_Game.Util
             // Choose which side to spawn on: 0=top,1=bottom,2=left,3=right
             int side = RandomUtils.Instance.Next(0, 4);
 
-            switch (side)
+            switch(side)
             {
                 case 0: // top
                     return new PointF(

@@ -1,6 +1,8 @@
-using AssertUtils;
 using System.Reflection;
 using System.Text;
+
+using AssertUtils;
+
 using Wc3_Combat_Game.Core;
 
 namespace Wc3_Combat_Game
@@ -26,7 +28,7 @@ namespace Wc3_Combat_Game
 
             Console.WriteLine("Type 'listclasses' to list all classes and properties in the assembly, or press Enter to start the game.");
             string? input = Console.ReadLine();
-            if (input?.ToLower() == "listclasses")
+            if(input?.ToLower() == "listclasses")
             {
                 ListClasses(); // Debugging utility to list all classes and properties in the assembly
                 return;
@@ -52,7 +54,7 @@ namespace Wc3_Combat_Game
 
             if(game.View != null)
             {
-                
+
 
                 game.StartGame();
 
@@ -81,18 +83,18 @@ namespace Wc3_Combat_Game
 
             oString.AppendLine("--- Assembly Class Structure ---");
 
-            foreach (var type in allTypes)
+            foreach(var type in allTypes)
             {
                 // Get the base type
                 string baseType = type.BaseType?.Name ?? "Object";
-                if (baseType == "Object" && type.IsValueType) baseType = "ValueType"; // For structs/enums
+                if(baseType == "Object" && type.IsValueType) baseType = "ValueType"; // For structs/enums
 
                 // Get interfaces, filtering for those within the current assembly
                 var projectInterfaces = type.GetInterfaces()
                                             .Where(i => i.Assembly == assembly)
                                             .Select(i => i.Name);
                 string interfaces = projectInterfaces.Any() ? string.Join(", ", projectInterfaces) : "None (Custom)";
-                if (!projectInterfaces.Any() && type.GetInterfaces().Any())
+                if(!projectInterfaces.Any() && type.GetInterfaces().Any())
                 {
                     interfaces = "None (Custom), plus external interfaces...";
                 }
@@ -107,10 +109,10 @@ namespace Wc3_Combat_Game
                 ConstructorInfo[] ctors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                     .Where(c => !c.IsPrivate && !c.IsFamily)
                     .ToArray();
-                if (ctors.Any())
+                if(ctors.Any())
                 {
                     oString.AppendLine("  - Constructors:");
-                    foreach (ConstructorInfo ctor in ctors)
+                    foreach(ConstructorInfo ctor in ctors)
                     {
                         string args = string.Join(", ", ctor.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"));
                         oString.AppendLine($"    - {type.Name}({args})");
@@ -125,14 +127,14 @@ namespace Wc3_Combat_Game
                 var projectProperties = props.Where(p => p.PropertyType.Assembly == assembly).ToList();
                 var externalProperties = props.Where(p => p.PropertyType.Assembly != assembly).ToList();
 
-                if (projectProperties.Any() || externalProperties.Any())
+                if(projectProperties.Any() || externalProperties.Any())
                 {
                     oString.AppendLine("  - Properties:");
-                    foreach (var prop in projectProperties)
+                    foreach(var prop in projectProperties)
                     {
                         oString.AppendLine($"    - {prop.Name}: {prop.PropertyType.Name}");
                     }
-                    if (externalProperties.Any())
+                    if(externalProperties.Any())
                     {
                         oString.AppendLine($"    - ... (plus {externalProperties.Count} properties with external types)");
                     }
@@ -142,10 +144,10 @@ namespace Wc3_Combat_Game
                 var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
                 .Where(m => !m.IsPrivate && !m.IsSpecialName && !m.IsFamily); // Excludes things like get_/set_ and private/protected methods
 
-                if (methods.Any())
+                if(methods.Any())
                 {
                     oString.AppendLine("  - Methods:");
-                    foreach (var method in methods)
+                    foreach(var method in methods)
                     {
                         string args = string.Join(", ", method.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"));
                         string returnType = method.ReturnType.Name;
@@ -163,7 +165,7 @@ namespace Wc3_Combat_Game
                 outputFile.Write(oString.ToString());
                 Console.WriteLine($"\nOutput saved to: {outputPath}");
             }
-            catch (IOException ex)
+            catch(IOException ex)
             {
                 Console.Error.WriteLine($"Error writing file: {ex.Message}");
             }
@@ -224,7 +226,7 @@ namespace Wc3_Combat_Game
             "#......_.._.........._.._......#",
             "#......_.._.........._.._......#",
             "################################"];
-        
+
         }
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-//namespace Wc3_Combat_Game.Terrain
+﻿//namespace Wc3_Combat_Game.Terrain
 //{
 //    /// <summary>
 //    /// Defines a group of Tiles that acts like a single Object

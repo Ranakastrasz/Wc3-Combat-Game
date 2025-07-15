@@ -1,11 +1,12 @@
-﻿using AssertUtils;
-using AStar;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
-using Wc3_Combat_Game.Util;
-using System.Drawing.Drawing2D;
-using System.Runtime.InteropServices.Marshalling;
+
+using AssertUtils;
+
+using AStar;
+
 using Wc3_Combat_Game.IO; // Add this at the top if not present
+using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Terrain
 {
@@ -402,10 +403,10 @@ namespace Wc3_Combat_Game.Terrain
                 {
                     Tile tile = TileMap[x, y];
                     Color tileColor = tile.GetColor;
-            
+
                     // Tell tiles to draw themselves.
                     tile.Draw(g, context);
-            
+
                 }
             }
         }

@@ -1,10 +1,5 @@
 ﻿using AssertUtils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
 
@@ -49,9 +44,9 @@ namespace Wc3_Combat_Game.Terrain
                 Brush brush = context.DrawCache.GetSolidBrush(GetColor);
                 g.FillRectangle(brush, rect);
 
-                if (context.DebugSettings.Get(DebugSetting.DrawMapCollisionTiles))
+                if(context.DebugSettings.Get(DebugSetting.DrawMapCollisionTiles))
                 {
-                    if (!IsWalkable)
+                    if(!IsWalkable)
                     {
                         var pen = context.DrawCache.GetPen(Color.Red, 1);
                         g.DrawRectangle(pen, rect.X, rect.Y, rect.Width, rect.Height);

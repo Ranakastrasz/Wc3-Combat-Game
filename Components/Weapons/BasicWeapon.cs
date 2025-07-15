@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+
 using Wc3_Combat_Game.Components.Actions.Interface;
 using Wc3_Combat_Game.Components.Weapons.Interface;
 using Wc3_Combat_Game.Core;
@@ -9,7 +10,7 @@ using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Components.Weapons
 {
-    class BasicWeapon : IWeapon
+    class BasicWeapon: IWeapon
     {
         protected float _cooldown;
         protected float _lastShotTime = float.NegativeInfinity;
@@ -35,14 +36,14 @@ namespace Wc3_Combat_Game.Components.Weapons
 
         public bool TryShootPoint(Unit unit, Vector2 target, IBoardContext context)
         {
-            if (!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
+            if(!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
 
             if(_prototype is WeaponPrototypeBasic basic) // This is hidious, and needs to be encapsulated better.
             {
                 if(basic.ManaCost > 0)
                 {
-                    if (unit.Mana < basic.ManaCost)
+                    if(unit.Mana < basic.ManaCost)
                         return false; // Not enough mana to cast.
                     unit.Mana -= basic.ManaCost; // Deduct mana cost.
                 }
@@ -56,7 +57,7 @@ namespace Wc3_Combat_Game.Components.Weapons
 
         public bool TryShootEntity(Unit unit, Entity target, IBoardContext context)
         {
-            if (!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
+            if(!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
 
             _CastEffect?.ExecuteOnEntity(unit, unit, target, context);

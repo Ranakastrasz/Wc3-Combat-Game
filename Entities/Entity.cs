@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualBasic;
-using System.Numerics;
+﻿using System.Numerics;
+
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
@@ -53,7 +53,7 @@ namespace Wc3_Combat_Game.Entities
         {
             DrawDebug(g, context);
 
-            if (!IsAlive) return;
+            if(!IsAlive) return;
             var brush = context.DrawCache.GetSolidBrush(_fillColor);
 
 
@@ -78,7 +78,7 @@ namespace Wc3_Combat_Game.Entities
 
         public void Die(IBoardContext context)
         {
-            if (!IsAlive) return;
+            if(!IsAlive) return;
 
             _isAlive = false;
             _lastKilled = context.CurrentTime;

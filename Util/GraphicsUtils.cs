@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Linq;
+﻿using System.Drawing.Drawing2D;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Wc3_Combat_Game.Util
 {
@@ -39,7 +34,7 @@ namespace Wc3_Combat_Game.Util
         #endregion
 
         public static PointF ToPointF(this Point point) =>
-            new(point.X+0.5f, point.Y+0.5f);
+            new(point.X + 0.5f, point.Y + 0.5f);
 
 
         // Snapping and Rounding Helpers
@@ -68,7 +63,7 @@ namespace Wc3_Combat_Game.Util
         #region Rectangle
         public static Rectangle RectFromTopLeft(this Vector2 topLeft, Vector2 size)
         {
-            if (size.X < 0 || size.Y < 0)
+            if(size.X < 0 || size.Y < 0)
                 throw new ArgumentException("Size must have non-negative dimensions", nameof(size));
             return new(
                 (int)Math.Floor(topLeft.X),
@@ -80,7 +75,7 @@ namespace Wc3_Combat_Game.Util
 
         public static Rectangle RectFromTopRight(this Vector2 topRight, Vector2 size)
         {
-            if (size.X < 0 || size.Y < 0)
+            if(size.X < 0 || size.Y < 0)
                 throw new ArgumentException("Size must have non-negative dimensions", nameof(size));
             return new(
                 (int)Math.Floor(topRight.X - size.X),
@@ -93,7 +88,7 @@ namespace Wc3_Combat_Game.Util
 
         public static Rectangle RectFromBottomLeft(this Vector2 bottomLeft, Vector2 size)
         {
-            if (size.X < 0 || size.Y < 0)
+            if(size.X < 0 || size.Y < 0)
                 throw new ArgumentException("Size must have non-negative dimensions", nameof(size));
             return new(
                 (int)Math.Floor(bottomLeft.X),
@@ -105,7 +100,7 @@ namespace Wc3_Combat_Game.Util
 
         public static Rectangle RectFromBottomRight(this Vector2 bottomRight, Vector2 size)
         {
-            if (size.X < 0 || size.Y < 0)
+            if(size.X < 0 || size.Y < 0)
                 throw new ArgumentException("Size must have non-negative dimensions", nameof(size));
             return new(
                 (int)Math.Floor(bottomRight.X - size.X),
@@ -117,7 +112,7 @@ namespace Wc3_Combat_Game.Util
 
         public static Rectangle RectFromCenter(this Vector2 center, Vector2 size)
         {
-            if (size.X < 0 || size.Y < 0)
+            if(size.X < 0 || size.Y < 0)
                 throw new ArgumentException("Size must have non-negative dimensions", nameof(size));
 
             return new(
@@ -129,7 +124,7 @@ namespace Wc3_Combat_Game.Util
         }
         public static RectangleF RectFFromCenter(this Vector2 center, Vector2 size)
         {
-            if (size.X < 0 || size.Y < 0)
+            if(size.X < 0 || size.Y < 0)
                 throw new ArgumentException("Size must have non-negative dimensions", nameof(size));
 
             return new(
@@ -142,7 +137,7 @@ namespace Wc3_Combat_Game.Util
 
         public static Rectangle RectFromBottomCenter(this Vector2 bottomCenter, Vector2 size)
         {
-            if (size.X < 0 || size.Y < 0)
+            if(size.X < 0 || size.Y < 0)
                 throw new ArgumentException("Size must have non-negative dimensions", nameof(size));
 
             return new(
@@ -164,7 +159,7 @@ namespace Wc3_Combat_Game.Util
         {
             int width = rect.Width - left - right;
             int height = rect.Height - top - bottom;
-            if (width < 0 || height < 0)
+            if(width < 0 || height < 0)
                 throw new ArgumentException("Deflate parameters result in negative dimensions");
 
             return new Rectangle(rect.X + left, rect.Y + top, width, height);

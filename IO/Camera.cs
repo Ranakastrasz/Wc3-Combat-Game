@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Linq;
+﻿using System.Drawing.Drawing2D;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+
 using Wc3_Combat_Game.Entities;
 
 namespace Wc3_Combat_Game.IO
@@ -32,7 +28,7 @@ namespace Wc3_Combat_Game.IO
 
         public void Update(float deltaTime)
         {
-            if (FollowTarget != null)
+            if(FollowTarget != null)
             {
                 Vector2 targetPosition = GetPositionCentered(FollowTarget.Position);
 
@@ -47,9 +43,9 @@ namespace Wc3_Combat_Game.IO
         public void SnapToUnit(Unit? unit = null)
         {
             Vector2 newPosition;
-            if (unit == null)
+            if(unit == null)
             {
-                if (FollowTarget == null) return;
+                if(FollowTarget == null) return;
                 newPosition = FollowTarget.Position;
             }
             else
@@ -71,10 +67,10 @@ namespace Wc3_Combat_Game.IO
         }
 
         public Vector2 WorldPointToScreenPoint(Vector2 worldPoint)
-        { 
+        {
             return (worldPoint - Position) * Zoom;
         }
-        
+
         public Vector2 ScreenPointToWorldPoint(Vector2 screenPoint)
         {
             return (screenPoint / Zoom) + Position;

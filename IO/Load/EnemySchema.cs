@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
-namespace Wc3_Combat_Game.IO.Load.GameSchema
+﻿namespace Wc3_Combat_Game.IO.Load.GameSchema
 {/*
     public class EnemySchema
     {

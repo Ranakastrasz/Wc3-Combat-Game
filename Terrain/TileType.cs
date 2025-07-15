@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Wc3_Combat_Game.Terrain
+﻿namespace Wc3_Combat_Game.Terrain
 {
     public class TileType
     {
@@ -24,7 +16,7 @@ namespace Wc3_Combat_Game.Terrain
 
 
         public Char Ascii; // Because maplookup. A real name might be better though.
-                            // or, a double dictionary? I dunno.
+                           // or, a double dictionary? I dunno.
         public Color Color; // Needs to draw itself I think.
         private bool Walkable;
 

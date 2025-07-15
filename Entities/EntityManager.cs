@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using Wc3_Combat_Game.Core;
+﻿using Wc3_Combat_Game.Core;
 
 namespace Wc3_Combat_Game.Entities
 {
@@ -16,7 +10,7 @@ namespace Wc3_Combat_Game.Entities
         public void UpdateAll(float deltaTime, IBoardContext context)
         {
             lock(_entityLock)
-                foreach (var e in _entities) e.Update(deltaTime,context);
+                foreach(var e in _entities) e.Update(deltaTime, context);
         }
         public void Add(T entity)
         {
@@ -50,7 +44,7 @@ namespace Wc3_Combat_Game.Entities
             //IEnumerable<T> entities = _entities.ToList(); // To avoid modifying the collection while iterating
 
             lock(_entityLock)
-                foreach (var entity in _entities)
+                foreach(var entity in _entities)
                     action(entity);
         }
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Wc3_Combat_Game.Core
+﻿namespace Wc3_Combat_Game.Core
 {
     public enum Team
     {
@@ -16,14 +10,14 @@ namespace Wc3_Combat_Game.Core
     {
         public static bool IsHostileTo(this Team self, Team other)
         {
-            if (self == Team.Neutral || other == Team.Neutral)
+            if(self == Team.Neutral || other == Team.Neutral)
                 return false;
 
             return self != other;
         }
         public static bool IsFriendlyTo(this Team self, Team other)
         {
-            if (self == Team.Neutral || other == Team.Neutral)
+            if(self == Team.Neutral || other == Team.Neutral)
                 return false;
 
             return self == other;

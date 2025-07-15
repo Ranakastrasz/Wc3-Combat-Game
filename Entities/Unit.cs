@@ -1,15 +1,15 @@
 ﻿using System.Numerics;
-using Wc3_Combat_Game.Prototype;
-using Wc3_Combat_Game.Util;
-using Wc3_Combat_Game.Core;
+
+using AssertUtils;
+
+using Wc3_Combat_Game.Components.Controllers.Interface;
 using Wc3_Combat_Game.Components.Weapons;
 using Wc3_Combat_Game.Components.Weapons.Interface;
-using Wc3_Combat_Game.Components.Controllers.Interface;
-using Wc3_Combat_Game.Components.Controllers;
-using AssertUtils;
-using Wc3_Combat_Game.Prototype.Weapons;
+using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.IO;
-using Wc3_Combat_Game.Terrain;
+using Wc3_Combat_Game.Prototype;
+using Wc3_Combat_Game.Prototype.Weapons;
+using Wc3_Combat_Game.Util;
 
 
 namespace Wc3_Combat_Game.Entities

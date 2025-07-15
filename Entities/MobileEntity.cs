@@ -1,23 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using Wc3_Combat_Game.Core;
-using Wc3_Combat_Game.Terrain;
+﻿using System.Numerics;
+
 using AssertUtils;
+
+using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.IO;
+using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Entities
 {
-    public class MobileEntity : Entity
+    public class MobileEntity: Entity
     {
         protected Vector2 _velocity = Vector2.Zero;
-        public MobileEntity(float size, Vector2 position, Color color): base(size,position,color)
-        { 
-            
+        public MobileEntity(float size, Vector2 position, Color color) : base(size, position, color)
+        {
+
         }
 
         public override void Update(float deltaTime, IBoardContext context)
@@ -64,11 +61,11 @@ namespace Wc3_Combat_Game.Entities
         internal new void DrawDebug(Graphics g, IDrawContext context)
         {
             base.DrawDebug(g, context);
-            if (context.DebugSettings.Get(DebugSetting.DrawEntityMovementVector))
+            if(context.DebugSettings.Get(DebugSetting.DrawEntityMovementVector))
             {
                 if(_velocity != Vector2.Zero)
-                { 
-                
+                {
+
                 }
                 var pen = context.DrawCache.GetPen(Color.Lime,2);
                 var endPoint = _position + _velocity*0.1f;

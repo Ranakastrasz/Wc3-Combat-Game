@@ -1,11 +1,6 @@
 ﻿using AssertUtils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Wc3_Combat_Game.Components.Actions.Interface;
-using Wc3_Combat_Game.Entities;
 
 namespace Wc3_Combat_Game.Prototype
 {
@@ -19,7 +14,7 @@ namespace Wc3_Combat_Game.Prototype
 
 
         public ProjectilePrototype(float size, float speed, float lifespan, IGameplayAction? impactEffect, Color fillColor)
-        { 
+        {
             Radius = size;
             Speed = speed;
             Lifespan = lifespan;

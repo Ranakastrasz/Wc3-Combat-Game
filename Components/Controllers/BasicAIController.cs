@@ -1,8 +1,10 @@
-﻿using AssertUtils;
-using AStar;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
 using System.Numerics;
+
+using AssertUtils;
+
+using AStar;
+
 using Wc3_Combat_Game.Components.Controllers.Interface;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
@@ -30,7 +32,7 @@ namespace Wc3_Combat_Game.Components.Controllers
 
         private float _lastLostPath = 0f;
         private const float RecoveryDelay = 1f; // Time to wait after losing path before trying to recover.
-        private float _lastPartialSteering = 0; 
+        private float _lastPartialSteering = 0;
 
         private const float WaypointTolerance = 2f*2f; // Distance to final waypoint to consider "arrived"
 
@@ -86,7 +88,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                         _currentState = State.DirectPursuit;
                         break; // Will handle in next state.
                     }
-                    if(_lastTargetPosition != targetPosition 
+                    if(_lastTargetPosition != targetPosition
                         && Vector2.DistanceSquared(_lastTargetPosition, targetPosition) > TargetRecalculateThresholdSqr
                         && TimeUtils.HasElapsed(context.CurrentTime, _lastPathfind, PathRecalculationInterval)) // Limit to 1 per 2 seconds.
                     {
@@ -101,16 +103,16 @@ namespace Wc3_Combat_Game.Components.Controllers
                         if(CurrentWaypoint < Path!.Length - 1) // Ensure there is a next waypoint
                         {
                             var nextWaypoint = Path![CurrentWaypoint + 1];
-                            if(unit.HasClearPathTo(context.Map.FromGrid(nextWaypoint),context))
+                            if(unit.HasClearPathTo(context.Map.FromGrid(nextWaypoint), context))
                             {
                                 CurrentWaypoint++;
                             }
                         }
                         else
-                        { 
+                        {
                             // No further waypoints available. Check for when we arrive, then re-pathfind.
                             float distSqr = Vector2.DistanceSquared(unit.Position, context.Map!.FromGrid(Path![CurrentWaypoint]));
-                            if (distSqr <= WaypointTolerance)
+                            if(distSqr <= WaypointTolerance)
                             {
                                 // Reached the end of the path. Since we didn't spot the target,
                                 // but still have one, build a new path.
@@ -266,7 +268,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         private bool TryPathfind(Unit unit, IBoardContext context)
         {
             Vector2? targetPos = unit.GetTargetPosition();
-            if (targetPos == null) return false; // No target to pathfind to.
+            if(targetPos == null) return false; // No target to pathfind to.
             Pathfind(unit, targetPos.Value, context);
             _lastPathfind = context.CurrentTime;
             _lastTargetPosition = targetPos.Value; // Update the last known target position.
@@ -425,9 +427,9 @@ namespace Wc3_Combat_Game.Components.Controllers
                 }
 
 
-                if (!TimeUtils.HasElapsed(context.CurrentTime, _lastPathfind, 0.1f))
+                if(!TimeUtils.HasElapsed(context.CurrentTime, _lastPathfind, 0.1f))
                     stateText += "\n (Path refreshed)";
-                if (!TimeUtils.HasElapsed(context.CurrentTime, _lastPartialSteering, 0.1f))
+                if(!TimeUtils.HasElapsed(context.CurrentTime, _lastPartialSteering, 0.1f))
                     stateText += "\n (Partial steering active)";
                 var font = context.DrawCache.GetFont("Arial", 2);
                 var brush = context.DrawCache.GetSolidBrush(Color.White);
@@ -441,8 +443,8 @@ namespace Wc3_Combat_Game.Components.Controllers
                 int x = CurrentWaypoint;
                 Vector2 currentPointWorld = (x == CurrentWaypoint) ? unit.Position : map.FromGrid(Path[x-1]);
                 Vector2 nextPointWorld = map.FromGrid(Path[x]);
-               
-                
+
+
                 if(context.DebugSettings.Get(DebugSetting.DrawEnemyControllerNextWaypoint))
                 {
                     if(_currentState == State.PathFollowing)
@@ -453,7 +455,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                         tileSize = map.TileSize * 0.15f; // Make it slightly larger
                         g.FillRectangle(Brushes.Red, currentTargetWaypointWorld.X - tileSize / 2, currentTargetWaypointWorld.Y - tileSize / 2, tileSize, tileSize);
                     }
-                    else if (_currentState == State.DirectPursuit)
+                    else if(_currentState == State.DirectPursuit)
                     {
                         // Direct pursuit target position
                         g.DrawLine(Pens.AliceBlue, unit.Position.ToPoint(), _TargetMovePosition.ToPoint());
@@ -472,7 +474,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                     {
                         currentPointWorld = (x == CurrentWaypoint) ? unit.Position : map.FromGrid(Path[x - 1]);
                         nextPointWorld = map.FromGrid(Path[x]);
-                            
+
                         Point from = currentPointWorld.ToPoint();
                         Point to = (nextPointWorld + offset).ToPoint();
                         if(x != CurrentWaypoint)
@@ -487,12 +489,12 @@ namespace Wc3_Combat_Game.Components.Controllers
                         g.FillRectangle(Brushes.Yellow, to.X - tileSize / 2, to.Y - tileSize / 2, tileSize, tileSize);
                     }
                 }
-                if (context.DebugSettings.Get(DebugSetting.DrawEnemyControllerLOS))
+                if(context.DebugSettings.Get(DebugSetting.DrawEnemyControllerLOS))
                 {
                     // Draw line of sight Check to next waypoint, via asking the map to draw it.
-                    if (_currentState == State.PathFollowing)
-                        map.DrawDebugLineOfSight(g, context,  unit.Position, context.Map.FromGrid(Path[CurrentWaypoint]), unit.Radius);
-                    else if (_currentState == State.DirectPursuit)
+                    if(_currentState == State.PathFollowing)
+                        map.DrawDebugLineOfSight(g, context, unit.Position, context.Map.FromGrid(Path[CurrentWaypoint]), unit.Radius);
+                    else if(_currentState == State.DirectPursuit)
                         map.DrawDebugLineOfSight(g, context, unit.Position, unit.GetTargetPosition().Value, unit.Radius);
                 }
             }

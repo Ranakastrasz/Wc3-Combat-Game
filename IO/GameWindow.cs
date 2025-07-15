@@ -1,13 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Color = Microsoft.Xna.Framework.Color;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace Wc3_Combat_Game.IO
 {
-    internal class GameWindow : Game
+    internal class GameWindow: Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.IO;
@@ -10,7 +11,7 @@ namespace Wc3_Combat_Game.Components.Weapons.Interface
     {
 
         WeaponPrototype? GetPrototype();
-        float AttackRange { get;}
+        float AttackRange { get; }
         float AttackRangeSqr => AttackRange * AttackRange;
 
         bool TryShootEntity(Unit unit, Entity target, IBoardContext context) { return false; }

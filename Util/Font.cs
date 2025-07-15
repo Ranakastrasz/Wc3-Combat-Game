@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Wc3_Combat_Game.Util
+﻿namespace Wc3_Combat_Game.Util
 {
     internal class FontUtils
     {
@@ -19,11 +12,11 @@ namespace Wc3_Combat_Game.Util
             {
                 testFont = new Font(fontName, fontSize, style, graphicsUnit);
                 size = g.MeasureString("W", testFont);
-                if (size.Width > tileSize || size.Height > tileSize)
+                if(size.Width > tileSize || size.Height > tileSize)
                     break;
                 fontSize += 0.5f;
                 testFont.Dispose();
-            } while (true);
+            } while(true);
 
             return new Font(fontName, fontSize - 0.5f, style, graphicsUnit);
         }

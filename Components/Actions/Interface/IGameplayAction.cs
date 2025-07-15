@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
+
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities;
 
@@ -17,7 +13,7 @@ namespace Wc3_Combat_Game.Components.Actions.Interface
         public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, Vector2 TargetPoint, IBoardContext context);
     }
 
-    public class GameplayActionNull : IGameplayAction
+    public class GameplayActionNull: IGameplayAction
     {
         public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)
         {

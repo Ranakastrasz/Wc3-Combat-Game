@@ -18,8 +18,8 @@ namespace Wc3_Combat_Game.Terrain
         {
             // Transpose the array for WorldGrid
             var transposed = new short[tileMap.GetLength(1), tileMap.GetLength(0)];
-            for (int y = 0; y < tileMap.GetLength(1); y++)
-                for (int x = 0; x < tileMap.GetLength(0); x++)
+            for(int y = 0; y < tileMap.GetLength(1); y++)
+                for(int x = 0; x < tileMap.GetLength(0); x++)
                     transposed[y, x] = tileMap[x, y];
 
             Grid = new WorldGrid(transposed);

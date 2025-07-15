@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.IO
 {
@@ -16,7 +15,7 @@ namespace Wc3_Combat_Game.IO
         {
             _keysDown.Add(key);
             _keysPressedThisFrame.Add(key);
-        }   
+        }
 
         public void OnKeyUp(Keys key)
         {

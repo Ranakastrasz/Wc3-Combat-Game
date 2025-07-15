@@ -1,9 +1,11 @@
-﻿using AssertUtils;
+﻿using System.Data;
+using System.Numerics;
+
+using AssertUtils;
+
 using AStar;
 using AStar.Options;
-using System.Collections.Generic;
-using System.Data;
-using System.Numerics;
+
 using Wc3_Combat_Game.Components.Actions;
 using Wc3_Combat_Game.Components.Actions.Interface;
 using Wc3_Combat_Game.Components.Controllers;
@@ -14,12 +16,13 @@ using Wc3_Combat_Game.Prototype.Weapons;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
 using Wc3_Combat_Game.Waves;
+
 using static Wc3_Combat_Game.Core.GameConstants;
 //using Wc3_Combat_Game.IO.Load.GameSchema;
 
 namespace Wc3_Combat_Game.Core
 {
-    public class GameBoard : IBoardContext, IDrawContext, IDisposable
+    public class GameBoard: IBoardContext, IDrawContext, IDisposable
     {
         private readonly GameController? _controller;
 
@@ -127,7 +130,7 @@ namespace Wc3_Combat_Game.Core
 
         public DebugSettings DebugSettings = new DebugSettings(); // May or may not stay here.
         DebugSettings IDrawContext.DebugSettings => DebugSettings;
-        
+
         public DrawCache DrawCache { get; private set; }
 
         private float _lastEnemySpawned = 0f;
@@ -189,10 +192,10 @@ namespace Wc3_Combat_Game.Core
             var wave3Unit = new UnitPrototype(weapon10DamageRanged, 30f,   0f, 10f,0.5f, 5f,  40f, Color.Orange , UnitPrototype.DrawShape.Square);
 
             //_waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 1));
-            _waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 12f,   2f,  4f,  50f, Color.Brown  , UnitPrototype.DrawShape.Circle), 32));
-            _waves.Add(new Wave(new UnitPrototype(weapon10Damage      , 10f, 0.1f,  4f,  75f, Color.Pink   , UnitPrototype.DrawShape.Circle), 32));
+            _waves.Add(new Wave(new UnitPrototype(weapon5Damage, 12f, 2f, 4f, 50f, Color.Brown, UnitPrototype.DrawShape.Circle), 32));
+            _waves.Add(new Wave(new UnitPrototype(weapon10Damage, 10f, 0.1f, 4f, 75f, Color.Pink, UnitPrototype.DrawShape.Circle), 32));
             _waves.Add(new Wave(wave3Unit, 16));
-            _waves.Add(new Wave(new UnitPrototype(weapon25Damage      , 80f,   2f, 10f,  50f, Color.Brown  , UnitPrototype.DrawShape.Square), 8));
+            _waves.Add(new Wave(new UnitPrototype(weapon25Damage, 80f, 2f, 10f, 50f, Color.Brown, UnitPrototype.DrawShape.Square), 8));
             _waves.Add(new Wave(new UnitPrototype(weapon10DamageRangedRapid, 400f, 0f, 15f, 100f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
 
         }
@@ -219,11 +222,11 @@ namespace Wc3_Combat_Game.Core
             AddUnit(PlayerUnit);
         }
 
-        
+
         private bool CheckGameOverCondition(IBoardContext context)
         {
             AssertUtil.NotNull(PlayerUnit);
-            if (PlayerUnit.IsExpired(context))
+            if(PlayerUnit.IsExpired(context))
             {
                 AssertUtil.NotNull(_controller);
                 _controller.OnDefeat();
@@ -233,7 +236,7 @@ namespace Wc3_Combat_Game.Core
         }
         private bool CheckVictoryCondition()
         {
-            if (_waveCurrent == _waves.Count)
+            if(_waveCurrent == _waves.Count)
             {
                 AssertUtil.NotNull(_controller);
                 _controller.OnVictory();
@@ -248,9 +251,9 @@ namespace Wc3_Combat_Game.Core
             CurrentTime += deltaTime;
 
 
-            if (TimeUtils.HasElapsed(CurrentTime,_lastEnemySpawned,ENEMY_SPAWN_COOLDOWN))
+            if(TimeUtils.HasElapsed(CurrentTime, _lastEnemySpawned, ENEMY_SPAWN_COOLDOWN))
             {
-                if (_waveSpawnsRemaining > 0)
+                if(_waveSpawnsRemaining > 0)
                 {
                     _lastEnemySpawned = CurrentTime;
                     _waveSpawnsRemaining--;
@@ -260,7 +263,7 @@ namespace Wc3_Combat_Game.Core
                     unit.TargetUnit = PlayerUnit;
                     AddUnit(unit);
                     // Elite
-                    if (_waveSpawnsRemaining > 0 && _waveSpawnsRemaining == _waves[_waveCurrent].CountToSpawn)
+                    if(_waveSpawnsRemaining > 0 && _waveSpawnsRemaining == _waves[_waveCurrent].CountToSpawn)
                     {
                         // unit.MaxHealth *= 4;
                         // unit.Health *= 4;
@@ -268,10 +271,10 @@ namespace Wc3_Combat_Game.Core
                         // unit.Damage *= 4;
                         // I probably need to... Do something to register units as unique.
                         // I can't just set these values.
-                        
+
                     }
                 }
-                else if (!Units.Entities.Any(s => s.IsAlive && s.Team == Team.Enemy))
+                else if(!Units.Entities.Any(s => s.IsAlive && s.Team == Team.Enemy))
                 {
                     // Should be .Count, but also needs a boss tag check. Later.
                     // After all, we do next wave when less than 1/8th remain, or less than 8, maybe. dunno. 
@@ -280,7 +283,7 @@ namespace Wc3_Combat_Game.Core
 
                     _waveCurrent++;
 
-                    if (!CheckVictoryCondition())
+                    if(!CheckVictoryCondition())
                     {
                         _waveSpawnsRemaining = _waves[_waveCurrent].CountToSpawn;
                     }
@@ -313,11 +316,11 @@ namespace Wc3_Combat_Game.Core
         private void CheckCollision(float deltaTime)
         {
             AssertUtil.NotNull(Map);
-            foreach (Projectile projectile in Projectiles.Entities.Where(p => p.IsAlive))
+            foreach(Projectile projectile in Projectiles.Entities.Where(p => p.IsAlive))
             {
-                foreach (Unit unit in Units.Entities.Where(p => p.IsAlive && p.Team.IsHostileTo(projectile.Team)))
+                foreach(Unit unit in Units.Entities.Where(p => p.IsAlive && p.Team.IsHostileTo(projectile.Team)))
                 {
-                    if (projectile.Intersects(unit))
+                    if(projectile.Intersects(unit))
                     {
                         projectile.Die(this);
                         projectile.ImpactEffect?.ExecuteOnEntity(projectile.Caster, projectile, unit, this);
@@ -327,15 +330,15 @@ namespace Wc3_Combat_Game.Core
                 }
             }
 
-            foreach (Projectile projectile in Projectiles.Entities)
+            foreach(Projectile projectile in Projectiles.Entities)
             {
-                if (!projectile.BoundingBox.IntersectsWith(Map.WorldBounds))
+                if(!projectile.BoundingBox.IntersectsWith(Map.WorldBounds))
                 {
                     projectile.Die(this);
                 }
             }
             AssertUtil.NotNull(PlayerUnit);
-            if (!Map.WorldBounds.Contains(PlayerUnit.BoundingBox))
+            if(!Map.WorldBounds.Contains(PlayerUnit.BoundingBox))
             {
                 var halfSize = PlayerUnit.BoundingBox;
 

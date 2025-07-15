@@ -1,7 +1,9 @@
-﻿using AssertUtils;
+﻿using System.Diagnostics;
+
+using AssertUtils;
+
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
-using System.Diagnostics;
 
 namespace Wc3_Combat_Game.Core
 {
@@ -26,7 +28,7 @@ namespace Wc3_Combat_Game.Core
 
 
         public float CurrentTime => Board?.CurrentTime ?? float.NegativeInfinity;
-        public InputManager ?Input => View?.Input;
+        public InputManager? Input => View?.Input;
 
         private readonly System.Timers.Timer _gameLoopTimer;
         private readonly Stopwatch _stopwatch = new();
@@ -34,7 +36,7 @@ namespace Wc3_Combat_Game.Core
         public float GlobalTime { get; private set; } = 0f;
 
         private float _gameOverTime = float.NegativeInfinity;
-        
+
         private bool _paused;
 
         private readonly float _tickDuration_ms = GameConstants.TICK_DURATION_MS; // Convert to seconds
@@ -93,10 +95,10 @@ namespace Wc3_Combat_Game.Core
                 _lastTime = DateTime.Now;
             }
 
-            float SimDeltaTime; 
-                // for the gameboard's updates. Adjusted by pause and gamespeed.
+            float SimDeltaTime;
+            // for the gameboard's updates. Adjusted by pause and gamespeed.
             float DrawDeltaTime = GameConstants.FIXED_DELTA_TIME;
-                // For drawing, which is always fixed.
+            // For drawing, which is always fixed.
             if(IsPaused())
                 SimDeltaTime = 0f;
             else
@@ -104,17 +106,17 @@ namespace Wc3_Combat_Game.Core
 
             GlobalTime += SimDeltaTime;
 
-            if (CurrentState == GameState.Playing)
+            if(CurrentState == GameState.Playing)
             {
-                if (View != null && Board != null)
+                if(View != null && Board != null)
                 {
                     Board.Update(SimDeltaTime);
                     View.Update(DrawDeltaTime); // May need to pass both in later. 
                 }
             }
-            else if (CurrentState == GameState.GameOver || CurrentState == GameState.Victory)
+            else if(CurrentState == GameState.GameOver || CurrentState == GameState.Victory)
             {
-                if (TimeUtils.HasElapsed(GlobalTime, _gameOverTime, GameConstants.GAME_RESTART_DELAY))
+                if(TimeUtils.HasElapsed(GlobalTime, _gameOverTime, GameConstants.GAME_RESTART_DELAY))
                 {
                     // Game crashes once the game starts and update happens, because CreateGameBoard isn't sufficient.
                     // This needs to be sent to the actual Program.cs, since that is where all the initialization happens.
@@ -155,12 +157,12 @@ namespace Wc3_Combat_Game.Core
         {
             AssertUtil.NotNull(Board);
             return View = new GameView(this, Board);
-            
+
         }
 
         internal void StartGame()
         {
-            if (Board != null)
+            if(Board != null)
             {
                 CurrentState = GameState.Playing;
             }

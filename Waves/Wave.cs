@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wc3_Combat_Game.Prototype;
+﻿using Wc3_Combat_Game.Prototype;
 
 namespace Wc3_Combat_Game.Waves
 {
