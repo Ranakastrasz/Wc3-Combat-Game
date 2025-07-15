@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 
 using Wc3_Combat_Game.Components.Drawable;
+using Wc3_Combat_Game.Components.Entitys;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities.Components;
 using Wc3_Combat_Game.IO;
@@ -15,6 +16,9 @@ namespace Wc3_Combat_Game.Entities
     {
         public readonly int Index = s_NextIndex++;
         private static int s_NextIndex = 0;
+
+        public ICollidable? Collider;
+        public IMoveable? Mover;
 
         public float Radius { get; protected set; } // This will be part of the ICollidable later.
                                                     // And IDraw, seperately, ofc.
@@ -78,7 +82,9 @@ namespace Wc3_Combat_Game.Entities
 
         public virtual void Update(float deltaTime, IBoardContext context)
         {
-            // Call all interfaces here. For now, nothing to do.
+
+            Mover?.Update(this, deltaTime, context);
+            Collider?.Update(this, deltaTime, context);
         }
 
         public void Die(IBoardContext context)
@@ -109,6 +115,9 @@ namespace Wc3_Combat_Game.Entities
             Vector2 between = otherPosition - _position;
             return between.LengthSquared();
         }
+        public virtual void OnTerrainCollision(IBoardContext context) // Clearly should be an Event, really.
+        {
 
+        }
     }
 }

@@ -37,14 +37,15 @@ namespace Wc3_Combat_Game.Entities
                 return !IntersectsTerrain(targetPosition, context);
             }
         }
-
         public void OnTerrainCollision(Entity owner, IBoardContext context)
         {
-            MobileEntity entity = owner as MobileEntity;
-            if(entity != null)
-            {
-                entity.OnTerrainCollision(context);
-            }
+            owner.OnTerrainCollision(context);
+        }
+
+        public void Update(Entity owner, float deltaTime, IBoardContext context)
+        {
+            // Does nothing for now.
+            // Will include collision checks with other entities and terrain later, mostly for the aggressive push effect.
         }
     }
 }

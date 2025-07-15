@@ -17,21 +17,15 @@ namespace Wc3_Combat_Game.Components.Entities
 
         public UnitMover(Vector2? velocity = null)
         {
-            if(velocity != null)
-            {
-                Velocity = velocity.Value;
-            }
-            else
-            {
-                Velocity = Vector2.Zero;
-            }
+            Velocity = velocity ?? Vector2.Zero;
         }
 
-        public void UpdateMovement(Entity owner, float deltaTime, IBoardContext context)
+        public void Update(Entity owner, float deltaTime, IBoardContext context)
         {
-            MobileEntity? entity = owner as MobileEntity;
-            ICollidable? collider = entity?.Collider;
-            Vector2 newPosition = owner.Position + Velocity * deltaTime;
+            ICollidable? collider = owner.Collider;
+
+            Vector2 deltaMove = Velocity * deltaTime;
+            Vector2 newPosition = owner.Position + deltaMove;
             if(collider == null)
             {
                 owner.Position = newPosition;
@@ -42,6 +36,9 @@ namespace Wc3_Combat_Game.Components.Entities
                 Map? map = context.Map;
                 AssertUtil.NotNull(map);
 
+                // Issue. This doesn't allow you to move "As far as Possible" I believe.
+
+
                 // Try full movement first.
                 if(collider.HasClearPathTo(owner, newPosition, context))
                 { 
@@ -50,19 +47,20 @@ namespace Wc3_Combat_Game.Components.Entities
                 }
                 
                 // Try X-only
-                Vector2 xOnly = owner.Position + new Vector2(Velocity.X * deltaTime, 0);
+                Vector2 xOnly = owner.Position + new Vector2(deltaMove.X, 0);
                 bool xOk = collider.HasClearPathTo(owner,xOnly, context);
                 
                 // Try Y-only
-                Vector2 yOnly = owner.Position + new Vector2(0, Velocity.Y * deltaTime);
+                Vector2 yOnly = owner.Position + new Vector2(0, deltaMove.Y);
                 bool yOk = collider.HasClearPathTo(owner,yOnly, context);
 
                 if(xOk)
-                    owner.Position += new Vector2(Velocity.X * deltaTime, 0);
+                    owner.Position = xOnly;
                 else if(yOk)
-                    owner.Position += new Vector2(0, Velocity.Y * deltaTime);
+                    owner.Position = yOnly;
                 else
                 {
+
                 }
 
                 collider.OnTerrainCollision(owner, context);
