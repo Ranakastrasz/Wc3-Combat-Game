@@ -23,7 +23,7 @@ namespace Wc3_Combat_Game.Entities.Components
             //    return;
             //}
 
-            if(!GetVisible()) return;
+            if(!_getVisible()) return;
 
             Vector2 position = _getPosition();
             float diameter = _getDiameter();

@@ -17,7 +17,7 @@ namespace Wc3_Combat_Game.Entities.Components
 
         public override void Draw(Graphics g, IDrawContext context)
         {
-            if(!GetVisible()) return;
+            if(!_getVisible()) return;
             Vector2 position = _getPosition();
             float radius = _getRadius();
             float diameter = radius * 2f;

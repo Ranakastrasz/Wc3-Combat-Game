@@ -2,6 +2,8 @@
 
 using AssertUtils;
 
+using Wc3_Combat_Game.Components.Entities;
+using Wc3_Combat_Game.Components.Entitys;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Terrain;
@@ -11,10 +13,18 @@ namespace Wc3_Combat_Game.Entities
 {
     public class MobileEntity: Entity
     {
-        protected Vector2 _velocity = Vector2.Zero;
+        private IMoveable _mover;
+        private ICollidable _collider;
+
+        protected Vector2 _velocity { get => _mover.Velocity; set => _mover.Velocity = value; } //Vector2.Zero;
+
+        public ICollidable Collider { get => _collider; private set => _collider = value; }
+        public IMoveable Mover { get => _mover; private set => _mover = value; }
+
         public MobileEntity(float size, Vector2 position) : base(size, position)
         {
-
+            _mover = new UnitMover();
+            _collider = new CircleCollider(size, true);
         }
 
         public override void Update(float deltaTime, IBoardContext context)
@@ -23,38 +33,41 @@ namespace Wc3_Combat_Game.Entities
             Map? map = context.Map;
             AssertUtil.NotNull(map);
 
-            float collisionRadius = Radius;
+            _mover.UpdateMovement(this, deltaTime, context);
 
-            // Try full movement first
-            if(map.HasLineOfSight(_position, newPosition, collisionRadius))
-            {
-                _position = newPosition;
-                return;
-            }
-
-            // Try X-only
-            Vector2 xOnly = _position + new Vector2(_velocity.X * deltaTime, 0);
-            bool xOk = map.HasLineOfSight(_position, xOnly, collisionRadius);
-
-            // Try Y-only
-            Vector2 yOnly = _position + new Vector2(0, _velocity.Y * deltaTime);
-            bool yOk = map.HasLineOfSight(_position, yOnly, collisionRadius);
-
-            if(xOk)
-                _position += new Vector2(_velocity.X * deltaTime, 0);
-            else if(yOk)
-                _position += new Vector2(0, _velocity.Y * deltaTime);
-            else
-            { } // Cannot move.
-            //AssertUtil.Assert(map.CollidesAt(_position, collisionRadius) == false, "Post-collision position is colliding!");
-
-            OnTerrainCollision(context);
+            //float collisionRadius = Radius;
+            //
+            //// Try full movement first
+            //if(map.HasLineOfSight(_position, newPosition, collisionRadius))
+            //{
+            //    _position = newPosition;
+            //    return;
+            //}
+            //
+            //// Try X-only
+            //Vector2 xOnly = _position + new Vector2(_velocity.X * deltaTime, 0);
+            //bool xOk = map.HasLineOfSight(_position, xOnly, collisionRadius);
+            //
+            //// Try Y-only
+            //Vector2 yOnly = _position + new Vector2(0, _velocity.Y * deltaTime);
+            //bool yOk = map.HasLineOfSight(_position, yOnly, collisionRadius);
+            //
+            //if(xOk)
+            //    _position += new Vector2(_velocity.X * deltaTime, 0);
+            //else if(yOk)
+            //    _position += new Vector2(0, _velocity.Y * deltaTime);
+            //else
+            //{ } // Cannot move.
+            ////AssertUtil.Assert(map.CollidesAt(_position, collisionRadius) == false, "Post-collision position is colliding!");
+            //
+            //OnTerrainCollision(context);
 
         }
 
-        protected virtual void OnTerrainCollision(IBoardContext context)
+        public virtual void OnTerrainCollision(IBoardContext context)
         {
             // Default: stop movement
+
             _velocity = Vector2.Zero;
         }
 

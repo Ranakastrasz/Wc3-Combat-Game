@@ -1,0 +1,50 @@
+﻿using System.Numerics;
+
+using AStar;
+
+using Wc3_Combat_Game.Components.Entitys;
+using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.Terrain;
+
+namespace Wc3_Combat_Game.Entities
+{
+    internal class CircleCollider: ICollidable
+    {
+        private float _radius;
+        private bool _sweptCollision;
+
+
+        public float CollisionRadius => _radius;
+        public CircleCollider(float radius, bool sweptCollision = false)
+        {
+            _radius = radius;
+            _sweptCollision = sweptCollision;
+        }
+
+        public bool IntersectsTerrain(Vector2 position, IBoardContext context)
+        {
+            return context.Map.CollidesAt(position, _radius);
+        }
+
+        public bool HasClearPathTo(Vector2 position, Vector2 targetPosition, IBoardContext context)
+        {
+            if(_sweptCollision)
+            {
+                return context.Map.HasLineOfSight(position, targetPosition, CollisionRadius);
+            }
+            else
+            {
+                return !IntersectsTerrain(targetPosition, context);
+            }
+        }
+
+        public void OnTerrainCollision(Entity owner, IBoardContext context)
+        {
+            MobileEntity entity = owner as MobileEntity;
+            if(entity != null)
+            {
+                entity.OnTerrainCollision(context);
+            }
+        }
+    }
+}

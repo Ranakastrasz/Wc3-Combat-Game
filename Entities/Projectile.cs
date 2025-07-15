@@ -59,7 +59,7 @@ namespace Wc3_Combat_Game.Entities
 
         }
 
-        protected override void OnTerrainCollision(IBoardContext context)
+        public override void OnTerrainCollision(IBoardContext context)
         {
             Die(context);
         }
