@@ -44,5 +44,14 @@ namespace Wc3_Combat_Game.Entities
             // Does nothing for now.
             // Will include collision checks with other entities and terrain later, mostly for the aggressive push effect.
         }
+
+        public bool CollidesAt(Entity owner, IBoardContext context)
+        {
+            return context.Map.CollidesAt(owner.Position, _radius);
+        }
+        public bool CollidesAt(Vector2 position, IBoardContext context)
+        {
+            return context.Map.CollidesAt(position, _radius);
+        }
     }
 }
