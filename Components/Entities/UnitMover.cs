@@ -45,7 +45,7 @@ namespace Wc3_Combat_Game.Components.Entities
                     owner.Position = newPosition;
                     return;
                 }
-                
+
                 // Try X-only
                 Vector2 xOnly = owner.Position + new Vector2(deltaMove.X, 0);
                 bool xOk = collider.HasClearPathTo(owner,xOnly, context);
@@ -65,6 +65,24 @@ namespace Wc3_Combat_Game.Components.Entities
 
                 collider.OnTerrainCollision(owner, context);
             }
+        }
+        private Vector2 StepUntilBlocked(Entity owner, ICollidable collider, Vector2 delta, Map map, IBoardContext context)
+        {
+            const int steps = 10;
+            Vector2 start = owner.Position;
+            Vector2 step = delta / steps;
+            Vector2 pos = start;
+
+            for(int i = 1; i <= steps; i++)
+            {
+                Vector2 test = start + step * i;
+                if(!collider.HasClearPathTo(owner, test, context)) // use cheap collision check here
+                    pos = test;
+                else
+                    break;
+            }
+
+            return pos;
         }
     }
 }

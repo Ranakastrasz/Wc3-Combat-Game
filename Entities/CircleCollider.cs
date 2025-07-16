@@ -13,6 +13,7 @@ namespace Wc3_Combat_Game.Entities
         private float _radius;
         private bool _sweptCollision;
 
+        public event EventHandler TerrainCollision;
 
         public float CollisionRadius => _radius;
         public CircleCollider(float radius, bool sweptCollision = false)
@@ -21,10 +22,6 @@ namespace Wc3_Combat_Game.Entities
             _sweptCollision = sweptCollision;
         }
 
-        public bool IntersectsTerrain(Vector2 position, IBoardContext context)
-        {
-            return context.Map.CollidesAt(position, _radius);
-        }
 
         public bool HasClearPathTo(Vector2 position, Vector2 targetPosition, IBoardContext context)
         {
@@ -34,7 +31,7 @@ namespace Wc3_Combat_Game.Entities
             }
             else
             {
-                return !IntersectsTerrain(targetPosition, context);
+                return !CollidesAt(targetPosition, context);
             }
         }
         public void OnTerrainCollision(Entity owner, IBoardContext context)
