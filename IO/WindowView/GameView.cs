@@ -20,7 +20,15 @@ namespace Wc3_Combat_Game
 
         private Camera _camera;
 
-        public IDrawContext? DrawContext { get; private set; }
+        public IDrawContext DrawContext
+        { get
+            {
+                AssertUtil.NotNull(_drawContext);
+                return _drawContext;
+            }
+            private set => _drawContext = value;
+        }
+        private IDrawContext? _drawContext;
 
 
         // In GameView.cs, add these:
@@ -193,13 +201,7 @@ namespace Wc3_Combat_Game
             g.Transform = transform;
 
             // Draw Map.
-            if(DrawContext != null)
-            {
-                Map? map = DrawContext.Map;
-                AssertUtil.NotNull(map);
-
-                map.Draw(g, DrawContext);
-            }
+            DrawContext?.Map.Draw(g, DrawContext);
 
 
             //Rectangle clientRect = GameWindow.ClientRectangle;

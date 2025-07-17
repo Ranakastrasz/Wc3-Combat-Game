@@ -33,7 +33,7 @@ namespace Wc3_Combat_Game.Components.Entities
             }
             else
             {
-                Map? map = context.Map;
+                Map map = context.Map;
                 AssertUtil.NotNull(map);
 
                 // Issue. This doesn't allow you to move "As far as Possible" I believe.

@@ -10,7 +10,7 @@ using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Components.Weapons
 {
-    class BasicWeapon: IWeapon
+    class AttackAbility: IWeapon
     {
         protected float _cooldown;
         protected float _lastShotTime = float.NegativeInfinity;
@@ -26,7 +26,7 @@ namespace Wc3_Combat_Game.Components.Weapons
 
 
 
-        public BasicWeapon(WeaponPrototypeBasic prototype)
+        public AttackAbility(WeaponPrototypeBasic prototype)
         {
             _prototype = prototype;
             _CastEffect = prototype.CastEffect;

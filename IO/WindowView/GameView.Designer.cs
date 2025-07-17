@@ -20,7 +20,7 @@ namespace Wc3_Combat_Game
                 DisposeCustomResources();
                 components.Dispose();
             }
-            base.Dispose(disposing);
+            base.Dispose(disposing); // Crashes the program, wrong thread apperantly?
         }
 
 

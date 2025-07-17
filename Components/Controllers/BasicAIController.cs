@@ -51,7 +51,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         public void Update(Unit unit, float deltaTime, IBoardContext context)
         {
             if(deltaTime <= 0f) return; // No time has passed, no update needed.
-            AssertUtil.NotNull(context.Map);
+
             _TargetMovePosition = unit.Position;
 
             if(!TargetUnitValid(unit.TargetUnit) || unit.GetTargetPosition() is not Vector2 targetPosition)
@@ -111,7 +111,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                         else
                         {
                             // No further waypoints available. Check for when we arrive, then re-pathfind.
-                            float distSqr = Vector2.DistanceSquared(unit.Position, context.Map!.FromGrid(Path![CurrentWaypoint]));
+                            float distSqr = Vector2.DistanceSquared(unit.Position, context.Map.FromGrid(Path![CurrentWaypoint]));
                             if(distSqr <= WaypointTolerance)
                             {
                                 // Reached the end of the path. Since we didn't spot the target,
@@ -162,7 +162,7 @@ namespace Wc3_Combat_Game.Components.Controllers
                             break;
                         }
 
-                        _TargetMovePosition = context.Map!.FromGrid(Path![CurrentWaypoint]);
+                        _TargetMovePosition = context.Map.FromGrid(Path![CurrentWaypoint]);
                     }
                     else
                     {
@@ -284,10 +284,8 @@ namespace Wc3_Combat_Game.Components.Controllers
         /// <param name="context">The board context providing map and pathfinder.</param>
         public void Pathfind(Unit unit, Vector2 targetPos, IBoardContext context)
         {
-            Map? map = context.Map;
-            PathFinder? pathFinder = context.PathFinder;
-            AssertUtil.NotNull(map);
-            AssertUtil.NotNull(pathFinder);
+            Map map = context.Map;
+            PathFinder pathFinder = context.PathFinder;
             Point startTile = map.ToGrid(unit.Position);
             Point targetTile = map.ToGrid(targetPos);
             Debug.Assert(map[startTile].IsWalkable, "Start tile is not walkable");
@@ -322,7 +320,7 @@ namespace Wc3_Combat_Game.Components.Controllers
         /// <returns>A normalized steering vector, or Vector2.Zero if already at target.</returns>
         public static Vector2 GetPartialSteeringTarget(Unit unit, Vector2 targetPos, IBoardContext context)
         {
-            var map = context.Map!;
+            var map = context.Map;
             if(unit.Position == targetPos)
                 return Vector2.Zero;
 
@@ -393,8 +391,6 @@ namespace Wc3_Combat_Game.Components.Controllers
         {
 
             if(!unit.IsAlive) return;
-            Map? map = context.Map;
-            AssertUtil.NotNull(map);
 
             //[DebugSetting.DrawEnemyControllerState] = false,       
             //[DebugSetting.DrawEnemyControllerFullPath] = false,    
@@ -439,10 +435,10 @@ namespace Wc3_Combat_Game.Components.Controllers
             if(ValidPath())
             {
                 AssertUtil.NotNull(Path); // ValidPath already does this, but compiler insists.
-                float tileSize = map.TileSize * 0.1f;
+                float tileSize = context.Map.TileSize * 0.1f;
                 int x = CurrentWaypoint;
-                Vector2 currentPointWorld = (x == CurrentWaypoint) ? unit.Position : map.FromGrid(Path[x-1]);
-                Vector2 nextPointWorld = map.FromGrid(Path[x]);
+                Vector2 currentPointWorld = (x == CurrentWaypoint) ? unit.Position : context.Map.FromGrid(Path[x-1]);
+                Vector2 nextPointWorld = context.Map.FromGrid(Path[x]);
 
 
                 if(context.DebugSettings.Get(DebugSetting.DrawEnemyControllerNextWaypoint))
@@ -451,8 +447,8 @@ namespace Wc3_Combat_Game.Components.Controllers
                     {
                         // Next waypoint and line connecting it.
                         g.DrawLine(Pens.Yellow, currentPointWorld.ToPoint(), nextPointWorld.ToPoint());
-                        Vector2 currentTargetWaypointWorld = map.FromGrid(Path![CurrentWaypoint]);
-                        tileSize = map.TileSize * 0.15f; // Make it slightly larger
+                        Vector2 currentTargetWaypointWorld = context.Map.FromGrid(Path![CurrentWaypoint]);
+                        tileSize = context.Map.TileSize * 0.15f; // Make it slightly larger
                         g.FillRectangle(Brushes.Red, currentTargetWaypointWorld.X - tileSize / 2, currentTargetWaypointWorld.Y - tileSize / 2, tileSize, tileSize);
                     }
                     else if(_currentState == State.DirectPursuit)
@@ -472,8 +468,8 @@ namespace Wc3_Combat_Game.Components.Controllers
                     // Draw lines between path points and highlight waypoints
                     for(x = CurrentWaypoint; x < Path.Length; x++) // Start drawing from the current waypoint
                     {
-                        currentPointWorld = (x == CurrentWaypoint) ? unit.Position : map.FromGrid(Path[x - 1]);
-                        nextPointWorld = map.FromGrid(Path[x]);
+                        currentPointWorld = (x == CurrentWaypoint) ? unit.Position : context.Map.FromGrid(Path[x - 1]);
+                        nextPointWorld = context.Map.FromGrid(Path[x]);
 
                         Point from = currentPointWorld.ToPoint();
                         Point to = (nextPointWorld + offset).ToPoint();
@@ -493,9 +489,9 @@ namespace Wc3_Combat_Game.Components.Controllers
                 {
                     // Draw line of sight Check to next waypoint, via asking the map to draw it.
                     if(_currentState == State.PathFollowing)
-                        map.DrawDebugLineOfSight(g, context, unit.Position, context.Map.FromGrid(Path[CurrentWaypoint]), unit.Radius);
+                        context.Map.DrawDebugLineOfSight(g, context, unit.Position, context.Map.FromGrid(Path[CurrentWaypoint]), unit.Radius);
                     else if(_currentState == State.DirectPursuit)
-                        map.DrawDebugLineOfSight(g, context, unit.Position, unit.GetTargetPosition().Value, unit.Radius);
+                        context.Map.DrawDebugLineOfSight(g, context, unit.Position, unit.GetTargetPosition()!.Value, unit.Radius);
                 }
             }
         }

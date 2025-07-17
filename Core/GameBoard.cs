@@ -24,7 +24,16 @@ namespace Wc3_Combat_Game.Core
 {
     public class GameBoard: IBoardContext, IDrawContext, IDisposable
     {
-        private readonly GameController? _controller;
+        private GameController? _controller;
+        public GameController Controller
+        {
+            get
+            {
+                AssertUtil.NotNull(_controller);
+                return _controller;
+            }
+            private set => _controller = value;
+        }
 
         public float CurrentTime { get; private set; } = 0f;
 
@@ -37,7 +46,7 @@ namespace Wc3_Combat_Game.Core
 
         private List<Vector2> spawnPoints = new();
 
-        Camera? IDrawContext.Camera => _controller?.View?.Camera;
+        Camera IDrawContext.Camera => Controller.View?.Camera;
 
         // Entities.
         public Unit? PlayerUnit { get; private set; }
@@ -50,6 +59,39 @@ namespace Wc3_Combat_Game.Core
         private float _lastCacheUpdateTime = float.NegativeInfinity;
         private Dictionary<Team, List<Unit>> _friendlyUnitsCache = new Dictionary<Team, List<Unit>>();
         private Dictionary<Team, List<Unit>> _enemyUnitsCache = new Dictionary<Team, List<Unit>>();
+
+
+        public Map Map
+        {
+            get
+            {
+                AssertUtil.NotNull(_map);
+                return _map;
+            }
+            private set => _map = value;
+        }
+        public PathFinder PathFinder
+        {
+            get
+            {
+                AssertUtil.NotNull(_pathfinder);
+                return _pathfinder;
+            }
+            private set => _pathfinder = value;
+        }
+
+        private Map _map;
+
+        private PathFinder? _pathfinder;
+        public float TileSize { get; private set; }
+
+        public DebugSettings DebugSettings = new DebugSettings(); // May or may not stay here.
+        DebugSettings IDrawContext.DebugSettings => DebugSettings;
+
+        public DrawCache DrawCache { get; private set; }
+
+
+        private float _lastEnemySpawned = 0f;
 
         public IReadOnlyList<Unit> GetFriendlyUnits(Team team)
         {
@@ -119,27 +161,10 @@ namespace Wc3_Combat_Game.Core
             }
         }
 
-        //
-        //IEnumerable<Unit> entities = context.Entities.Entities
-        //            .OfType<Unit>()
-        //            .Where(u => u.IsAlive && u.Team.IsFriendlyTo(unit.Team));
-
-        public Map? Map { get; private set; }
-        public PathFinder? PathFinder { get; private set; }
-        public float TileSize { get; private set; }
-
-        public DebugSettings DebugSettings = new DebugSettings(); // May or may not stay here.
-        DebugSettings IDrawContext.DebugSettings => DebugSettings;
-
-        public DrawCache DrawCache { get; private set; }
-
-        private float _lastEnemySpawned = 0f;
 
 
         public GameBoard()
         {
-            Map = null;
-            PathFinder = null;
             DrawCache = new DrawCache();
         }
 
@@ -202,9 +227,8 @@ namespace Wc3_Combat_Game.Core
 
         public void InitPlayer()
         {
-            AssertUtil.NotNull(_controller);
-            AssertUtil.NotNull(_controller.Input);
-            AssertUtil.NotNull(Map);
+            AssertUtil.NotNull(Controller);
+            AssertUtil.NotNull(Controller.Input);
 
             WeaponPrototypeBasic weapon = new WeaponPrototypeBasic(new ProjectileAction(new ProjectilePrototype(2.5f,
                 600f,
@@ -216,7 +240,7 @@ namespace Wc3_Combat_Game.Core
 
             UnitPrototype playerUnit = new((WeaponPrototype)weapon, 100f, 1f, 100f, 3f, 5f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
 
-            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, (Vector2)Map.GetPlayerSpawn(), new PlayerController(_controller.Input), Team.Ally);
+            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally);
 
 
             AddUnit(PlayerUnit);
@@ -228,8 +252,8 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(PlayerUnit);
             if(PlayerUnit.IsExpired(context))
             {
-                AssertUtil.NotNull(_controller);
-                _controller.OnDefeat();
+                AssertUtil.NotNull(Controller);
+                Controller.OnDefeat();
                 return true;
             }
             return false;
@@ -238,8 +262,8 @@ namespace Wc3_Combat_Game.Core
         {
             if(_waveCurrent == _waves.Count)
             {
-                AssertUtil.NotNull(_controller);
-                _controller.OnVictory();
+                AssertUtil.NotNull(Controller);
+                Controller.OnVictory();
                 return true;
             }
             return false;
@@ -315,7 +339,6 @@ namespace Wc3_Combat_Game.Core
 
         private void CheckCollision(float deltaTime)
         {
-            AssertUtil.NotNull(Map);
             foreach(Projectile projectile in Projectiles.Entities.Where(p => p.IsAlive))
             {
                 foreach(Unit unit in Units.Entities.Where(p => p.IsAlive && p.Team.IsHostileTo(projectile.Team)))

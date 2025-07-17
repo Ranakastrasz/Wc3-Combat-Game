@@ -22,13 +22,29 @@ namespace Wc3_Combat_Game.Core
 
         public GameState CurrentState;
 
-        public GameBoard? Board { get; set; }
-        public GameView? View { get; set; }
+        public GameBoard Board
+        {
+            get
+            {
+                AssertUtil.NotNull(_board);
+                return _board;
+            }
+            private set => _board = value;
+        }
+        private GameBoard? _board;
+        public GameView View
+        {
+            get
+            {
+                AssertUtil.NotNull(_view);
+                return _view;
+            }
+            private set => _view = value;
+        }
+        private GameView? _view;
 
-
-
-        public float CurrentTime => Board?.CurrentTime ?? float.NegativeInfinity;
-        public InputManager? Input => View?.Input;
+        public float CurrentTime => _board?.CurrentTime ?? float.NegativeInfinity;
+        public InputManager? Input => View.Input;
 
         private readonly System.Timers.Timer _gameLoopTimer;
         private readonly Stopwatch _stopwatch = new();

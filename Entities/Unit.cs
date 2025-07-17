@@ -69,7 +69,7 @@ namespace Wc3_Combat_Game.Entities
 
             if(prototype.Weapon is WeaponPrototypeBasic basic)
             {
-                Weapon = new BasicWeapon(basic);
+                Weapon = new AttackAbility(basic);
             }
             _despawnDelay = 1f; // For units specifically.
 

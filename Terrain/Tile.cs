@@ -25,8 +25,6 @@ namespace Wc3_Combat_Game.Terrain
 
         public void Draw(Graphics g, IDrawContext context)
         {
-            AssertUtil.NotNull(context.Map);
-            AssertUtil.NotNull(context.Camera);
             float scale = context.Map.TileSize ;
 
 

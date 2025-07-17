@@ -2,7 +2,7 @@
 
 namespace Wc3_Combat_Game.Components.Drawable
 {
-    internal interface IDrawable
+    public interface IDrawable
     {
         public abstract void Draw(Graphics g, IDrawContext context);
     }
