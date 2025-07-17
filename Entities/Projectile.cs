@@ -1,10 +1,9 @@
 ﻿using System.Numerics;
 
-using Wc3_Combat_Game.Components.Actions.Interface;
-using Wc3_Combat_Game.Core;
-using Wc3_Combat_Game.Entities.Components;
-using Wc3_Combat_Game.IO;
-using Wc3_Combat_Game.Prototype;
+using Wc3_Combat_Game.Actions.Interface;
+using Wc3_Combat_Game.Core.Context;
+using Wc3_Combat_Game.Entities.Components.Drawable;
+using Wc3_Combat_Game.Entities.Components.Prototype;
 using Wc3_Combat_Game.Util;
 
 using static Wc3_Combat_Game.Core.GameConstants;

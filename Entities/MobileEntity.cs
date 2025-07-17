@@ -1,12 +1,9 @@
 ﻿using System.Numerics;
 
-using AssertUtils;
-
-using Wc3_Combat_Game.Components.Entities;
-using Wc3_Combat_Game.Components.Entitys;
-using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.Core.Context;
+using Wc3_Combat_Game.Entities.Components;
+using Wc3_Combat_Game.Entities.Components.Movement;
 using Wc3_Combat_Game.IO;
-using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Entities

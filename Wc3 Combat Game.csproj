@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <None Include="C:\Users\Corwin Slater\source\repos\Wc3 Combat Game\.editorconfig" />
-    <None Include="Prototype\EntityPrototyper.cs" />
+    <None Include="Entities\Components\Prototype\EntityPrototyper.cs" />
   </ItemGroup>
 
   <ItemGroup>

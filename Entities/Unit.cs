@@ -1,16 +1,14 @@
 ﻿using System.Numerics;
 
 using AssertUtils;
-
-using Wc3_Combat_Game.Components.Controllers.Interface;
-using Wc3_Combat_Game.Components.Weapons;
-using Wc3_Combat_Game.Components.Weapons.Interface;
 using Wc3_Combat_Game.Core;
-using Wc3_Combat_Game.Entities.Components;
-using Wc3_Combat_Game.IO;
-using Wc3_Combat_Game.Prototype;
-using Wc3_Combat_Game.Prototype.Weapons;
+using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Util;
+using Wc3_Combat_Game.Entities.Components.Interface;
+using Wc3_Combat_Game.Entities.Components.Prototype;
+using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
+using Wc3_Combat_Game.Entities.Components.Abilities;
+using Wc3_Combat_Game.Entities.Components.Drawable;
 
 
 namespace Wc3_Combat_Game.Entities
@@ -26,7 +24,7 @@ namespace Wc3_Combat_Game.Entities
         public IUnitController? Controller = null;
         public Unit? TargetUnit { get; set; }
 
-        public IWeapon? Weapon; // needs to be a weapon list instead.
+        public IAbility? Ability; // needs to be a weapon list instead.
 
         public Vector2? TargetPoint
         {
@@ -67,9 +65,9 @@ namespace Wc3_Combat_Game.Entities
             Mana = prototype.Mana;
             MoveSpeed = prototype.Speed;
 
-            if(prototype.Weapon is WeaponPrototypeBasic basic)
+            if(prototype.Weapon is TargetedAbilityPrototype basic)
             {
-                Weapon = new AttackAbility(basic);
+                Ability = new TargetedAbility(basic);
             }
             _despawnDelay = 1f; // For units specifically.
 
@@ -138,7 +136,7 @@ namespace Wc3_Combat_Game.Entities
                 else
                     _velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
             }
-            if(Weapon != null && Weapon.GetTimeSinceLastShot(context) < Weapon.Cooldown)
+            if(Ability != null && Ability.GetTimeSinceLastUse(context) < Ability.Cooldown)
             {
                 _velocity *= 0.5f; // Slow down while shooting.
             }
@@ -206,7 +204,7 @@ namespace Wc3_Combat_Game.Entities
             // --- More of a cooldown bar. For player only.
             if(Team == Team.Ally)
             {
-                if(Weapon != null)
+                if(Ability != null)
                 {
                     float manaBarY = BoundingBox.Bottom + barOffset + barHeight + barSpacing;
 
@@ -245,7 +243,7 @@ namespace Wc3_Combat_Game.Entities
                         // This is a temporary solution, will be replaced with a proper mana system later.
 
                         {
-                            manaRatio = (float)Math.Min(1f, Weapon.GetTimeSinceLastShot(context) / Weapon.Cooldown);
+                            manaRatio = (float)Math.Min(1f, Ability.GetTimeSinceLastUse(context) / Ability.Cooldown);
                         }
 
                     }

@@ -5,7 +5,7 @@ using AssertUtils;
 
 using AStar;
 
-using Wc3_Combat_Game.IO; // Add this at the top if not present
+using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Terrain
@@ -23,7 +23,7 @@ namespace Wc3_Combat_Game.Terrain
         public int Width; // X, 0
         public int Height; // Y, 1 
 
-        public TileMapRenderer? TileMapRenderer;
+        //public TileMapRenderer? TileMapRenderer;
 
 
         Map(Tile[,] tileMap, float tileSize)

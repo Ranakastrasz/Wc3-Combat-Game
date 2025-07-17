@@ -1,4 +1,4 @@
-﻿using Wc3_Combat_Game.Prototype;
+﻿using Wc3_Combat_Game.Entities.Components.Prototype;
 
 namespace Wc3_Combat_Game.Waves
 {

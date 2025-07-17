@@ -6,13 +6,13 @@ using AssertUtils;
 using AStar;
 using AStar.Options;
 
-using Wc3_Combat_Game.Components.Actions;
-using Wc3_Combat_Game.Components.Actions.Interface;
-using Wc3_Combat_Game.Components.Controllers;
+using Wc3_Combat_Game.Actions;
+using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.Entities.Components.Controllers;
+using Wc3_Combat_Game.Entities.Components.Prototype;
+using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
 using Wc3_Combat_Game.IO;
-using Wc3_Combat_Game.Prototype;
-using Wc3_Combat_Game.Prototype.Weapons;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
 using Wc3_Combat_Game.Waves;
@@ -46,7 +46,7 @@ namespace Wc3_Combat_Game.Core
 
         private List<Vector2> spawnPoints = new();
 
-        Camera IDrawContext.Camera => Controller.View?.Camera;
+        Camera IDrawContext.Camera => Controller.View.Camera;
 
         // Entities.
         public Unit? PlayerUnit { get; private set; }
@@ -54,7 +54,7 @@ namespace Wc3_Combat_Game.Core
         internal EntityManager<Projectile> Projectiles { get; private set; } = new();
         internal EntityManager<Unit> Units { get; private set; } = new();
 
-        public EntityManager<Entities.Entity> Entities { get; private set; } = new();
+        public EntityManager<Entity> Entities { get; private set; } = new();
 
         private float _lastCacheUpdateTime = float.NegativeInfinity;
         private Dictionary<Team, List<Unit>> _friendlyUnitsCache = new Dictionary<Team, List<Unit>>();
@@ -70,6 +70,7 @@ namespace Wc3_Combat_Game.Core
             }
             private set => _map = value;
         }
+        private Map? _map;
         public PathFinder PathFinder
         {
             get
@@ -80,7 +81,6 @@ namespace Wc3_Combat_Game.Core
             private set => _pathfinder = value;
         }
 
-        private Map _map;
 
         private PathFinder? _pathfinder;
         public float TileSize { get; private set; }
@@ -197,18 +197,18 @@ namespace Wc3_Combat_Game.Core
             _waveCurrent = -1;
             _waveSpawnsRemaining = 0;
 
-            var meleeWeaponBase = new WeaponPrototypeBasic(new GameplayActionNull(), 1f, 20f);
+            var meleeWeaponBase = new TargetedAbilityPrototype(null, 1f, 20f);
             var weapon5Damage = meleeWeaponBase.SetDamage(5f);
             var weapon10Damage = meleeWeaponBase.SetDamage(10f);
             var weapon25Damage = meleeWeaponBase.SetDamage(25f);
             var weapon200Damage = meleeWeaponBase.SetDamage(200f);
 
-            var weapon10DamageRanged = new WeaponPrototypeBasic(
+            var weapon10DamageRanged = new TargetedAbilityPrototype(
                 new ProjectileAction(new ProjectilePrototype(2.5f, 225f, 4f, new DamageAction(10f), Color.DarkMagenta)),
                 0.5f,
                 150f,10f); // For some reason, this doesnt end up using mana. Dunno why.
 
-            var weapon10DamageRangedRapid = new WeaponPrototypeBasic(
+            var weapon10DamageRangedRapid = new TargetedAbilityPrototype(
                 new ProjectileAction(new ProjectilePrototype(5f, 375f, 4f, new DamageAction(10f), Color.Black)),
                 0.25f,
                 500f);
@@ -230,7 +230,7 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(Controller);
             AssertUtil.NotNull(Controller.Input);
 
-            WeaponPrototypeBasic weapon = new WeaponPrototypeBasic(new ProjectileAction(new ProjectilePrototype(2.5f,
+            TargetedAbilityPrototype weapon = new TargetedAbilityPrototype(new ProjectileAction(new ProjectilePrototype(2.5f,
                 600f,
                 2f,
                 new DamageAction(10f),
@@ -238,7 +238,7 @@ namespace Wc3_Combat_Game.Core
                 0.20f,
                 float.PositiveInfinity,3f);
 
-            UnitPrototype playerUnit = new((WeaponPrototype)weapon, 100f, 1f, 100f, 3f, 5f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
+            UnitPrototype playerUnit = new((AbilityPrototype)weapon, 100f, 1f, 100f, 3f, 5f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
 
             PlayerUnit = UnitFactory.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally);
 

@@ -1,9 +1,9 @@
 ﻿using System.Numerics;
 
-using Wc3_Combat_Game.Components.Drawable;
-using Wc3_Combat_Game.Components.Entitys;
 using Wc3_Combat_Game.Core;
-using Wc3_Combat_Game.Entities.Components;
+using Wc3_Combat_Game.Core.Context;
+using Wc3_Combat_Game.Entities.Components.Drawable;
+using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
 
