@@ -49,5 +49,27 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.Abilities
             }
             return new TargetedAbilityPrototype(newEffect, Cooldown, CastRange);
         }
+
+        internal float GetDamage()
+        {
+            float damageValue = 0f;
+            switch(CastEffect) // Very messy but works for now.
+            {
+                case ProjectileAction projectileAction:
+                    if(projectileAction.Prototype.ImpactEffect is DamageAction impactDamageAction)
+                    {
+                        damageValue = impactDamageAction.Damage;
+                    }
+                    break;
+                case DamageAction directDamageAction: // Already did Damage.
+                    damageValue = directDamageAction.Damage;
+                    break;
+                case null: // Null effect.
+                    break;
+                default:
+                    break;
+            }
+            return damageValue;
+        }
     }
 }

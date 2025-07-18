@@ -65,9 +65,9 @@ namespace Wc3_Combat_Game.Entities
             Mana = prototype.MaxMana;
             MoveSpeed = prototype.Speed;
 
-            for(int x = 0; x < Prototype.Weapons.Length; x++)
+            for(int x = 0; x < Prototype.Abilities.Length; x++)
             {
-                if(prototype.Weapons[x] is TargetedAbilityPrototype basic)
+                if(prototype.Abilities[x] is TargetedAbilityPrototype basic)
                 {
                     Abilities.Add(new TargetedAbility(basic));
                 }
@@ -91,18 +91,19 @@ namespace Wc3_Combat_Game.Entities
                 }
 
             };
-            switch (Prototype.Shape)
-            {
-                case UnitPrototype.DrawShape.Square:
-                    _drawableComponent = new RectangleDrawable(getColor, () => Position, () => Radius * 2, () => true);
-                    break;
-                case UnitPrototype.DrawShape.Circle:
-                    _drawableComponent = new CircleDrawable(getColor,  () => Position, () => Radius, () => true);
-                    break;
-                default:
-                    AssertUtil.Assert(false, "Unit.prototype.Shape is Invalid", true, "Create Unit");
-                    break;
-            }
+            _drawableComponent = new PolygonDrawable(getColor, () => Position, () => Radius * 2, () => prototype.PolygonCount , () => true);
+            //switch (Prototype.Shape)
+            //{
+            //    case UnitPrototype.DrawShape.Square:
+            //        _drawableComponent = new RectangleDrawable(getColor, () => Position, () => Radius * 2, () => true);
+            //        break;
+            //    case UnitPrototype.DrawShape.Circle:
+            //        _drawableComponent = new CircleDrawable(getColor,  () => Position, () => Radius, () => true);
+            //        break;
+            //    default:
+            //        AssertUtil.Assert(false, "Unit.prototype.Shape is Invalid", true, "Create Unit");
+            //        break;
+            //}
 
         }
 

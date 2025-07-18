@@ -10,6 +10,7 @@ using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.Components.Controllers;
+using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Components.Prototype;
 using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
 using Wc3_Combat_Game.IO;
@@ -208,23 +209,23 @@ namespace Wc3_Combat_Game.Core
                 0.5f,
                 150f,10f);
 
-            var unit = new UnitPrototype(15f, 2f, 4f, 50f, Color.Brown, UnitPrototype.DrawShape.Circle);
+            var unit = new UnitPrototype(15f, 2f, 4f, 50f, Color.Brown, 6);
             unit = unit.AddWeapon(meleeWeaponBase.WithDamage(5f));
             _waves.Add(new Wave(unit, 32));
 
-            unit = new UnitPrototype(10f, 0.1f, 4f, 75f, Color.DarkGoldenrod, UnitPrototype.DrawShape.Circle);
+            unit = new UnitPrototype(10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
             unit = unit.AddWeapon(meleeWeaponBase.WithDamage(10f));
             _waves.Add(new Wave(unit, 32));
 
-            unit = new UnitPrototype(30f, 0.1f, 5f, 40f, Color.Orange, UnitPrototype.DrawShape.Circle);
+            unit = new UnitPrototype(30f, 0.0f, 5f, 40f, Color.Orange, 5);
             unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f));
             _waves.Add(new Wave(unit, 16));
 
-            unit = new UnitPrototype(80f, 2f, 10f, 50f, Color.Brown, UnitPrototype.DrawShape.Square);
+            unit = new UnitPrototype(80f, 2f, 10f, 50f, Color.Brown, 6);
             unit = unit.AddWeapon(meleeWeaponBase.WithDamage(25f));
             _waves.Add(new Wave(unit, 8));
 
-            unit = new UnitPrototype(400f, 0f, 15f, 100f, Color.DarkRed, UnitPrototype.DrawShape.Square);
+            unit = new UnitPrototype(400f, 0f, 15f, 100f, Color.DarkRed, 4);
             unit = unit.AddWeapon(meleeWeaponBase.WithDamage(90f));
             unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f)); // Change to a ranged snare. Also, screw with other bits.
             _waves.Add(new Wave(unit, 1));
@@ -257,7 +258,7 @@ namespace Wc3_Combat_Game.Core
                 0.20f,
                 float.PositiveInfinity,3f);
 
-            UnitPrototype playerUnit = new(100f,  3f, 5f, 150f, Color.Green, UnitPrototype.DrawShape.Circle);
+            UnitPrototype playerUnit = new(100f,  3f, 5f, 150f, Color.Green, 0);
             playerUnit = playerUnit.AddWeapon(weapon);
             playerUnit = playerUnit.WithMana(100, 3f);
             PlayerUnit = UnitFactory.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally);
@@ -299,24 +300,41 @@ namespace Wc3_Combat_Game.Core
             {
                 if(_waveSpawnsRemaining > 0)
                 {
-                    _lastEnemySpawned = CurrentTime;
-                    _waveSpawnsRemaining--;
                     Vector2 spawnPoint = spawnPoints[RandomUtils.RandomIntBelow(spawnPoints.Count)]; // Poor, but for now
-
-                    Unit unit = UnitFactory.SpawnUnit(_waves[_waveCurrent].Unit,spawnPoint, new BasicAIController(), Team.Enemy);
-                    unit.TargetUnit = PlayerUnit;
-                    AddUnit(unit);
-                    // Elite
-                    if(_waveSpawnsRemaining > 0 && _waveSpawnsRemaining == _waves[_waveCurrent].CountToSpawn)
+                    Unit unit;
+                    if(_waveSpawnsRemaining == _waves[_waveCurrent].CountToSpawn && _waves[_waveCurrent].CountToSpawn > 1)
                     {
-                        // unit.MaxHealth *= 4;
-                        // unit.Health *= 4;
-                        // unit.Speed += 25;
-                        // unit.Damage *= 4;
-                        // I probably need to... Do something to register units as unique.
-                        // I can't just set these values.
+                        UnitPrototype elitePrototype = _waves[_waveCurrent].Unit;
+                        elitePrototype = elitePrototype.WithLife(elitePrototype.MaxLife * 4, elitePrototype.LifeRegen * 4);
+                        elitePrototype = elitePrototype.WithSpeed(elitePrototype.Speed * 1.2f);
+                        elitePrototype = elitePrototype.WithRadius(elitePrototype.Radius * 1.5f);
+                        //elitePrototype = elitePrototype.WithColors(Color.Black, elitePrototype.DamagedColor, elitePrototype.DeadColor, elitePrototype.PolygonCount);
+                        AbilityPrototype[] abilities = new AbilityPrototype[elitePrototype.Abilities.Length];
+                        for (int x = 0; x < elitePrototype.Abilities.Length; x++)
+                        {
+                            AbilityPrototype ability = elitePrototype.Abilities[x];
+                            // hacky solution.
+                            if(ability is TargetedAbilityPrototype targetedAbility)
+                            {
+                                float damage =  targetedAbility.GetDamage();
+                                targetedAbility = targetedAbility.WithDamage(damage * 4);
+                                abilities[x] = targetedAbility;
+                            }
+                        }
+                        elitePrototype = elitePrototype.WithAbilities(abilities);
+                        unit = UnitFactory.SpawnUnit(elitePrototype, spawnPoint, new BasicAIController(), Team.Enemy);
+                    }
+                    else
+                    {
+                        unit = UnitFactory.SpawnUnit(_waves[_waveCurrent].Unit, spawnPoint, new BasicAIController(), Team.Enemy);
 
                     }
+
+                    unit.TargetUnit = PlayerUnit;
+                    AddUnit(unit);
+                    _lastEnemySpawned = CurrentTime;
+                    _waveSpawnsRemaining--;
+
                 }
                 else if(!Units.Entities.Any(s => s.IsAlive && s.Team == Team.Enemy))
                 {
