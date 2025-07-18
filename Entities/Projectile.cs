@@ -30,7 +30,7 @@ namespace Wc3_Combat_Game.Entities
             _velocity = GeometryUtils.NormalizeAndScale(direction, prototype.Speed);
             _timeToLive = prototype.Lifespan;
 
-            _drawableComponent = new CircleDrawable((context) => _prototype.FillColor, () => _position, () => _prototype.Radius, () => IsAlive);
+            _drawableComponent = new PolygonDrawable((context) => _prototype.FillColor, () => _position, () => _prototype.Radius*2, () => 1, () => IsAlive);
         }
 
         //        public Vector2 Velocity { get => _velocity; set => _velocity = value; }
