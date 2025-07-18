@@ -31,13 +31,13 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
 
 
 
-            if(unit.Ability != null)
+            if(unit.Abilities != null)
             {
                 if(_input.IsMouseClicked())
-                    unit.Ability.TryTargetPoint(unit, _input.MouseClickedPosition, context);
+                    unit.Abilities[0].TryTargetPoint(unit, _input.MouseClickedPosition, context);
 
                 else if(_input.IsMouseDown())
-                    unit.Ability.TryTargetPoint(unit, _input.CurrentMousePosition, context);
+                    unit.Abilities[0].TryTargetPoint(unit, _input.CurrentMousePosition, context);
             }
         }
         public void DrawDebug(Graphics g, IDrawContext context, Unit unit)

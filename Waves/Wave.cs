@@ -1,4 +1,5 @@
-﻿using Wc3_Combat_Game.Entities.Components.Prototype;
+﻿
+using Wc3_Combat_Game.Entities.Components.Prototype;
 
 namespace Wc3_Combat_Game.Waves
 {
@@ -12,6 +13,7 @@ namespace Wc3_Combat_Game.Waves
             Unit = unit;
             CountToSpawn = toSpawn;
         }
+
     }
 }
 

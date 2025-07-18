@@ -193,14 +193,17 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
 
             // Action phase: Attack if possible, then move towards target position.
             // Ideally, you delegate this to the unit, I.e. Unit.TryShootEntity/Point.
-            if(unit.Ability != null && unit.Ability is TargetedAbility targetedAbility && canSeeTarget)
+            foreach(IAbility ability in unit.Abilities)
             {
-                float distSqr = unit.DistanceSquaredTo(targetPosition);
-                if(distSqr <= targetedAbility.UseRangeSqr)
-                    if(unit.TargetUnit != null)
-                        unit.Ability.TryTargetEntity(unit, unit.TargetUnit, context);
-                    else
-                        unit.Ability.TryTargetPoint(unit, targetPosition, context);
+                if(ability is TargetedAbility targetedAbility && canSeeTarget)
+                {
+                    float distSqr = unit.DistanceSquaredTo(targetPosition);
+                    if(distSqr <= targetedAbility.UseRangeSqr)
+                        if(unit.TargetUnit != null)
+                            targetedAbility.TryTargetEntity(unit, unit.TargetUnit, context);
+                        else
+                            targetedAbility.TryTargetPoint(unit, targetPosition, context);
+                }
             }
 
             if(_TargetMovePosition != unit.Position)

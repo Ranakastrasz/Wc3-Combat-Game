@@ -22,25 +22,25 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.Abilities
         {
             return MemberwiseClone();
         }
-        public TargetedAbilityPrototype SetDamage(float damage)
+        public TargetedAbilityPrototype WithDamage(float damage)
         {
             IGameplayAction? newEffect;
             switch(CastEffect) // Very messy but works for now.
             {
-                case ProjectileAction projEffect: // Created a projectile. That projectile deals damage.
-                    var oldProj = projEffect.Prototype;
-                    var newProj = new ProjectilePrototype(
-                        oldProj.Radius,
-                        oldProj.Speed,
-                        oldProj.Lifespan,
+                case ProjectileAction projectileAction: // Created a projectile. That projectile deals damage.
+                    var oldProjectile = projectileAction.Prototype;
+                    var newProjectile = new ProjectilePrototype(
+                        oldProjectile.Radius,
+                        oldProjectile.Speed,
+                        oldProjectile.Lifespan,
                         new DamageAction(damage),
-                        oldProj.FillColor);
-                    newEffect = new ProjectileAction(newProj);
+                        oldProjectile.FillColor);
+                    newEffect = new ProjectileAction(newProjectile);
                     break;
-                case DamageAction _: // Already did Damage.
+                case DamageAction : // Already did Damage.
                     newEffect = new DamageAction(damage);
                     break;
-                case IGameplayAction _: // Null effect.
+                case null : // Null effect.
                     newEffect = new DamageAction(damage);
                     break;
                 default:
