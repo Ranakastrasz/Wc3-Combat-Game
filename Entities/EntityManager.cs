@@ -11,7 +11,51 @@ namespace Wc3_Combat_Game.Entities
         public void UpdateAll(float deltaTime, IBoardContext context)
         {
             lock(_entityLock)
-                foreach(var e in _entities) e.Update(deltaTime, context);
+            {
+                // Step 1: Initialize interactions for all active entities
+                InitializeAllInteractions();
+
+                // Step 2: Resolve pairwise interactions
+                ResolveAllPairwiseInteractions(context);
+
+                // Step 3: Perform individual entity updates based on resolved interactions
+                foreach(var e in _entities.Where(e => e.IsAlive)) // Assuming IsAlive is on Entity
+                {
+                    e.Update(deltaTime, context);
+                }
+            }
+        }
+
+        private void InitializeAllInteractions()
+        {
+            // The EntityManager simply asks each entity to prepare for interaction calculations.
+            // This might involve clearing accumulated forces, resetting state related to interactions, etc.
+            foreach(var entity in _entities.Where(e => e.IsAlive))
+            {
+                entity.InitializeInteractionState();
+            }
+        }
+
+        private void ResolveAllPairwiseInteractions(IBoardContext context)
+        {
+            // This is where the N^2 loop (or optimized spatial partitioning later) lives.
+            // The EntityManager is responsible for identifying pairs that *might* interact.
+            // The actual interaction logic is delegated to the entities.
+
+            List<T> activeEntities = _entities.Where(e => e.IsAlive).ToList(); // Work with a snapshot
+
+            for(int x = 0; x < activeEntities.Count; x++)
+            {
+                T entityA = activeEntities[x];
+
+                for(int y = x + 1; y < activeEntities.Count; y++) // Avoid self-interaction and duplicate pairs
+                {
+                    T entityB = activeEntities[y];
+
+                    // Bidirectional.
+                    entityA.TryInteractWith(entityB, context);
+                }
+            }
         }
         public void Add(T entity)
         {

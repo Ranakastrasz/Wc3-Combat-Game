@@ -363,7 +363,7 @@ namespace Wc3_Combat_Game.Core
             // Admittedly, eventually projectiles will be able to create projectiles, Starburst or Delayed cast.
             // so a method to do this right is needed.
 
-            CheckCollision(deltaTime);
+            CheckCollision(deltaTime, this);
 
 
             // Cleanup dead entities.
@@ -375,7 +375,7 @@ namespace Wc3_Combat_Game.Core
             // End Logic
         }
 
-        private void CheckCollision(float deltaTime)
+        private void CheckCollision(float deltaTime, IBoardContext context)
         {
             foreach(Projectile projectile in Projectiles.Entities.Where(p => p.IsAlive))
             {
@@ -403,10 +403,11 @@ namespace Wc3_Combat_Game.Core
             {
                 var halfSize = PlayerUnit.BoundingBox;
 
-                PlayerUnit.Position = new Vector2(
+                Vector2 newPosition = new Vector2(
                     Math.Clamp(PlayerUnit.Position.X, Map.WorldBounds.Left + halfSize.Width, Map.WorldBounds.Right - halfSize.Width),
-                    Math.Clamp(PlayerUnit.Position.Y, Map.WorldBounds.Top + halfSize.Height, Map.WorldBounds.Bottom - halfSize.Height)
-                );
+                    Math.Clamp(PlayerUnit.Position.Y, Map.WorldBounds.Top + halfSize.Height, Map.WorldBounds.Bottom - halfSize.Height));
+                PlayerUnit.Mover.Teleport(newPosition, context);
+
             }
         }
 

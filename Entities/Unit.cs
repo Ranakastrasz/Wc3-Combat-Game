@@ -9,6 +9,8 @@ using Wc3_Combat_Game.Entities.Components.Prototype;
 using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
 using Wc3_Combat_Game.Entities.Components.Abilities;
 using Wc3_Combat_Game.Entities.Components.Drawable;
+using Wc3_Combat_Game.Entities.Components.Movement;
+using Wc3_Combat_Game.Entities.Components;
 
 
 namespace Wc3_Combat_Game.Entities
@@ -17,9 +19,9 @@ namespace Wc3_Combat_Game.Entities
     /// Represents a living or interactive game unit with health and actions.
     /// Inherits from Entity.
     /// </summary>
-    public class Unit: MobileEntity
+    public class Unit: Entity
     {
-        UnitPrototype Prototype;
+        protected UnitPrototype _prototype;
 
         public IUnitController? Controller = null;
         public Unit? TargetUnit { get; set; }
@@ -42,14 +44,14 @@ namespace Wc3_Combat_Game.Entities
                 return TargetUnit.Position;
             return TargetPoint;
         }
-        public float MaxLife => Prototype.MaxLife;
+        public float MaxLife => _prototype.MaxLife;
         public float Life { get; protected set; }
 
-        public float LifeRegen => Prototype.LifeRegen;
+        public float LifeRegen => _prototype.LifeRegen;
 
-        public float MaxMana => Prototype.MaxMana;
+        public float MaxMana => _prototype.MaxMana;
         public float Mana { get; set; }
-        public float ManaRegen => Prototype.ManaRegen;
+        public float ManaRegen => _prototype.ManaRegen;
 
         float _lastDamaged = float.NegativeInfinity;
         static float s_DamageFlashTime = GameConstants.FIXED_DELTA_TIME;
@@ -58,14 +60,16 @@ namespace Wc3_Combat_Game.Entities
 
         public float MoveSpeed { get; set; }
 
+        public new IMoveable Mover { get;}
+
         public Unit(UnitPrototype prototype, Vector2 position) : base(prototype.Radius, position)
         {
-            Prototype = prototype;
+            _prototype = prototype;
             Life = prototype.MaxLife;
             Mana = prototype.MaxMana;
             MoveSpeed = prototype.Speed;
 
-            for(int x = 0; x < Prototype.Abilities.Length; x++)
+            for(int x = 0; x < _prototype.Abilities.Length; x++)
             {
                 if(prototype.Abilities[x] is TargetedAbilityPrototype basic)
                 {
@@ -91,19 +95,12 @@ namespace Wc3_Combat_Game.Entities
                 }
 
             };
-            _drawableComponent = new PolygonDrawable(getColor, () => Position, () => Radius * 2, () => prototype.PolygonCount , () => true);
-            //switch (Prototype.Shape)
-            //{
-            //    case UnitPrototype.DrawShape.Square:
-            //        _drawableComponent = new RectangleDrawable(getColor, () => Position, () => Radius * 2, () => true);
-            //        break;
-            //    case UnitPrototype.DrawShape.Circle:
-            //        _drawableComponent = new CircleDrawable(getColor,  () => Position, () => Radius, () => true);
-            //        break;
-            //    default:
-            //        AssertUtil.Assert(false, "Unit.prototype.Shape is Invalid", true, "Create Unit");
-            //        break;
-            //}
+            Drawer = new PolygonDrawable(getColor, () => Position, () => Radius * 2, () => prototype.PolygonCount , () => true);
+            Collider = new CircleCollider(_position, () => _prototype.Radius, true);
+            base.Collider = Collider;
+
+            Mover = new UnitMover(_position, Collider, Vector2.Zero);
+            base.Mover = Mover;
 
         }
 
@@ -131,24 +128,25 @@ namespace Wc3_Combat_Game.Entities
             }
 
             Controller?.Update(this, deltaTime, context);
-
-            if(TargetPoint != null)
+            if(Mover != null)
             {
-                Vector2 moveVector = (Vector2)TargetPoint - Position;
-                if(Vector2.DistanceSquared(Position, (Vector2)TargetPoint) < MoveSpeed * deltaTime)
-                    _velocity = moveVector / deltaTime; // Just reach the point this frame.
-                else
-                    _velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
+                if(TargetPoint != null)
+                {
+                    Vector2 moveVector = (Vector2)TargetPoint - Position;
+                    if(Vector2.DistanceSquared(Position, (Vector2)TargetPoint) < MoveSpeed * deltaTime)
+                        Mover.Velocity = moveVector / deltaTime; // Just reach the point this frame.
+                    else
+                        Mover.Velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
+                }
+                if(Abilities[0].GetTimeSinceLastUse(context) < Abilities[0].Cooldown)
+                {
+                    Mover.Velocity *= 0.5f; // Slow down while shooting.
+                }
             }
-            if(Abilities[0].GetTimeSinceLastUse(context) < Abilities[0].Cooldown)
-            {
-                _velocity *= 0.5f; // Slow down while shooting.
-            }
-
             base.Update(deltaTime, context); // Includes movement and collision.
 
             // Units only move once tick of movement per "move order",
-            _velocity = Vector2.Zero;
+            //_velocity = Vector2.Zero;
         }
 
 

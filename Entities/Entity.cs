@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
 
+using AStar;
+
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Drawable;
@@ -17,18 +19,21 @@ namespace Wc3_Combat_Game.Entities
         public readonly int Index = s_NextIndex++;
         private static int s_NextIndex = 0;
 
-        public ICollidable? Collider;
-        public IMoveable? Mover;
+        public WorldPosition _position = new();
+
+        private IDrawable? _drawer;
+        private ICollidable? _collider;
+
+        private IMoveable? _mover;
 
         public float Radius { get; protected set; } // This will be part of the ICollidable later.
                                                     // And IDraw, seperately, ofc.
 
-        public DrawableComponent? _drawableComponent { get; protected set; }
 
         public float Diameter => Radius * 2f;
         protected Vector2 _BoundingSize => new Vector2(Diameter, Diameter);
 
-        protected Vector2 _position;
+        public Vector2 Position { get => _position.Position; set => _position.Position = value; }
         private bool _isAlive = true;
         float _lastKilled = float.NegativeInfinity;
         protected float _despawnDelay = GameConstants.FIXED_DELTA_TIME;
@@ -39,24 +44,24 @@ namespace Wc3_Combat_Game.Entities
         // to be built by factory, allowing highly mutable entities.
 
 
-        public RectangleF BoundingBox { get => _position.RectFFromCenter(_BoundingSize); }
+        public RectangleF BoundingBox { get => Position.RectFFromCenter(_BoundingSize); }
+
+        public bool IsAlive { get => _isAlive; set => _isAlive = value; }
+        public ICollidable? Collider { get => _collider; set => _collider = value; }
+        public IMoveable? Mover { get => _mover; set => _mover = value; }
+        public IDrawable? Drawer { get => _drawer; protected set => _drawer = value; }
+
+        public bool IsExpired(IBoardContext context) => !_isAlive && context.CurrentTime > _lastKilled + _despawnDelay;
 
         public Entity(float radius, Vector2 position)
         {
             Radius = radius;
-            _position = position;
-            _drawableComponent = null; //new RectangleDrawable(() => color, () => _position, () => Diameter);
+            Position = position;
+            Drawer = null; //new RectangleDrawable(() => color, () => _position, () => Diameter);
 
             Team = Team.Neutral;
         }
 
-
-        // Velocity, cooldown, health, mana, etc.
-        // Later
-        public Vector2 Position { get => _position; set => _position = value; }
-        public bool IsAlive { get => _isAlive; set => _isAlive = value; }
-
-        public bool IsExpired(IBoardContext context) => !_isAlive && context.CurrentTime > _lastKilled + _despawnDelay;
 
         public virtual void Draw(Graphics g, IDrawContext context)
         {
@@ -67,7 +72,7 @@ namespace Wc3_Combat_Game.Entities
 
 
             //g.FillRectangle(brush, BoundingBox);
-            _drawableComponent?.Draw(g, context);
+            Drawer?.Draw(g, context);
 
         }
         internal void DrawDebug(Graphics g, IDrawContext context)
@@ -102,21 +107,35 @@ namespace Wc3_Combat_Game.Entities
 
         public float DistanceTo(Entity other)
         {
-            Vector2 between = other.Position - _position;
+            Vector2 between = other.Position - Position;
             return between.Length();
         }
         public float DistanceSquaredTo(Entity other)
         {
-            Vector2 between = other.Position - _position;
+            Vector2 between = other.Position - Position;
             return between.LengthSquared();
         }
         public float DistanceSquaredTo(Vector2 otherPosition)
         {
-            Vector2 between = otherPosition - _position;
+            Vector2 between = otherPosition - Position;
             return between.LengthSquared();
         }
         public virtual void OnTerrainCollision(IBoardContext context) // Clearly should be an Event, really.
         {
+
+        }
+
+        public virtual void InitializeInteractionState()
+        {
+        }
+
+
+        public virtual void TryInteractWith<T>(T entityB, IBoardContext context) where T : Entity
+        {
+            if(Collider != null && entityB.Collider != null)
+            {
+                Collider.CheckCollision(this, entityB, context);
+            }
 
         }
     }

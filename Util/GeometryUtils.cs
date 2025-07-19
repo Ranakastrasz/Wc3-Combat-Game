@@ -139,6 +139,45 @@ namespace Wc3_Combat_Game.Util
 
         public static float DegToRad(this float degrees) =>
             degrees * (MathF.PI / 180f);
+
+        internal static bool CollidesCircleWithCircle(Vector2 positionA, Vector2 positionB, float radiusA, float radiusB)
+        {
+            // Calculate the squared distance between the two circle centers
+            float distanceSquared = (positionB - positionA).LengthSquared();
+
+            // Calculate the sum of the radii
+            float sumOfRadii = radiusA + radiusB;
+
+            // Compare the squared distance to the squared sum of the radii
+            return distanceSquared <= (sumOfRadii * sumOfRadii);
+        }
+
+        internal static Vector2 GetCircleCircleSeperationVector(Vector2 positionA, Vector2 positionB, float radiusA, float radiusB)
+        {
+            Vector2 distanceVector = positionB - positionA;
+            float distance = distanceVector.Length();
+            float sumOfRadii = radiusA + radiusB;
+
+            // If the circles are not overlapping, return Vector2.Zero
+            if(distance >= sumOfRadii)
+                return Vector2.Zero;
+
+            // Calculate the overlap amount
+            float overlap = sumOfRadii - distance;
+
+            // Normalize the distance vector to get the direction of overlap
+            // Handle the case where circles are perfectly concentric to avoid division by zero
+            if(distance == 0)
+            {
+                // If circles are at the exact same position, define a default separation direction, e.g., along X-axis
+                return new Vector2(overlap, 0); // Or any arbitrary non-zero vector with magnitude 'overlap'
+            }
+
+            // Multiply the normalized vector by the overlap amount to get the separation vector
+            Vector2 separationVector = (distanceVector / distance) * overlap;
+
+            return separationVector;
+        }
         #endregion
     }
 }

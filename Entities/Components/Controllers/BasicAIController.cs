@@ -23,7 +23,7 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
         private Vector2 _lastTargetPosition = Vector2.Zero;
         // Threshold for target movement to trigger path recalculation
         private const float TargetRecalculateThresholdSqr = 32*32; // If target moves more than 32 units.
-        private const float SeparationDistanceSqr = 20f*20f; // Minimum distance to maintain from other friendly units.
+        private const float SeparationDistanceSqr = 5f*5f; // Minimum distance to maintain from other friendly units.
 
 
         private Vector2 _TargetMovePosition;
@@ -360,9 +360,10 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
         private static Vector2 GetSeparationSteering(Unit unit, IEnumerable<Unit> allUnits, IBoardContext context)
         {
             Vector2 separationForce = Vector2.Zero;
-            float separationRadius = unit.Radius * 4;
-            float separationRadiusSqr = separationRadius * separationRadius;
-
+            //float separationRadius = unit.Radius * 3; // may or may not put this check back in.
+            // Also, this will likely take push priority into consideration.
+            float separationRadiusSqr = SeparationDistanceSqr;
+            
             foreach(Unit otherUnit in allUnits)
             {
                 // Only consider other units that are alive, are allies, and are not the unit itself
