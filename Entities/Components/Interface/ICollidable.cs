@@ -19,8 +19,8 @@ namespace Wc3_Combat_Game.Entities.Components.Interface
         bool HasClearPathTo(Vector2 position, Vector2 targetPosition, IBoardContext context);
         void OnTerrainCollision(Entity owner, IBoardContext context);
         void Update(Entity owner, float deltaTime, IBoardContext context);
-        bool CollidesAt(Entity owner, IBoardContext context);
-        bool CollidesAt(Vector2 position, IBoardContext context);
+        bool CollidesAt(Entity owner, IContext context);
+        bool CollidesAt(Vector2 position, IContext context);
         void CheckCollision(Entity owner, Entity other, IBoardContext context);
     }
 }

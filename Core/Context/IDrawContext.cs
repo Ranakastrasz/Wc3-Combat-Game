@@ -8,7 +8,6 @@ namespace Wc3_Combat_Game.Core.Context
     public interface IDrawContext: IContext
     {
 
-        Map Map { get; }
 
         Camera Camera { get; }
         EntityManager<Entity> Entities { get; }

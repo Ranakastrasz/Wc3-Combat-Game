@@ -80,8 +80,16 @@ namespace Wc3_Combat_Game.Entities
             // Debugging info
             if(context.DebugSettings.Get(DebugSetting.DrawEntityCollisionBox))
             {
-                var pen = context.DrawCache.GetPen(Color.Yellow, 1);
-                g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
+                if(Collider != null && Collider.CollidesAt(this, context))
+                {
+                    var pen = context.DrawCache.GetPen(Color.Red, 1);
+                    g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
+                }
+                else
+                {
+                    var pen = context.DrawCache.GetPen(Color.Yellow, 1);
+                    g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
+                }
             }
         }
 

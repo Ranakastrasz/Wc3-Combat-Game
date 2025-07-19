@@ -7,8 +7,6 @@ namespace Wc3_Combat_Game.Core.Context
 {
     public interface IBoardContext : IContext
     {
-        Map Map { get; }
-
         PathFinder PathFinder { get; }
 
         void AddProjectile(Projectile p);

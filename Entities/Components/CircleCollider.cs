@@ -59,13 +59,13 @@ namespace Wc3_Combat_Game.Entities.Components
         }
 
         // Checks if this collider, *if placed at 'position'*, would collide with terrain
-        public bool CollidesAt(Vector2 position, IBoardContext context)
+        public bool CollidesAt(Vector2 position, IContext context)
         {
             return context.Map.CollidesAt(position, _radius());
         }
 
         // Overload to allow passing the Entity directly if convenient, extracting its position
-        public bool CollidesAt(Entity owner, IBoardContext context)
+        public bool CollidesAt(Entity owner, IContext context)
         {
             return CollidesAt(owner.Position, context);
         }
