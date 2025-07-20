@@ -31,8 +31,6 @@ namespace Wc3_Combat_Game.Entities.Components.Movement
 
         public void Update(Entity owner, float deltaTime, IBoardContext context)
         {
-
-
             Vector2 deltaMove = Velocity * deltaTime;
 
             if(!TimeUtils.HasElapsed(context.CurrentTime, SlowExpires, 0f))
@@ -40,11 +38,9 @@ namespace Wc3_Combat_Game.Entities.Components.Movement
                 deltaMove *= 0.75f;
             }
 
-            Vector2 newPosition = Position + deltaMove;
-
             if(_collider == null)
             {
-                Position = newPosition;
+                Position += deltaMove;
                 return;
             }
             else
@@ -52,55 +48,89 @@ namespace Wc3_Combat_Game.Entities.Components.Movement
                 Map map = context.Map;
                 AssertUtil.NotNull(map);
 
-                // Try full movement first.
-                if(_collider.HasClearPathTo(owner, newPosition, context))
+                Vector2 currentPosition = Position;
+                Vector2 targetPosition = currentPosition + deltaMove;
+
+                // Attempt full movement first
+                if(_collider.HasClearPathTo(owner, targetPosition, context))
                 {
-                    Position = newPosition;
+                    Position = targetPosition;
                     return;
                 }
 
                 // If full movement is blocked, attempt to slide.
-                // Try moving along the X axis only
-                Vector2 xOnlyTarget = Position + new Vector2(deltaMove.X, 0);
-                Vector2 attemptedXMove = StepUntilBlocked(new Vector2(deltaMove.X, 0), map, context);
+                // This is where the main change will be.
+                // Instead of simple X-only or Y-only, we'll try a more robust sliding approach.
 
-                // Try moving along the Y axis only (from the original position)
-                Vector2 yOnlyTarget = Position + new Vector2(0, deltaMove.Y);
-                Vector2 attemptedYMove = StepUntilBlocked(new Vector2(0, deltaMove.Y), map, context);
+                Vector2 remainingMovement = deltaMove;
+                int maxIterations = 3; // Prevent infinite loops, adjust as needed
 
-                // Determine the best slide path
-                Vector2 finalPosition = Position;
-
-                // Option 1: Prioritize X, then Y
-                if(attemptedXMove != Position) // If we can move along X
+                for(int i = 0; i < maxIterations; i++)
                 {
-                    finalPosition = attemptedXMove;
-                    // Now try to add Y movement from the new X position
-                    Vector2 remainingYMove = new Vector2(0, deltaMove.Y);
-                    Vector2 potentialYAfterX = StepUntilBlocked(remainingYMove, map, context, finalPosition);
-                    // If the Y movement from the new X position is different, combine them
-                    if(potentialYAfterX != finalPosition)
+                    Vector2 newPotentialPosition = currentPosition + remainingMovement;
+
+                    // Check if the current remaining movement can be fully applied
+                    if(_collider.HasClearPathTo(owner, newPotentialPosition, context))
                     {
-                        finalPosition = new Vector2(finalPosition.X, potentialYAfterX.Y);
+                        currentPosition = newPotentialPosition;
+                        remainingMovement = Vector2.Zero; // All movement applied
+                        break;
+                    }
+                    else
+                    {
+                        // If blocked, find the point just before collision and
+                        // calculate a "slide" vector.
+
+                        // This part is crucial and requires a more detailed collision test.
+                        // HasClearPathTo only tells you "yes" or "no".
+                        // You need a function that returns the *point of collision* or the *normal* of the hit surface.
+
+                        // For a circular collider, if it hits a wall, the slide direction
+                        // is perpendicular to the collision normal.
+
+                        // Placeholder for advanced collision logic:
+                        // Let's assume you have a method like TryMoveAndSlide that
+                        // returns the actual movement done and the remaining slide vector.
+                        Vector2 actualMoveThisIteration = Vector2.Zero;
+                        Vector2 slideVector = Vector2.Zero;
+
+                        // This is a simplified concept. In reality, you'd iterate
+                        // and resolve against each collision detected.
+                        // For circular colliders and rectangular terrain, you'd check
+                        // for axis-aligned collisions and corner collisions.
+
+                        // Option 1: Try X then Y, or Y then X as a fallback, but make it smarter
+                        // The current StepUntilBlocked is good for finding the limit on one axis.
+
+                        Vector2 tempPositionX = StepUntilBlocked(new Vector2(remainingMovement.X, 0), map, context, currentPosition);
+                        Vector2 tempPositionY = StepUntilBlocked(new Vector2(0, remainingMovement.Y), map, context, currentPosition);
+
+                        // If we can move further on X
+                        if(Vector2.DistanceSquared(currentPosition, tempPositionX) > Vector2.DistanceSquared(currentPosition, tempPositionY))
+                        {
+                            actualMoveThisIteration = tempPositionX - currentPosition;
+                            currentPosition = tempPositionX;
+                            remainingMovement.Y = 0; // Clear Y component if X was prioritized
+                        }
+                        else // Prioritize Y or if X was no better
+                        {
+                            actualMoveThisIteration = tempPositionY - currentPosition;
+                            currentPosition = tempPositionY;
+                            remainingMovement.X = 0; // Clear X component if Y was prioritized
+                        }
+
+                        if(actualMoveThisIteration.LengthSquared() < 0.0001f && remainingMovement.LengthSquared() > 0.0001f)
+                        {
+                            // If no movement was made this iteration but there's still remaining movement,
+                            // it means we are truly stuck in this direction. Break to prevent infinite loop.
+                            break;
+                        }
                     }
                 }
-                else if(attemptedYMove != Position) // If X was blocked, try Y
-                {
-                    finalPosition = attemptedYMove;
-                    // Now try to add X movement from the new Y position
-                    Vector2 remainingXMove = new Vector2(deltaMove.X, 0);
-                    Vector2 potentialXAfterY = StepUntilBlocked(remainingXMove, map, context, finalPosition);
-                    if(potentialXAfterY != finalPosition)
-                    {
-                        finalPosition = new Vector2(potentialXAfterY.X, finalPosition.Y);
-                    }
-                }
-                // If neither X-only nor Y-only movement was possible,
-                // finalPosition remains currentOwnerPosition, meaning no movement.
 
-                Position = finalPosition;
+                Position = currentPosition;
 
-                if (_collider.OnTerrainCollision != null)
+                if(_collider.OnTerrainCollision != null)
                     _collider.OnTerrainCollision(context);
             }
         }
