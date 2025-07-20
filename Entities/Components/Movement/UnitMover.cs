@@ -31,7 +31,6 @@ namespace Wc3_Combat_Game.Entities.Components.Movement
 
         public void Update(Entity owner, float deltaTime, IBoardContext context)
         {
-            ICollidable? collider = owner.Collider;
 
 
             Vector2 deltaMove = Velocity * deltaTime;
@@ -41,8 +40,9 @@ namespace Wc3_Combat_Game.Entities.Components.Movement
                 deltaMove *= 0.75f;
             }
 
-            Vector2 newPosition = owner.Position + deltaMove;
-            if(collider == null)
+            Vector2 newPosition = Position + deltaMove;
+
+            if(_collider == null)
             {
                 Position = newPosition;
                 return;
@@ -52,53 +52,84 @@ namespace Wc3_Combat_Game.Entities.Components.Movement
                 Map map = context.Map;
                 AssertUtil.NotNull(map);
 
-                // Issue. This doesn't allow you to move "As far as Possible" I believe.
-
-
                 // Try full movement first.
-                if(collider.HasClearPathTo(owner, newPosition, context))
-                { 
+                if(_collider.HasClearPathTo(owner, newPosition, context))
+                {
                     Position = newPosition;
                     return;
                 }
 
-                // Try X-only
-                Vector2 xOnly = owner.Position + new Vector2(deltaMove.X, 0);
-                bool xOk = collider.HasClearPathTo(owner,xOnly, context);
-                
-                // Try Y-only
-                Vector2 yOnly = owner.Position + new Vector2(0, deltaMove.Y);
-                bool yOk = collider.HasClearPathTo(owner,yOnly, context);
+                // If full movement is blocked, attempt to slide.
+                // Try moving along the X axis only
+                Vector2 xOnlyTarget = Position + new Vector2(deltaMove.X, 0);
+                Vector2 attemptedXMove = StepUntilBlocked(new Vector2(deltaMove.X, 0), map, context);
 
-                if(xOk)
-                    Position = xOnly;
-                else if(yOk)
-                    Position = yOnly;
-                else
+                // Try moving along the Y axis only (from the original position)
+                Vector2 yOnlyTarget = Position + new Vector2(0, deltaMove.Y);
+                Vector2 attemptedYMove = StepUntilBlocked(new Vector2(0, deltaMove.Y), map, context);
+
+                // Determine the best slide path
+                Vector2 finalPosition = Position;
+
+                // Option 1: Prioritize X, then Y
+                if(attemptedXMove != Position) // If we can move along X
                 {
-
+                    finalPosition = attemptedXMove;
+                    // Now try to add Y movement from the new X position
+                    Vector2 remainingYMove = new Vector2(0, deltaMove.Y);
+                    Vector2 potentialYAfterX = StepUntilBlocked(remainingYMove, map, context, finalPosition);
+                    // If the Y movement from the new X position is different, combine them
+                    if(potentialYAfterX != finalPosition)
+                    {
+                        finalPosition = new Vector2(finalPosition.X, potentialYAfterX.Y);
+                    }
                 }
+                else if(attemptedYMove != Position) // If X was blocked, try Y
+                {
+                    finalPosition = attemptedYMove;
+                    // Now try to add X movement from the new Y position
+                    Vector2 remainingXMove = new Vector2(deltaMove.X, 0);
+                    Vector2 potentialXAfterY = StepUntilBlocked(remainingXMove, map, context, finalPosition);
+                    if(potentialXAfterY != finalPosition)
+                    {
+                        finalPosition = new Vector2(potentialXAfterY.X, finalPosition.Y);
+                    }
+                }
+                // If neither X-only nor Y-only movement was possible,
+                // finalPosition remains currentOwnerPosition, meaning no movement.
 
-                collider.OnTerrainCollision(owner, context);
+                Position = finalPosition;
+
+                if (_collider.OnTerrainCollision != null)
+                    _collider.OnTerrainCollision(context);
             }
         }
-        private Vector2 StepUntilBlocked(Entity owner, ICollidable collider, Vector2 delta, Map map, IBoardContext context)
+        private Vector2 StepUntilBlocked(Vector2 delta, Map map, IBoardContext context, Vector2? customStartPosition = null)
         {
-            const int steps = 10;
-            Vector2 start = owner.Position;
-            Vector2 step = delta / steps;
-            Vector2 pos = start;
+            const int steps = 10; // You can adjust this for granularity vs. performance
+            Vector2 start = customStartPosition ?? Position; // Use custom start or owner's current position
+            Vector2 stepIncrement = delta / steps;
+            Vector2 currentPosition = start;
+
+            if(_collider == null) return currentPosition + delta;
 
             for(int i = 1; i <= steps; i++)
             {
-                Vector2 test = start + step * i;
-                if(!collider.HasClearPathTo(owner, test, context)) // use cheap collision check here
-                    pos = test;
-                else
-                    break;
-            }
+                Vector2 testPosition = start + stepIncrement * i;
 
-            return pos;
+                // If the next step is clear, update currentPosition and continue
+                if(_collider.HasClearPathTo(start, testPosition, context))
+                {
+                    currentPosition = testPosition;
+                }
+                else
+                {
+                    // If the next step is blocked, we've found the limit.
+                    // Return the last known clear position (currentPosition).
+                    break;
+                }
+            }
+            return currentPosition;
         }
 
         public void Teleport(Vector2 position, IBoardContext context)

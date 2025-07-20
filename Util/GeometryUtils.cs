@@ -63,7 +63,7 @@ namespace Wc3_Combat_Game.Util
             float distSq = Vector2.DistanceSquared(circleCenter, closestPoint);
 
             // Collision occurs if the squared distance is less than the squared radius.
-            return distSq < circleRadius * circleRadius;
+            return distSq < circleRadius * circleRadius + 0.01f;
         }
 
         /// <summary>
@@ -96,6 +96,148 @@ namespace Wc3_Combat_Game.Util
             if(LineSegmentIntersectsLineSegment(p1, p2, new Vector2(aabbMax.X, aabbMin.Y), new Vector2(aabbMax.X, aabbMax.Y))) return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// Checks if a capsule (line segment with radius) intersects an Axis-Aligned Bounding Box (AABB).
+        /// A capsule is defined by its two endpoints and a radius.
+        /// </summary>
+        /// <param name="p1">The start point of the line segment.</param>
+        /// <param name="p2">The end point of the line segment.</param>
+        /// <param name="radius">The radius of the capsule.</param>
+        /// <param name="aabbMin">The minimum corner of the AABB.</param>
+        /// <param name="aabbMax">The maximum corner of the AABB.</param>
+        /// <returns>True if the capsule intersects the AABB, false otherwise.</returns>
+        public static bool CollidesCapsuleWithRectangle(Vector2 p1, Vector2 p2, float radius, Vector2 aabbMin, Vector2 aabbMax)
+        {
+            // 1. Check if either endpoint's circle overlaps the AABB
+            if(CollidesCircleWithRectangle(p1, radius, aabbMin, aabbMax) ||
+                CollidesCircleWithRectangle(p2, radius, aabbMin, aabbMax))
+            {
+                return true;
+            }
+
+            // 2. Check if the line segment (p1 to p2) is close enough to any of the AABB's edges.
+            // This involves finding the closest point on the line segment to the AABB.
+            // If the distance from this closest point to the AABB is less than or equal to the radius,
+            // there's a collision.
+
+            // A simpler way to think about this part is checking if the "core" line segment
+            // (p1 to p2) intersects the AABB if the AABB itself were "inflated" *only along its normals*.
+            // However, the most robust way is to find the closest point on the line segment to the rectangle.
+
+            // Let's implement finding the closest point on the rectangle to the line segment.
+            // Or, more commonly, find the closest point on the line segment to the rectangle.
+
+            // Get the closest point on the AABB to the line segment p1-p2
+            Vector2 closestPointOnAABB = ClampPointToAABB(GetClosestPointOnLineSegment(p1, p2, GetCenter(aabbMin, aabbMax)), aabbMin, aabbMax);
+
+            // Get the closest point on the line segment to the AABB
+            Vector2 closestPointOnSegment = GetClosestPointOnLineSegment(p1, p2, closestPointOnAABB);
+
+            // If the distance between the closest point on the segment and the AABB
+            // is less than or equal to the radius, then there's a collision.
+            // The distance from closestPointOnSegment to the AABB is essentially just the distance
+            // from closestPointOnSegment to closestPointOnAABB, if closestPointOnSegment is outside the AABB.
+            // If closestPointOnSegment is inside the AABB, the distance is 0, so it collides.
+
+            // This is the core logic for the "swept body" part of the capsule.
+            float dx = Math.Max(0, Math.Max(aabbMin.X - p1.X, p2.X - aabbMax.X));
+            float dy = Math.Max(0, Math.Max(aabbMin.Y - p1.Y, p2.Y - aabbMax.Y));
+
+            // Project segment onto X and Y axes
+            float segMinX = Math.Min(p1.X, p2.X);
+            float segMaxX = Math.Max(p1.X, p2.X);
+            float segMinY = Math.Min(p1.Y, p2.Y);
+            float segMaxY = Math.Max(p1.Y, p2.Y);
+
+            // Check if the segment crosses the AABB after 'inflating' the AABB by the radius,
+            // but in a more precise way than just expanding the AABB directly.
+            // This is essentially checking for overlap of the segment's AABB (plus radius) with the tile.
+            // A more precise "line segment vs AABB with radius" check:
+
+            // This approach is more robust: Find the closest point on the AABB to the line segment.
+            // Then find the closest point on the line segment to *that* closest point on the AABB.
+            // If the distance between the closest point on the line segment and the AABB is <= radius, it's a hit.
+            // This is a common and reliable method.
+
+            Vector2 centerRect = (aabbMin + aabbMax) / 2f;
+            Vector2 halfExtents = (aabbMax - aabbMin) / 2f;
+
+            // Translate segment and AABB so AABB is centered at origin
+            Vector2 localP1 = p1 - centerRect;
+            Vector2 localP2 = p2 - centerRect;
+
+            Vector2 segmentDir = localP2 - localP1;
+            float segmentLengthSq = segmentDir.LengthSquared();
+
+            // Find the closest point on the line segment to the origin (of the translated AABB)
+            // using projection.
+            float t = 0;
+            if(segmentLengthSq > 0)
+            {
+                t = Vector2.Dot(-localP1, segmentDir) / segmentLengthSq;
+                t = Math.Clamp(t, 0f, 1f); // Clamp t to [0, 1] to stay within the segment
+            }
+
+            Vector2 closestPointOnLine = localP1 + segmentDir * t;
+
+            // Now, check the distance from this closest point to the AABB's surface.
+            // Since the AABB is now centered at the origin, its bounds are -halfExtents to +halfExtents.
+            Vector2 clampedClosestPoint = new(
+        Math.Clamp(closestPointOnLine.X, -halfExtents.X, halfExtents.X),
+        Math.Clamp(closestPointOnLine.Y, -halfExtents.Y, halfExtents.Y)
+    );
+
+            float distanceSq = (closestPointOnLine - clampedClosestPoint).LengthSquared();
+
+            if(distanceSq <= radius * radius)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        // You will need these helper functions inside GeometryUtils:
+
+        /// <summary>
+        /// Clamps a point to be within the bounds of an AABB.
+        /// This essentially finds the closest point *within* the AABB to the given point.
+        /// </summary>
+        private static Vector2 ClampPointToAABB(Vector2 point, Vector2 aabbMin, Vector2 aabbMax)
+        {
+            return new Vector2(
+                Math.Clamp(point.X, aabbMin.X, aabbMax.X),
+                Math.Clamp(point.Y, aabbMin.Y, aabbMax.Y)
+            );
+        }
+
+        /// <summary>
+        /// Finds the closest point on a line segment to a given point.
+        /// </summary>
+        private static Vector2 GetClosestPointOnLineSegment(Vector2 segmentStart, Vector2 segmentEnd, Vector2 point)
+        {
+            Vector2 segmentVector = segmentEnd - segmentStart;
+            float segmentLengthSq = segmentVector.LengthSquared();
+
+            if(segmentLengthSq == 0) // It's a point, not a segment
+            {
+                return segmentStart;
+            }
+
+            // Project 'point' onto the line defined by the segment
+            float t = Vector2.Dot(point - segmentStart, segmentVector) / segmentLengthSq;
+
+            // Clamp t to [0, 1] to ensure the closest point is on the segment itself
+            t = Math.Clamp(t, 0f, 1f);
+
+            return segmentStart + t * segmentVector;
+        }
+
+        private static Vector2 GetCenter(Vector2 min, Vector2 max)
+        {
+            return (min + max) / 2f;
         }
 
         /// <summary>

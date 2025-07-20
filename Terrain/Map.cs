@@ -249,10 +249,8 @@ namespace Wc3_Combat_Game.Terrain
                         // Check if the line segment (inflated by radius) intersects this obstacle tile.
                         // This is equivalent to checking if the line segment intersects the tile's AABB
                         // expanded by the radius.
-                        Vector2 inflatedTileMin = tileMin - new Vector2(radius);
-                        Vector2 inflatedTileMax = tileMax + new Vector2(radius);
 
-                        if(GeometryUtils.LineSegmentIntersectsAABB(startWorld, targetWorld, inflatedTileMin, inflatedTileMax))
+                        if(GeometryUtils.CollidesCapsuleWithRectangle(startWorld, targetWorld, radius, tileMin, tileMax))
                         {
                             debugBlockingTiles?.Add(new Point(x, y));
                             return false; // The swept body of the capsule collides with an obstacle

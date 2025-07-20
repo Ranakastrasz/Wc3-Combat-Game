@@ -43,7 +43,7 @@ namespace Wc3_Combat_Game.Entities
 
             Drawer = new PolygonDrawable((context) => _prototype.FillColor, () => Position, () => _prototype.Radius*2, () => 1, () => IsAlive);
 
-            Collider = new CircleCollider(_position, () => _prototype.Radius, true);
+            Collider = new CircleCollider(_position, () => _prototype.Radius,(context) => OnTerrainCollision(context) , true);
             base.Collider = Collider;
         }
 

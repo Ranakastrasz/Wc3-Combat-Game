@@ -15,17 +15,19 @@ namespace Wc3_Combat_Game.Entities.Components
 
         private readonly bool _sweptCollision;
 
+        public Action<IBoardContext>? OnTerrainCollision { get; }
 
         public Vector2 Position => _position.Position;
 
         public float CollisionRadius => _radius();
 
 
-        public CircleCollider(WorldPosition position, Func<float> radius, bool sweptCollision = false)
+        public CircleCollider(WorldPosition position, Func<float> radius, Action<IBoardContext>? onTerrainCollision = null, bool sweptCollision = false)
         {
             _radius = radius;
             _position = position;
             _sweptCollision = sweptCollision;
+            OnTerrainCollision = onTerrainCollision;
         }
 
         public bool HasClearPathTo(Vector2 currentPosition, Vector2 targetPosition, IBoardContext context)
@@ -40,21 +42,15 @@ namespace Wc3_Combat_Game.Entities.Components
             }
         }
 
-        public void OnTerrainCollision(Entity owner, IBoardContext context)
-        {
-            // Ideally should throw an event.
-            owner.OnTerrainCollision(context);
-        }
-
         public void Update(Entity owner, float deltaTime, IBoardContext context)
         {
             // This method in a collider typically isn't for continuous collision checks
             // but for any internal state updates the collider itself might have.
             // Collision checks are usually triggered externally (e.g., by a physics system or movement component).
             // For now, it can remain empty or be used for future internal logic.
-            if(context.Map.CollidesAt(_position.Position, CollisionRadius))
+            if(OnTerrainCollision != null && context.Map.CollidesAt(_position.Position, CollisionRadius))
             {
-                OnTerrainCollision(owner, context);
+                OnTerrainCollision(context);
             }
         }
 
@@ -102,15 +98,15 @@ namespace Wc3_Combat_Game.Entities.Components
         }
 
         // Example of a utility method that might be needed elsewhere or internally
-        private void PushApart(Entity entityA, Entity entityB, Vector2 seperationVector, IBoardContext context)
+        private void PushApart(Entity entityA, Entity entityB, Vector2 separationVector, IBoardContext context)
         {
             // Logic to calculate collision normal and push entities apart
             // This often involves calculating the overlap and moving entities.
             IMoveable? moverA = entityA.Mover;
             IMoveable? moverB = entityB.Mover;
             
-            Vector2 seperationA = -seperationVector;
-            Vector2 seperationB = seperationVector;
+            Vector2 seperationA = -separationVector;
+            Vector2 seperationB = separationVector;
 
             if(true)
             { }

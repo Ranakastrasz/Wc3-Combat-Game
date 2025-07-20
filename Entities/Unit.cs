@@ -96,7 +96,7 @@ namespace Wc3_Combat_Game.Entities
 
             };
             Drawer = new PolygonDrawable(getColor, () => Position, () => Radius * 2, () => prototype.PolygonCount , () => true);
-            Collider = new CircleCollider(_position, () => _prototype.Radius, true);
+            Collider = new CircleCollider(_position, () => _prototype.Radius, (context) => OnTerrainCollision(context),true);
             base.Collider = Collider;
 
             Mover = new UnitMover(_position, Collider, Vector2.Zero);

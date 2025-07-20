@@ -13,7 +13,7 @@ namespace Wc3_Combat_Game.Entities.Components.Interface
         bool TryTargetEntity(Unit unit, Entity target, IBoardContext context) { return false; }
         bool TryTargetPoint(Unit unit, Vector2 target, IBoardContext context) { return false; }
 
-        bool CanUse(Unit unit, IBoardContext context) { return false; }
+        bool CanUse(Unit unit, IContext context) { return false; }
 
         float Cooldown { get; }             // For display
 
