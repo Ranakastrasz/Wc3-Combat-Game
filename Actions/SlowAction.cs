@@ -25,10 +25,7 @@ namespace Wc3_Combat_Game.Actions
         {
             if(Target is Unit unit)
             {
-                if(unit.Mover is UnitMover unitMover)
-                {
-                    unitMover.SlowExpires = context.CurrentTime + Duration;
-                }
+                unit.SlowExpires = context.CurrentTime + Duration;
             }
         }
 

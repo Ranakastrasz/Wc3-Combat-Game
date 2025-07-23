@@ -4,6 +4,7 @@ using AStar;
 
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
+using Wc3_Combat_Game.Entities.Components;
 using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.IO;
@@ -19,21 +20,19 @@ namespace Wc3_Combat_Game.Entities
         public readonly int Index = s_NextIndex++;
         private static int s_NextIndex = 0;
 
-        public WorldPosition _position = new();
 
-        private IDrawable? _drawer;
-        private ICollidable? _collider;
+        protected IDrawable? _drawer;
 
-        private IMoveable? _mover;
+        protected PhysicsObject _physicsObject;
+        //protected ICollidable? _collider;
+        //protected IMoveable? _mover;
 
-        public float Radius { get; protected set; } // This will be part of the ICollidable later.
-                                                    // And IDraw, seperately, ofc.
-
+        public float Radius => _physicsObject.CollisionRadius;
 
         public float Diameter => Radius * 2f;
         protected Vector2 _BoundingSize => new Vector2(Diameter, Diameter);
 
-        public Vector2 Position { get => _position.Position; set => _position.Position = value; }
+        public Vector2 Position { get => _physicsObject.Position; set => _physicsObject.Position = value; }
         private bool _isAlive = true;
         float _lastKilled = float.NegativeInfinity;
         protected float _despawnDelay = GameConstants.FIXED_DELTA_TIME;
@@ -47,19 +46,19 @@ namespace Wc3_Combat_Game.Entities
         public RectangleF BoundingBox { get => Position.RectFFromCenter(_BoundingSize); }
 
         public bool IsAlive { get => _isAlive; set => _isAlive = value; }
-        public ICollidable? Collider { get => _collider; set => _collider = value; }
-        public IMoveable? Mover { get => _mover; set => _mover = value; }
+        //public ICollidable? Collider { get => _collider; set => _collider = value; }
+        //public IMoveable? Mover { get => _mover; set => _mover = value; }
         public IDrawable? Drawer { get => _drawer; protected set => _drawer = value; }
+        public PhysicsObject PhysicsObject { get => _physicsObject; protected set => _physicsObject = value; }
 
         public bool IsExpired(IBoardContext context) => !_isAlive && context.CurrentTime > _lastKilled + _despawnDelay;
 
-        public Entity(float radius, Vector2 position)
+        public Entity(float radius, Vector2 position, IBoardContext context)
         {
-            Radius = radius;
-            Position = position;
-            Drawer = null; //new RectangleDrawable(() => color, () => _position, () => Diameter);
+            Drawer = null;
 
             Team = Team.Neutral;
+            _physicsObject = new PhysicsObject(this, context.PhysicsWorld, position, radius, true);
         }
 
 
@@ -80,24 +79,24 @@ namespace Wc3_Combat_Game.Entities
             // Debugging info
             if(context.DebugSettings.Get(DebugSetting.DrawEntityCollisionBox))
             {
-                if(Collider != null && Collider.CollidesAt(this, context))
-                {
-                    var pen = context.DrawCache.GetPen(Color.Red, 1);
-                    g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
-                }
-                else
-                {
-                    var pen = context.DrawCache.GetPen(Color.Yellow, 1);
-                    g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
-                }
+                //if(Collider != null && Collider.CollidesAt(this, context))
+                //{
+                //    var pen = context.DrawCache.GetPen(Color.Red, 1);
+                //    g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
+                //}
+                //else
+                //{
+                //    var pen = context.DrawCache.GetPen(Color.Yellow, 1);
+                //    g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
+                //}
             }
         }
 
         public virtual void Update(float deltaTime, IBoardContext context)
         {
 
-            Mover?.Update(this, deltaTime, context);
-            Collider?.Update(this, deltaTime, context);
+            //Mover?.Update(this, deltaTime, context);
+            //Collider?.Update(this, deltaTime, context);
         }
 
         public void Die(IBoardContext context)
@@ -140,10 +139,10 @@ namespace Wc3_Combat_Game.Entities
 
         public virtual void TryInteractWith<T>(T entityB, IBoardContext context) where T : Entity
         {
-            if(Collider != null && entityB.Collider != null)
-            {
-                Collider.CheckCollision(this, entityB, context);
-            }
+            //if(Collider != null && entityB.Collider != null)
+            //{
+            //    Collider.CheckCollision(this, entityB, context);
+            //}
 
         }
     }

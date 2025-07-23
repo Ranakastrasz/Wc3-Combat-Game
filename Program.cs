@@ -1,7 +1,10 @@
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 
 using AssertUtils;
+
+using nkast.Aether.Physics2D.Dynamics;
 
 using Wc3_Combat_Game.Core;
 
@@ -24,20 +27,37 @@ namespace Wc3_Combat_Game
             GameController game = new GameController();
 
 
+            World world = new World(Vector2.Zero);
+            Body body = world.CreateBody(new Vector2(0, 0), 0, BodyType.Dynamic);
+            Fixture fixture = body.CreateCircle(0.5f, 1f);
+            fixture.IsSensor = true;
+            body.LinearDamping = 0f;
+            body.FixedRotation = true;
+            body.LinearVelocity = new Vector2(60, 0);
+
+            Console.WriteLine($"Before step: {body.LinearVelocity}");
+            world.Step(1f / 60f);
+            Console.WriteLine($"After step: {body.LinearVelocity}");
+
 
 
             Console.WriteLine("Type 'listclasses' to list all classes and properties in the assembly, or press Enter to start the game.");
             string? input = Console.ReadLine();
-            if(input?.ToLower() == "listclasses")
+            input = input?.ToLower();
+            switch(input)
             {
-                ListClasses(); // Debugging utility to list all classes and properties in the assembly
-                return;
+                case "listclasses":
+                    ListClasses(); // Debugging utility to list all classes and properties in the assembly
+                    return;
+
+                default:
+                    break;
             }
 
 
-            // otherwise continue with the game
+                // otherwise continue with the game
 
-            game.CreateGameBoard();
+                game.CreateGameBoard();
             AssertUtil.NotNull(game.Board);
 
             game.Board.InitWaves();

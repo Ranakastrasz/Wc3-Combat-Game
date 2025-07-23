@@ -6,11 +6,12 @@ using AssertUtils;
 using AStar;
 using AStar.Options;
 
+using nkast.Aether.Physics2D.Dynamics;
+
 using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.Components.Controllers;
-using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Components.Prototype;
 using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
 using Wc3_Combat_Game.IO;
@@ -91,6 +92,9 @@ namespace Wc3_Combat_Game.Core
 
         public DrawCache DrawCache { get; private set; }
 
+        private PhysicsManager _physicsManager;
+
+        public World PhysicsWorld { get => _physicsManager._world; }
 
         private float _lastEnemySpawned = 0f;
 
@@ -167,6 +171,7 @@ namespace Wc3_Combat_Game.Core
         public GameBoard()
         {
             DrawCache = new DrawCache();
+            _physicsManager = new PhysicsManager();
         }
 
 
@@ -261,7 +266,7 @@ namespace Wc3_Combat_Game.Core
             UnitPrototype playerUnit = new(100f,  3f, 5f, 150f, Color.Green, 0);
             playerUnit = playerUnit.AddWeapon(weapon);
             playerUnit = playerUnit.WithMana(100, 3f);
-            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally);
+            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
 
 
             AddUnit(PlayerUnit);
@@ -295,6 +300,10 @@ namespace Wc3_Combat_Game.Core
             if(deltaTime <= 0) return;
             CurrentTime += deltaTime;
 
+            //Projectiles.ForEach((projectile) =>
+            //{
+            //    Console.WriteLine($"306 - Entity[{projectile.Index}] Pos({projectile.Position}, Velocity({projectile.PhysicsObject.Body.LinearVelocity})");
+            //});
 
             if(TimeUtils.HasElapsed(CurrentTime, _lastEnemySpawned, ENEMY_SPAWN_COOLDOWN))
             {
@@ -322,11 +331,11 @@ namespace Wc3_Combat_Game.Core
                             }
                         }
                         elitePrototype = elitePrototype.WithAbilities(abilities);
-                        unit = UnitFactory.SpawnUnit(elitePrototype, spawnPoint, new BasicAIController(), Team.Enemy);
+                        unit = UnitFactory.SpawnUnit(elitePrototype, spawnPoint, new BasicAIController(), Team.Enemy,this);
                     }
                     else
                     {
-                        unit = UnitFactory.SpawnUnit(_waves[_waveCurrent].Unit, spawnPoint, new BasicAIController(), Team.Enemy);
+                        unit = UnitFactory.SpawnUnit(_waves[_waveCurrent].Unit, spawnPoint, new BasicAIController(), Team.Enemy,this);
 
                     }
 
@@ -359,12 +368,27 @@ namespace Wc3_Combat_Game.Core
             Units.UpdateAll(deltaTime, this);
             Projectiles.UpdateAll(deltaTime, this);
 
+
+            //Projectiles.ForEach((projectile) =>
+            //{
+            //    Console.WriteLine($"375 - Entity[{projectile.Index}] Pos({projectile.Position}, Velocity({projectile.PhysicsObject.Body.LinearVelocity})");
+            //});
+            _physicsManager.Update(deltaTime);
+
+            //Projectiles.ForEach((projectile) =>
+            //{
+            //    Console.WriteLine($"380 - Entity[{projectile.Index}] Pos({projectile.Position}, Velocity({projectile.PhysicsObject.Body.LinearVelocity})");
+            //});
             // Separate required, because units can create projectiles.
             // Admittedly, eventually projectiles will be able to create projectiles, Starburst or Delayed cast.
             // so a method to do this right is needed.
 
             CheckCollision(deltaTime, this);
 
+            //Projectiles.ForEach((projectile) =>
+            //{
+            //    Console.WriteLine($"385 - Entity[{projectile.Index}] Pos({projectile.Position}, Velocity({projectile.PhysicsObject.Body.LinearVelocity})");
+            //});
 
             // Cleanup dead entities.
             Projectiles.RemoveExpired(this);
@@ -372,6 +396,11 @@ namespace Wc3_Combat_Game.Core
             Entities.RemoveExpired(this);
 
             CheckGameOverCondition(this);
+
+            //Projectiles.ForEach((projectile) =>
+            //{
+            //    Console.WriteLine($"395 - Entity[{projectile.Index}] Pos({projectile.Position}, Velocity({projectile.PhysicsObject.Body.LinearVelocity})");
+            //});
             // End Logic
         }
 
@@ -399,16 +428,16 @@ namespace Wc3_Combat_Game.Core
                 }
             }
             AssertUtil.NotNull(PlayerUnit);
-            if(!Map.WorldBounds.Contains(PlayerUnit.BoundingBox))
-            {
-                var halfSize = PlayerUnit.BoundingBox;
-
-                Vector2 newPosition = new Vector2(
-                    Math.Clamp(PlayerUnit.Position.X, Map.WorldBounds.Left + halfSize.Width, Map.WorldBounds.Right - halfSize.Width),
-                    Math.Clamp(PlayerUnit.Position.Y, Map.WorldBounds.Top + halfSize.Height, Map.WorldBounds.Bottom - halfSize.Height));
-                PlayerUnit.Mover.Teleport(newPosition, context);
-
-            }
+            //if(!Map.WorldBounds.Contains(PlayerUnit.BoundingBox))
+            //{
+            //    var halfSize = PlayerUnit.BoundingBox;
+            //
+            //    Vector2 newPosition = new Vector2(
+            //        Math.Clamp(PlayerUnit.Position.X, Map.WorldBounds.Left + halfSize.Width, Map.WorldBounds.Right - halfSize.Width),
+            //        Math.Clamp(PlayerUnit.Position.Y, Map.WorldBounds.Top + halfSize.Height, Map.WorldBounds.Bottom - halfSize.Height));
+            //    PlayerUnit.Mover.Teleport(newPosition, context);
+            //
+            //}
         }
 
         public void AddProjectile(Projectile p)

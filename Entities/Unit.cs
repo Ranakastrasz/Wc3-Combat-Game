@@ -1,16 +1,19 @@
 ﻿using System.Numerics;
 
 using AssertUtils;
+
+using nkast.Aether.Physics2D.Dynamics;
+
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
-using Wc3_Combat_Game.Util;
+using Wc3_Combat_Game.Entities.Components.Abilities;
+using Wc3_Combat_Game.Entities.Components.Collider;
+using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Components.Interface;
+using Wc3_Combat_Game.Entities.Components.Movement;
 using Wc3_Combat_Game.Entities.Components.Prototype;
 using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
-using Wc3_Combat_Game.Entities.Components.Abilities;
-using Wc3_Combat_Game.Entities.Components.Drawable;
-using Wc3_Combat_Game.Entities.Components.Movement;
-using Wc3_Combat_Game.Entities.Components;
+using Wc3_Combat_Game.Util;
 
 
 namespace Wc3_Combat_Game.Entities
@@ -59,10 +62,11 @@ namespace Wc3_Combat_Game.Entities
         private Vector2? _targetPoint = null;
 
         public float MoveSpeed { get; set; }
+        public float SlowExpires { get; internal set; }
 
-        public new IMoveable Mover { get;}
+        //public new IMoveable Mover { get;}
 
-        public Unit(UnitPrototype prototype, Vector2 position) : base(prototype.Radius, position)
+        public Unit(UnitPrototype prototype, Vector2 position, IBoardContext context) : base(prototype.Radius, position, context)
         {
             _prototype = prototype;
             Life = prototype.MaxLife;
@@ -96,11 +100,18 @@ namespace Wc3_Combat_Game.Entities
 
             };
             Drawer = new PolygonDrawable(getColor, () => Position, () => Radius * 2, () => prototype.PolygonCount , () => true);
-            Collider = new CircleCollider(_position, () => _prototype.Radius, (context) => OnTerrainCollision(context),true);
-            base.Collider = Collider;
 
-            Mover = new UnitMover(_position, Collider, Vector2.Zero);
-            base.Mover = Mover;
+            Body body = _physicsObject.Body;
+            if(body.FixtureList.Count > 0)
+            {
+                Fixture fixture = body.FixtureList[0];
+                fixture.CollisionCategories = PhysicsManager.PlayerCategory;
+                fixture.CollidesWith = PhysicsManager.TerrainCategory | PhysicsManager.PlayerCategory | PhysicsManager.EnemyCategory;
+                fixture.IsSensor = true;
+                body.LinearDamping = 2f;
+                fixture.Friction = 0f;
+                fixture.Restitution = 0f; // unless bounce is needed
+            }
 
         }
 
@@ -128,21 +139,25 @@ namespace Wc3_Combat_Game.Entities
             }
 
             Controller?.Update(this, deltaTime, context);
-            if(Mover != null)
+            //if(Mover != null)
+            //{
+            if(TargetPoint != null)
             {
-                if(TargetPoint != null)
-                {
-                    Vector2 moveVector = (Vector2)TargetPoint - Position;
-                    if(Vector2.DistanceSquared(Position, (Vector2)TargetPoint) < MoveSpeed * deltaTime)
-                        Mover.Velocity = moveVector / deltaTime; // Just reach the point this frame.
-                    else
-                        Mover.Velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
-                }
-                if(Abilities[0].GetTimeSinceLastUse(context) < Abilities[0].Cooldown)
-                {
-                    Mover.Velocity *= 0.5f; // Slow down while shooting.
-                }
+                Vector2 moveVector = (Vector2)TargetPoint - Position;
+                if(Vector2.DistanceSquared(Position, (Vector2)TargetPoint) < MoveSpeed * deltaTime)
+                    _physicsObject.Velocity = moveVector / deltaTime; // Just reach the point this frame.
+                else
+                    _physicsObject.Velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
             }
+            if(Abilities[0].OnCooldown(context.CurrentTime))
+            {
+                _physicsObject.Velocity *= 0.5f; // Slow down while shooting.
+            }
+            if(!TimeUtils.HasElapsed(context.CurrentTime, SlowExpires, 0f))
+            {
+                _physicsObject.Velocity *= 0.5f;
+            }
+            //}
             base.Update(deltaTime, context); // Includes movement and collision.
 
             // Units only move once tick of movement per "move order",
@@ -287,9 +302,9 @@ namespace Wc3_Combat_Game.Entities
     }
     static class UnitFactory
     {
-        public static Unit SpawnUnit(UnitPrototype prototype, Vector2 position, IUnitController controller, Team team)
+        public static Unit SpawnUnit(UnitPrototype prototype, Vector2 position, IUnitController controller, Team team, IBoardContext context)
         {
-            Unit unit = new Unit(prototype, position)
+            Unit unit = new Unit(prototype, position, context)
             {
                 Controller = controller,
                 Team = team

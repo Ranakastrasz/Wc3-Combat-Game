@@ -29,7 +29,7 @@ namespace Wc3_Combat_Game.Actions
             if(Caster == null || Emitter == null) return;
             Vector2 directionToTarget = TargetPoint - Caster.Position;
             Projectile projectile = new
-                (Prototype, Caster, Emitter.Position, directionToTarget)
+                (Prototype, Caster, Emitter.Position, directionToTarget,context)
             {
                 Team = Caster.Team
             };

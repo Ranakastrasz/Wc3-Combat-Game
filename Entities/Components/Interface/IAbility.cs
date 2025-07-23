@@ -18,7 +18,7 @@ namespace Wc3_Combat_Game.Entities.Components.Interface
         float Cooldown { get; }             // For display
 
         float GetTimeSinceLastUse(IContext context); // For display
-
+        bool OnCooldown(float currentTime);
     }
 
 }

@@ -57,5 +57,10 @@ namespace Wc3_Combat_Game.Entities.Components.Abilities
         {
             return _prototype;
         }
+
+        public bool OnCooldown(float currentTime)
+        {
+            return !TimeUtils.HasElapsed(currentTime, _lastShotTime, _cooldown);
+        }
     }
 }
