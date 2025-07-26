@@ -105,8 +105,8 @@ namespace Wc3_Combat_Game.Entities
             if(body.FixtureList.Count > 0)
             {
                 Fixture fixture = body.FixtureList[0];
-                fixture.CollisionCategories = PhysicsManager.PlayerCategory;
-                fixture.CollidesWith = PhysicsManager.TerrainCategory | PhysicsManager.PlayerCategory | PhysicsManager.EnemyCategory;
+                fixture.CollisionCategories = PhysicsManager.Player | PhysicsManager.Unit;
+                fixture.CollidesWith = PhysicsManager.Terrain | PhysicsManager.Unit | PhysicsManager.Projectile;
                 //fixture.IsSensor = false;
                 body.LinearDamping = 2f;
                 fixture.Friction = 0f;

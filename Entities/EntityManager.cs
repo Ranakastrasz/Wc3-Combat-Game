@@ -69,7 +69,15 @@ namespace Wc3_Combat_Game.Entities
             //System.Diagnostics.Debug.WriteLine($"[EntityManager] RemoveExpired at {Environment.StackTrace}");
             //var before = _entities.Count;
             lock(_entityLock)
-                _entities.RemoveAll(e => e.IsExpired(context));
+                for(int i = _entities.Count - 1; i >= 0; i--)
+                {
+                    var entity = _entities[i];
+                    if(entity.IsExpired(context))
+                    {
+                        entity.Dispose();
+                        _entities.RemoveAt(i);
+                    }
+                }
             //var after = _entities.Count;
             //System.Diagnostics.Debug.WriteLine($"[EntityManager] Removed {before - after} entities.");
         }

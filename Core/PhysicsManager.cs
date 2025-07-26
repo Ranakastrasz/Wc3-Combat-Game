@@ -13,11 +13,11 @@ namespace Wc3_Combat_Game.Core
 {
     public class PhysicsManager
     {
-        public const Category PlayerCategory = Category.Cat1;
-        public const Category PlayerProjectileCategory = Category.Cat2;
-        public const Category EnemyCategory = Category.Cat3;
-        public const Category EnemyProjectileCategory = Category.Cat4;
-        public const Category TerrainCategory = Category.Cat5;
+        public const Category Unit = Category.Cat1;
+        public const Category Projectile = Category.Cat2;
+        public const Category Player = Category.Cat3;
+        public const Category Enemy = Category.Cat4;
+        public const Category Terrain = Category.Cat5;
 
         public World _world;
 

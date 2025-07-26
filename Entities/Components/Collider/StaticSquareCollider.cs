@@ -30,8 +30,8 @@ namespace Wc3_Combat_Game.Entities.Components.Collider
             if(_body.FixtureList.Count > 0)
             {
                 Fixture fixture = _body.FixtureList[0];
-                fixture.CollisionCategories = PhysicsManager.TerrainCategory;
-                fixture.CollidesWith = PhysicsManager.PlayerCategory;
+                fixture.CollisionCategories = PhysicsManager.Terrain;
+                fixture.CollidesWith = PhysicsManager.Unit | PhysicsManager.Projectile;
             }
 
         }

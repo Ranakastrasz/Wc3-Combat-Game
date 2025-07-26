@@ -5,6 +5,7 @@ using AssertUtils;
 
 using AStar;
 
+using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Util;
 
@@ -118,21 +119,25 @@ namespace Wc3_Combat_Game.Terrain
             return new(x, y);
         }
 
-        public Vector2 FromGrid(int x, int y)
+        public Vector2 FromGrid(Point index)
+        {
+            return new Vector2(index.X * TileSize, index.Y * TileSize);
+        }
+        public Vector2 GetTileCenter(int x, int y)
         {
             return new Vector2((x + 0.5f) * TileSize, (y + 0.5f) * TileSize);
         }
 
-        public Vector2 FromGrid(Point index)
+        public Vector2 GetTileCenter(Point index)
         {
-            return FromGrid(index.X, index.Y);
+            return GetTileCenter(index.X, index.Y);
         }
 
         public Vector2 GetTileCenter(Vector2 worldPosition)
         {
             int x = (int)Math.Floor(worldPosition.X / TileSize);
             int y = (int)Math.Floor(worldPosition.Y / TileSize);
-            return FromGrid(x, y);
+            return GetTileCenter(x, y);
         }
 
         /// <summary>
@@ -187,7 +192,7 @@ namespace Wc3_Combat_Game.Terrain
 
         public bool HasLineOfSight(Point myTile, Point targetTile)
         {
-            return HasLineOfSight(FromGrid(myTile), FromGrid(targetTile));
+            return HasLineOfSight(GetTileCenter(myTile), GetTileCenter(targetTile));
         }
         public bool HasLineOfSight(Vector2 startWorld, Vector2 targetWorld, float radius = 0f)
         {
@@ -346,7 +351,7 @@ namespace Wc3_Combat_Game.Terrain
             var spawnTile = GetTilesMatching('F').FirstOrDefault();
             if(spawnTile != default)
             {
-                return FromGrid(spawnTile);
+                return GetTileCenter(spawnTile);
             }
             throw new InvalidOperationException("No player spawn point found in the map.");
         }
@@ -406,6 +411,14 @@ namespace Wc3_Combat_Game.Terrain
                     tile.Draw(g, context);
 
                 }
+            }
+        }
+
+        internal void InitCollision(GameBoard gameBoard)
+        {
+            foreach(var tile in TileMap)
+            {
+                tile.InitCollision(gameBoard);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Xml;
 
 using nkast.Aether.Physics2D.Dynamics;
 
@@ -11,6 +12,7 @@ using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Components.Movement;
 using Wc3_Combat_Game.Entities.Components.Prototype;
+using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
 
 using static Wc3_Combat_Game.Core.GameConstants;
@@ -28,9 +30,7 @@ namespace Wc3_Combat_Game.Entities
         private ProjectilePrototype _prototype;
         public IGameplayAction? ImpactEffect => _prototype.ImpactEffect;
         public Entity? Caster;
-
-        //public new ProjectileMover Mover { get; }
-        //public new ICollidable Collider { get; }
+        private Team _team;
 
 
         public Projectile(ProjectilePrototype prototype, Entity? caster, Vector2 position, Vector2 direction, IBoardContext context) : base(prototype.Radius, position, context)
@@ -39,6 +39,7 @@ namespace Wc3_Combat_Game.Entities
             Caster = caster;
             _timeToLive = prototype.Lifespan;
             Drawer = new PolygonDrawable((context) => _prototype.FillColor, () => Position, () => _prototype.Radius * 2, () => 1, () => IsAlive);
+            _team = caster?.Team ?? Team.Neutral;
 
             //Mover = new ProjectileMover(_position, GeometryUtils.NormalizeAndScale(direction, prototype.Speed))
             //{
@@ -54,16 +55,54 @@ namespace Wc3_Combat_Game.Entities
             if(body.FixtureList.Count > 0)
             {
                 Fixture fixture = body.FixtureList[0];
-                fixture.CollisionCategories = PhysicsManager.PlayerProjectileCategory;
-                fixture.CollidesWith = PhysicsManager.EnemyCategory;
-                fixture.IsSensor = true;
+                fixture.CollisionCategories = PhysicsManager.Projectile;
+                fixture.CollidesWith = PhysicsManager.Unit | PhysicsManager.Terrain;
+                //fixture.IsSensor = true;
                 body.LinearDamping = 0f;
                 fixture.Friction = 0f;
                 fixture.Restitution = 0f; // unless bounce is needed
+                fixture.BeforeCollision += (f1, f2) =>
+                {
+                    if(IsAlive == false)
+                        return false; // skip collision if already dead
+                    var myEntity = caster;
+                    var otherObject = f2.Body.Tag;
+                    if(otherObject is Entity otherEntity)
+                    {
+                        if(otherEntity.IsAlive == false)
+                            return false; // skip collision if other entity is already dead
+                        if(_team.IsHostileTo(otherEntity.Team))
+                            return true; // allow collision with hostile entities
+                        return false; // skip collision with friendly entities
+                    }
+                    else if(otherObject is Tile tile)
+                    {
+                        return true; // allow collision with terrain
+                    }
+                    else
+                    { 
+                        throw new MissingFieldException($"Unknown object type in collision: {otherObject?.GetType().Name}");
+                    }
+                };
+                fixture.OnCollision += (f1, f2, contact) =>
+                {
+                    if (IsAlive == false)
+                        return false; // skip collision if already dead
+                    var myEntity = caster;
+                    var otherObject = f2.Body.Tag;
+                    if (otherObject is Entity otherEntity)
+                    {
+                        if (otherEntity.IsAlive == false)
+                            return false; // skip collision if other entity is already dead
+                        OnEntityCollision(otherEntity, context);
+                    }
+                    else if (otherObject is Tile tile)
+                    {
+                        OnTerrainCollision(context);
+                    }
+                    return true; // allow it
+                };
             }
-            //Console.WriteLine($"Velocity: {body.LinearVelocity}, Position: {body.Position}");
-            //Console.WriteLine($"Mass: {body.Mass}");
-            //Console.WriteLine($"Inertia: {body.Inertia}");
 
             //fixture.OnCollision += (f1, f2, contact) =>
             //{
@@ -78,8 +117,6 @@ namespace Wc3_Combat_Game.Entities
 
         }
 
-        //        public Vector2 Velocity { get => _velocity; set => _velocity = value; }
-        //        public float TimeToLive { get => _timeToLive; set => _timeToLive = value; }
 
         public override void Update(float deltaTime, IBoardContext context)
         {
@@ -103,8 +140,17 @@ namespace Wc3_Combat_Game.Entities
 
         }
 
+        private void OnEntityCollision(Entity otherEntity, IBoardContext context)
+        {
+            if(_team.IsHostileTo(otherEntity.Team))
+            {
+                ImpactEffect?.ExecuteOnEntity(Caster, this, otherEntity, context);
+                Die(context);
+            }
+        }
         public override void OnTerrainCollision(IBoardContext context)
         {
+            ImpactEffect?.ExecuteOnPoint(Caster, this, Position, context);
             Die(context);
         }
     }

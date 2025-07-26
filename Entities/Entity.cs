@@ -4,7 +4,7 @@ using AStar;
 
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
-using Wc3_Combat_Game.Entities.Components;
+using Wc3_Combat_Game.Entities.Components.Collider;
 using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.IO;
@@ -15,7 +15,7 @@ namespace Wc3_Combat_Game.Entities
     /// <summary>
     /// Base class representing any game object with a position and size.
     /// </summary>
-    public class Entity
+    public class Entity: IDisposable
     {
         public readonly int Index = s_NextIndex++;
         private static int s_NextIndex = 0;
@@ -23,7 +23,7 @@ namespace Wc3_Combat_Game.Entities
 
         protected IDrawable? _drawer;
 
-        protected PhysicsObject _physicsObject;
+        protected PhysicsCircleCollider _physicsObject;
         //protected ICollidable? _collider;
         //protected IMoveable? _mover;
 
@@ -49,7 +49,7 @@ namespace Wc3_Combat_Game.Entities
         //public ICollidable? Collider { get => _collider; set => _collider = value; }
         //public IMoveable? Mover { get => _mover; set => _mover = value; }
         public IDrawable? Drawer { get => _drawer; protected set => _drawer = value; }
-        public PhysicsObject PhysicsObject { get => _physicsObject; protected set => _physicsObject = value; }
+        public PhysicsCircleCollider PhysicsObject { get => _physicsObject; protected set => _physicsObject = value; }
 
         public bool IsExpired(IBoardContext context) => !_isAlive && context.CurrentTime > _lastKilled + _despawnDelay;
 
@@ -58,7 +58,7 @@ namespace Wc3_Combat_Game.Entities
             Drawer = null;
 
             Team = Team.Neutral;
-            _physicsObject = new PhysicsObject(this, context.PhysicsWorld, position, radius, true);
+            _physicsObject = new PhysicsCircleCollider(this, context.PhysicsWorld, position, radius, true);
         }
 
 
@@ -144,6 +144,21 @@ namespace Wc3_Combat_Game.Entities
             //    Collider.CheckCollision(this, entityB, context);
             //}
 
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            if(_physicsObject != null)
+            {
+                _physicsObject.Dispose();
+                _physicsObject = null!;
+            }
+            if(_drawer != null)
+            {
+                _drawer.Dispose();
+                _drawer = null!;
+            }
         }
     }
 }

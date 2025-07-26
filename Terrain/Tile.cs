@@ -1,4 +1,7 @@
-﻿using Wc3_Combat_Game.Core.Context;
+﻿using nkast.Aether.Physics2D.Dynamics;
+
+using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Collider;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
@@ -20,6 +23,20 @@ namespace Wc3_Combat_Game.Terrain
             Position = pos;
         }
 
+        public void InitCollision(IBoardContext context)
+        {
+            if(!IsWalkable)
+            {
+                Collider = new StaticSquareCollider(this, context.PhysicsWorld, context.Map.FromGrid(Position), context.Map.Width, context.Map.Height);
+                if(Collider.Body.FixtureList.Count > 0)
+                {
+                    Fixture fixture = Collider.Body.FixtureList[0];
+                    fixture.CollisionCategories = PhysicsManager.Terrain;
+                    fixture.CollidesWith = PhysicsManager.Unit | PhysicsManager.Projectile;
+                    fixture.Tag = this;
+                }
+            }
+        }
         public bool IsWalkable => Type.IsWalkable;
         public char GetChar => Type.Ascii;
         public Color GetColor => Type.Color;

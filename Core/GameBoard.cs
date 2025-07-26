@@ -195,6 +195,8 @@ namespace Wc3_Combat_Game.Core
             };
             PathFinder = new PathFinder(Map.PathfinderGrid.Grid, options);
 
+            Map.InitCollision(this);
+
         }
 
         public void InitWaves()
@@ -383,7 +385,7 @@ namespace Wc3_Combat_Game.Core
             // Admittedly, eventually projectiles will be able to create projectiles, Starburst or Delayed cast.
             // so a method to do this right is needed.
 
-            CheckCollision(deltaTime, this);
+            //CheckCollision(deltaTime, this);
 
             //Projectiles.ForEach((projectile) =>
             //{

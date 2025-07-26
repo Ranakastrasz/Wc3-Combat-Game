@@ -4,7 +4,8 @@
     {
         Ally,
         Enemy, // May need something else someday, but this is valid for now.
-        Neutral
+        Neutral,
+        Hostile
     }
     public static class TeamExtensions
     {
