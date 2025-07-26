@@ -61,9 +61,9 @@ namespace Wc3_Combat_Game.Entities
                 fixture.Friction = 0f;
                 fixture.Restitution = 0f; // unless bounce is needed
             }
-            Console.WriteLine($"Velocity: {body.LinearVelocity}, Position: {body.Position}");
-            Console.WriteLine($"Mass: {body.Mass}");
-            Console.WriteLine($"Inertia: {body.Inertia}");
+            //Console.WriteLine($"Velocity: {body.LinearVelocity}, Position: {body.Position}");
+            //Console.WriteLine($"Mass: {body.Mass}");
+            //Console.WriteLine($"Inertia: {body.Inertia}");
 
             //fixture.OnCollision += (f1, f2, contact) =>
             //{

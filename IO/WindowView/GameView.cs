@@ -4,6 +4,7 @@ using System.Numerics;
 
 using AssertUtils;
 
+using Wc3_Combat_Game.Constants;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;

@@ -1,4 +1,5 @@
 ﻿using Wc3_Combat_Game.Core.Context;
+using Wc3_Combat_Game.Entities.Components.Collider;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Util;
 
@@ -12,6 +13,7 @@ namespace Wc3_Combat_Game.Terrain
         public int X => Position.X;
         public int Y => Position.Y;
 
+        public StaticSquareCollider? Collider;
         public Tile(TileType type, Point pos)
         {
             Type = type;

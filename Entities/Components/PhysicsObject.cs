@@ -11,35 +11,36 @@ namespace Wc3_Combat_Game.Entities.Components
     {
         private Body _body;
 
+        private static readonly float SCALAR = 64f;
         public PhysicsObject(Object owner, World world, Vector2 position, float radius, bool isDynamic)
         {
-            _body = world.CreateBody(position/64f, 0,
+            _body = world.CreateBody(position/ SCALAR, 0,
                 isDynamic ? BodyType.Dynamic : BodyType.Static);
 
-            _body.CreateCircle(radius, 1f);
+            _body.CreateCircle(radius/SCALAR, 1f);
             _body.Tag = owner;
         }
 
         public Body Body { get => _body; set => _body = value; }
         public Vector2 Position
         {
-            get => _body.Position.ToNumerics()*64f;
-            set => _body.Position = value/64f; // rarely used, maybe for teleport
+            get => _body.Position.ToNumerics()* SCALAR;
+            set => _body.Position = value/ SCALAR;
         }
 
         public Vector2 Velocity
         {
-            get => _body.LinearVelocity.ToNumerics()*64f;
-            set => _body.LinearVelocity = value/64f;
+            get => _body.LinearVelocity.ToNumerics()* SCALAR;
+            set => _body.LinearVelocity = value/ SCALAR;
         }
 
         public void ApplyForce(Vector2 force) =>
             _body.ApplyForce(force);
 
         // ICollidable
-        public float CollisionRadius => _body.FixtureList[0].Shape.Radius;
+        public float CollisionRadius => _body.FixtureList[0].Shape.Radius * SCALAR;
 
-        public bool CollidesAt(Vector2 pos, IContext context) => false; // or implement via test body
+        public bool CollidesAt(Vector2 pos, IContext context) => false; // temp, to remove
 
         public void Update(Entity owner, float dt, IBoardContext context) { }
 

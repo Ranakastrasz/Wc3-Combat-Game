@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 using nkast.Aether.Physics2D.Dynamics;
 
+using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 
 namespace Wc3_Combat_Game.Entities.Components.Collider
@@ -15,20 +12,35 @@ namespace Wc3_Combat_Game.Entities.Components.Collider
     {
         private Body _body;
 
-        public StaticSquareCollider(Object owner, World world, Vector2 position, float width, float height, bool isDynamic)
+        private static readonly float SCALAR = 64f;
+
+        public SizeF CollisionSize { get; private set; }
+
+        public StaticSquareCollider(Object owner, World world, Vector2 position, float width, float height)
         {
-            _body = world.CreateBody(position / 64f, 0,
-                isDynamic ? BodyType.Dynamic : BodyType.Static);
+            CollisionSize = new SizeF(width, height);
+            width /= SCALAR;
+            height /= SCALAR;
+            position /= SCALAR;
+            _body = world.CreateBody(position, 0,
+                BodyType.Static);
 
             _body.CreateRectangle(width, height, 1f, new Vector2(width/2,height/2));
             _body.Tag = owner;
+            if(_body.FixtureList.Count > 0)
+            {
+                Fixture fixture = _body.FixtureList[0];
+                fixture.CollisionCategories = PhysicsManager.TerrainCategory;
+                fixture.CollidesWith = PhysicsManager.PlayerCategory;
+            }
+
         }
 
         public Body Body { get => _body; set => _body = value; }
         public Vector2 Position
         {
-            get => _body.Position.ToNumerics() * 64f;
-            set => _body.Position = value / 64f; // rarely used, maybe for teleport
+            get => _body.Position.ToNumerics() * SCALAR;
+            set => _body.Position = value / SCALAR;
         }
 
 

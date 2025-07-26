@@ -66,7 +66,18 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
             switch(_currentState)
             {
                 case State.Idle:
-                    // Does nothing. May include auto aggression or something later
+                    if (canSeeTarget)
+                    {
+                        _currentState = State.DirectPursuit; // Start pursuing the target directly.
+                    }
+                    else if( TimeUtils.HasElapsed(context.CurrentTime, _lastPathfind, PathRecalculationInterval) &&TryPathfind(unit, context))
+                    {
+                        _currentState = State.PathFollowing; // Found a path to follow.
+                    }
+                    else
+                    {
+                        _currentState = State.Idle; // No target and no path, stay idle.
+                    }
                     break;
                 case State.PathFinding:
                 {
@@ -213,7 +224,7 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
                 // Get friendly units for separation
                 var entities = context.GetFriendlyUnits(unit.Team);
 
-                Vector2 separationForce = GetSeparationSteering(unit, entities, context);
+                Vector2 separationForce = Vector2.Zero;//GetSeparationSteering(unit, entities, context);
 
                 // Decompose separation
                 float forwardDot = Vector2.Dot(steeringTarget, separationForce);
@@ -291,8 +302,15 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
             PathFinder pathFinder = context.PathFinder;
             Point startTile = map.ToGrid(unit.Position);
             Point targetTile = map.ToGrid(targetPos);
-            Debug.Assert(map[startTile].IsWalkable, "Start tile is not walkable");
-            Debug.Assert(map[targetTile].IsWalkable, "Target tile is not walkable");
+            if(map[startTile].IsWalkable == false || map[targetTile].IsWalkable == false)
+            {
+                // If either the start or target tile is not walkable, we cannot pathfind.
+                Path = Array.Empty<Point>();
+                CurrentWaypoint = 0;
+                return;
+            }
+            //Debug.Assert(map[startTile].IsWalkable, "Start tile is not walkable");
+            //Debug.Assert(map[targetTile].IsWalkable, "Target tile is not walkable");
             Path = pathFinder.FindPath(startTile, targetTile);
             if(Path.Length > 0)
             {
