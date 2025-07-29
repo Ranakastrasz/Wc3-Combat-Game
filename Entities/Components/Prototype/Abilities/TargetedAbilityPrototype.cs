@@ -30,11 +30,12 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.Abilities
                 case ProjectileAction projectileAction: // Created a projectile. That projectile deals damage.
                     var oldProjectile = projectileAction.Prototype;
                     var newProjectile = new ProjectilePrototype(
+                        oldProjectile.Name,
                         oldProjectile.Radius,
                         oldProjectile.Speed,
                         oldProjectile.Lifespan,
                         new DamageAction(damage),
-                        oldProjectile.FillColor);
+                        oldProjectile.Color);
                     newEffect = new ProjectileAction(newProjectile);
                     break;
                 case DamageAction : // Already did Damage.

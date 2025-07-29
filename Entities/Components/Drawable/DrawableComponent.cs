@@ -25,5 +25,10 @@ namespace Wc3_Combat_Game.Entities.Components.Drawable
             GC.SuppressFinalize(this);
             // Currently, nothing is instanced. Probably needed once I use Monogame though.
         }
+
+        public void DrawDebug(Graphics g, IDrawContext context)
+        {
+
+        }
     }
 }

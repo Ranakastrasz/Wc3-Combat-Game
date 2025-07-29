@@ -74,22 +74,10 @@ namespace Wc3_Combat_Game.Entities
             Drawer?.Draw(g, context);
 
         }
-        internal void DrawDebug(Graphics g, IDrawContext context)
+        internal virtual void DrawDebug(Graphics g, IDrawContext context)
         {
-            // Debugging info
-            if(context.DebugSettings.Get(DebugSetting.DrawEntityCollisionBox))
-            {
-                //if(Collider != null && Collider.CollidesAt(this, context))
-                //{
-                //    var pen = context.DrawCache.GetPen(Color.Red, 1);
-                //    g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
-                //}
-                //else
-                //{
-                //    var pen = context.DrawCache.GetPen(Color.Yellow, 1);
-                //    g.DrawRectangle(pen, BoundingBox.X, BoundingBox.Y, BoundingBox.Width, BoundingBox.Height);
-                //}
-            }
+            Drawer?.DrawDebug(g, context);
+            _physicsObject.DrawDebug(g, context);
         }
 
         public virtual void Update(float deltaTime, IBoardContext context)
@@ -99,7 +87,7 @@ namespace Wc3_Combat_Game.Entities
             //Collider?.Update(this, deltaTime, context);
         }
 
-        public void Die(IBoardContext context)
+        public virtual void Die(IBoardContext context)
         {
             if(!IsAlive) return;
 

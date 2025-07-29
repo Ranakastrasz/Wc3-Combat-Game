@@ -172,6 +172,7 @@ namespace Wc3_Combat_Game.Core
         {
             DrawCache = new DrawCache();
             _physicsManager = new PhysicsManager();
+            //_physicsManager.RegisterForm(Controller?.View.DebugPanel); // Register the form if available.
         }
 
 
@@ -212,7 +213,7 @@ namespace Wc3_Combat_Game.Core
             var weapon200Damage = meleeWeaponBase.WithDamage(200f);
 
             var rangedWeaponBase = new TargetedAbilityPrototype(
-                new ProjectileAction(new ProjectilePrototype(2.5f, 225f, 4f, null, Color.DarkMagenta)),
+                new ProjectileAction(new ProjectilePrototype("Ranged Weapon",2.5f, 225f, 4f, null, Color.DarkMagenta)),
                 0.5f,
                 150f,10f);
 
@@ -257,7 +258,7 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(Controller);
             AssertUtil.NotNull(Controller.Input);
 
-            TargetedAbilityPrototype weapon = new TargetedAbilityPrototype(new ProjectileAction(new ProjectilePrototype(2.5f,
+            TargetedAbilityPrototype weapon = new TargetedAbilityPrototype(new ProjectileAction(new ProjectilePrototype("Player Weapon",2.5f,
                 600f,
                 2f,
                 new DamageAction(10f),

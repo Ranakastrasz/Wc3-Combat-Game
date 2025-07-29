@@ -80,7 +80,7 @@ namespace Wc3_Combat_Game.Entities
                     Abilities.Add(new TargetedAbility(basic));
                 }
             }
-            _despawnDelay = 1f; // For units specifically.
+            _despawnDelay = 1f;
 
             Func<IDrawContext, Color> getColor = (context) =>
             {
@@ -298,6 +298,11 @@ namespace Wc3_Combat_Game.Entities
 
             }
             return false;
+        }
+
+        public override void Die(IBoardContext context)
+        {
+            base.Die(context);
         }
     }
     static class UnitFactory

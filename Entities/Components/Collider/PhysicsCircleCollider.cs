@@ -58,5 +58,20 @@ namespace Wc3_Combat_Game.Entities.Components.Collider
             }
             _body = null!;
         }
+
+        internal void DrawDebug(Graphics g, IDrawContext context)
+        {
+            if(_body == null || _body.World == null)
+                return;
+            if(context.DebugSettings[IO.DebugSetting.DrawEntityCollisionBox])
+            {
+                // Draw the circle collider
+                var position = Position;
+                var radius = CollisionRadius;
+                g.DrawEllipse(context.DrawCache.GetPen(Color.Red), position.X-radius/2, position.Y-radius/2,radius,radius);
+                // Draw the body position
+                //g.DrawEllipse(context.DrawCache.GetPen(Color.Red),position, 2f);
+            }
+        }
     }
 }

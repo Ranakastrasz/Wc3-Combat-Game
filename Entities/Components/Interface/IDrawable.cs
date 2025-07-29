@@ -6,5 +6,6 @@ namespace Wc3_Combat_Game.Entities.Components.Interface
     {
         public abstract void Dispose();
         public abstract void Draw(Graphics g, IDrawContext context);
+        void DrawDebug(Graphics g, IDrawContext context);
     }
 }
