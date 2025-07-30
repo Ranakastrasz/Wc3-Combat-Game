@@ -34,7 +34,10 @@ namespace Wc3_Combat_Game.Util
         #region VectorManipulation
         public static Vector2 NormalizeAndScale(Vector2 vector, float scale) =>
             vector == Vector2.Zero ? Vector2.Zero : Vector2.Normalize(vector) * scale;
-
+        public static Vector2 SafeNormalize(this Vector2 vector)
+        {
+            return vector.LengthSquared() > 0f ? Vector2.Normalize(vector) : Vector2.Zero;
+        }
         public static float DistanceTo(Vector2 from, Vector2 to) =>
             Vector2.Distance(from, to);
         public static float DistanceTo(Point from, Point to) =>

@@ -42,9 +42,9 @@ namespace Wc3_Combat_Game.Core
         //private List<PrototypeUnit> _waveUnits = new();
         //private List<int> _waveUnitCounts = new();
 
-        private List<Wave> _waves = new();
-        private int _waveCurrent;
-        private int _waveSpawnsRemaining;
+        //private List<Wave> _waves = new();
+        private int CurrentWave => _waveManager.CurrentWave;
+        //private int _waveSpawnsRemaining;
 
         private List<Vector2> spawnPoints = new();
 
@@ -96,7 +96,7 @@ namespace Wc3_Combat_Game.Core
 
         public World PhysicsWorld { get => _physicsManager._world; }
 
-        private float _lastEnemySpawned = 0f;
+        private WaveManager _waveManager;
 
         public IReadOnlyList<Unit> GetFriendlyUnits(Team team)
         {
@@ -172,6 +172,7 @@ namespace Wc3_Combat_Game.Core
         {
             DrawCache = new DrawCache();
             _physicsManager = new PhysicsManager();
+            _waveManager = new WaveManager();
             //_physicsManager.RegisterForm(Controller?.View.DebugPanel); // Register the form if available.
         }
 
@@ -202,41 +203,44 @@ namespace Wc3_Combat_Game.Core
 
         public void InitWaves()
         {
+            _waveManager = new WaveManager();
+            _waveManager.InitWaves(this.spawnPoints);
+
             // Will be in wave class when we get there.
-            _waveCurrent = -1;
-            _waveSpawnsRemaining = 0;
-
-            var meleeWeaponBase = new TargetedAbilityPrototype(null, 1f, 20f);
-            var weapon5Damage = meleeWeaponBase.WithDamage(5f);
-            var weapon10Damage = meleeWeaponBase.WithDamage(10f);
-            var weapon25Damage = meleeWeaponBase.WithDamage(25f);
-            var weapon200Damage = meleeWeaponBase.WithDamage(200f);
-
-            var rangedWeaponBase = new TargetedAbilityPrototype(
-                new ProjectileAction(new ProjectilePrototype("Ranged Weapon",2.5f, 225f, 4f, null, Color.DarkMagenta)),
-                0.5f,
-                150f,10f);
-
-            var unit = new UnitPrototype(15f, 2f, 4f, 50f, Color.Brown, 6);
-            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(5f));
-            _waves.Add(new Wave(unit, 32));
-
-            unit = new UnitPrototype(10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
-            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(10f));
-            _waves.Add(new Wave(unit, 32));
-
-            unit = new UnitPrototype(30f, 0.0f, 5f, 40f, Color.Orange, 5);
-            unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f));
-            _waves.Add(new Wave(unit, 16));
-
-            unit = new UnitPrototype(80f, 2f, 10f, 50f, Color.Brown, 6);
-            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(25f));
-            _waves.Add(new Wave(unit, 8));
-
-            unit = new UnitPrototype(400f, 0f, 15f, 100f, Color.DarkRed, 4);
-            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(90f));
-            unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f)); // Change to a ranged snare. Also, screw with other bits.
-            _waves.Add(new Wave(unit, 1));
+            //_waveCurrent = -1;
+            //_waveSpawnsRemaining = 0;
+            //
+            //var meleeWeaponBase = new TargetedAbilityPrototype(null, 1f, 20f);
+            //var weapon5Damage = meleeWeaponBase.WithDamage(5f);
+            //var weapon10Damage = meleeWeaponBase.WithDamage(10f);
+            //var weapon25Damage = meleeWeaponBase.WithDamage(25f);
+            //var weapon200Damage = meleeWeaponBase.WithDamage(200f);
+            //
+            //var rangedWeaponBase = new TargetedAbilityPrototype(
+            //    new ProjectileAction(new ProjectilePrototype("Ranged Weapon",2.5f, 225f, 4f, null, Color.DarkMagenta)),
+            //    0.5f,
+            //    150f,10f);
+            //
+            //var unit = new UnitPrototype(15f, 2f, 4f, 50f, Color.Brown, 6);
+            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(5f));
+            //_waves.Add(new Wave(unit, 32));
+            //
+            //unit = new UnitPrototype(10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
+            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(10f));
+            //_waves.Add(new Wave(unit, 32));
+            //
+            //unit = new UnitPrototype(30f, 0.0f, 5f, 40f, Color.Orange, 5);
+            //unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f));
+            //_waves.Add(new Wave(unit, 16));
+            //
+            //unit = new UnitPrototype(80f, 2f, 10f, 50f, Color.Brown, 6);
+            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(25f));
+            //_waves.Add(new Wave(unit, 8));
+            //
+            //unit = new UnitPrototype(400f, 0f, 15f, 100f, Color.DarkRed, 4);
+            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(90f));
+            //unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f)); // Change to a ranged snare. Also, screw with other bits.
+            //_waves.Add(new Wave(unit, 1));
 
 
 
@@ -289,7 +293,7 @@ namespace Wc3_Combat_Game.Core
         }
         private bool CheckVictoryCondition()
         {
-            if(_waveCurrent == _waves.Count)
+            if(_waveManager.AllWavesComplete)
             {
                 AssertUtil.NotNull(Controller);
                 Controller.OnVictory();
@@ -308,63 +312,65 @@ namespace Wc3_Combat_Game.Core
             //    Console.WriteLine($"306 - Entity[{projectile.Index}] Pos({projectile.Position}, Velocity({projectile.PhysicsObject.Body.LinearVelocity})");
             //});
 
-            if(TimeUtils.HasElapsed(CurrentTime, _lastEnemySpawned, ENEMY_SPAWN_COOLDOWN))
-            {
-                if(_waveSpawnsRemaining > 0)
-                {
-                    Vector2 spawnPoint = spawnPoints[RandomUtils.RandomIntBelow(spawnPoints.Count)]; // Poor, but for now
-                    Unit unit;
-                    if(_waveSpawnsRemaining == _waves[_waveCurrent].CountToSpawn && _waves[_waveCurrent].CountToSpawn > 1)
-                    {
-                        UnitPrototype elitePrototype = _waves[_waveCurrent].Unit;
-                        elitePrototype = elitePrototype.WithLife(elitePrototype.MaxLife * 4, elitePrototype.LifeRegen * 4);
-                        elitePrototype = elitePrototype.WithSpeed(elitePrototype.Speed * 1.2f);
-                        elitePrototype = elitePrototype.WithRadius(elitePrototype.Radius * 1.5f);
-                        //elitePrototype = elitePrototype.WithColors(Color.Black, elitePrototype.DamagedColor, elitePrototype.DeadColor, elitePrototype.PolygonCount);
-                        AbilityPrototype[] abilities = new AbilityPrototype[elitePrototype.Abilities.Length];
-                        for (int x = 0; x < elitePrototype.Abilities.Length; x++)
-                        {
-                            AbilityPrototype ability = elitePrototype.Abilities[x];
-                            // hacky solution.
-                            if(ability is TargetedAbilityPrototype targetedAbility)
-                            {
-                                float damage =  targetedAbility.GetDamage();
-                                targetedAbility = targetedAbility.WithDamage(damage * 4);
-                                abilities[x] = targetedAbility;
-                            }
-                        }
-                        elitePrototype = elitePrototype.WithAbilities(abilities);
-                        unit = UnitFactory.SpawnUnit(elitePrototype, spawnPoint, new BasicAIController(), Team.Enemy,this);
-                    }
-                    else
-                    {
-                        unit = UnitFactory.SpawnUnit(_waves[_waveCurrent].Unit, spawnPoint, new BasicAIController(), Team.Enemy,this);
-
-                    }
-
-                    unit.TargetUnit = PlayerUnit;
-                    AddUnit(unit);
-                    _lastEnemySpawned = CurrentTime;
-                    _waveSpawnsRemaining--;
-
-                }
-                else if(!Units.Entities.Any(s => s.IsAlive && s.Team == Team.Enemy))
-                {
-                    // Should be .Count, but also needs a boss tag check. Later.
-                    // After all, we do next wave when less than 1/8th remain, or less than 8, maybe. dunno. 
-                    // Right now, its 100%.
-                    // New Wave
-
-                    _waveCurrent++;
-
-                    if(!CheckVictoryCondition())
-                    {
-                        _waveSpawnsRemaining = _waves[_waveCurrent].CountToSpawn;
-                    }
-                }
-
-
-            }
+            _waveManager.Update(deltaTime, this);
+            CheckVictoryCondition();
+            //if(TimeUtils.HasElapsed(CurrentTime, _lastEnemySpawned, ENEMY_SPAWN_COOLDOWN))
+            //{
+            //    if(_waveSpawnsRemaining > 0)
+            //    {
+            //        Vector2 spawnPoint = spawnPoints[RandomUtils.RandomIntBelow(spawnPoints.Count)]; // Poor, but for now
+            //        Unit unit;
+            //        if(_waveSpawnsRemaining == _waves[_waveCurrent].CountToSpawn && _waves[_waveCurrent].CountToSpawn > 1)
+            //        {
+            //            UnitPrototype elitePrototype = _waves[_waveCurrent].Unit;
+            //            elitePrototype = elitePrototype.WithLife(elitePrototype.MaxLife * 4, elitePrototype.LifeRegen * 4);
+            //            elitePrototype = elitePrototype.WithSpeed(elitePrototype.Speed * 1.2f);
+            //            elitePrototype = elitePrototype.WithRadius(elitePrototype.Radius * 1.5f);
+            //            //elitePrototype = elitePrototype.WithColors(Color.Black, elitePrototype.DamagedColor, //elitePrototype.DeadColor, elitePrototype.PolygonCount);
+            //            AbilityPrototype[] abilities = new AbilityPrototype[elitePrototype.Abilities.Length];
+            //            for (int x = 0; x < elitePrototype.Abilities.Length; x++)
+            //            {
+            //                AbilityPrototype ability = elitePrototype.Abilities[x];
+            //                // hacky solution.
+            //                if(ability is TargetedAbilityPrototype targetedAbility)
+            //                {
+            //                    float damage =  targetedAbility.GetDamage();
+            //                    targetedAbility = targetedAbility.WithDamage(damage * 4);
+            //                    abilities[x] = targetedAbility;
+            //                }
+            //            }
+            //            elitePrototype = elitePrototype.WithAbilities(abilities);
+            //            unit = UnitFactory.SpawnUnit(elitePrototype, spawnPoint, new BasicAIController(), Team.Enemy,this);
+            //        }
+            //        else
+            //        {
+            //            unit = UnitFactory.SpawnUnit(_waves[_waveCurrent].Unit, spawnPoint, new BasicAIController(), //Team.Enemy,this);
+            //
+            //        }
+            //
+            //        unit.TargetUnit = PlayerUnit;
+            //        AddUnit(unit);
+            //        _lastEnemySpawned = CurrentTime;
+            //        _waveSpawnsRemaining--;
+            //
+            //    }
+            //    else if(!Units.Entities.Any(s => s.IsAlive && s.Team == Team.Enemy))
+            //    {
+            //        // Should be .Count, but also needs a boss tag check. Later.
+            //        // After all, we do next wave when less than 1/8th remain, or less than 8, maybe. dunno. 
+            //        // Right now, its 100%.
+            //        // New Wave
+            //
+            //        _waveCurrent++;
+            //
+            //        if(!CheckVictoryCondition())
+            //        {
+            //            _waveSpawnsRemaining = _waves[_waveCurrent].CountToSpawn;
+            //        }
+            //    }
+            //
+            //
+            //}
 
             // Update Entities.
 
@@ -453,6 +459,12 @@ namespace Wc3_Combat_Game.Core
         {
             Units.Add(u);
             Entities.Add(u);
+            
+            // Temporary fix, not sure where to do this.
+            if(u.Team == Team.Enemy)
+            {
+                u.TargetUnit = PlayerUnit;
+            }
         }
 
         public void Dispose()

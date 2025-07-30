@@ -43,18 +43,17 @@ namespace Wc3_Combat_Game
             }
 
 
-                // otherwise continue with the game
+            // otherwise continue with the game
 
-                game.CreateGameBoard();
+            game.CreateGameBoard();
             AssertUtil.NotNull(game.Board);
-
-            game.Board.InitWaves();
-
 
             game.CreateGameView();
             AssertUtil.NotNull(game.View);
 
             game.Board.InitMap(GetDefaultMap(), 32f);
+
+            game.Board.InitWaves();
 
             game.Board.InitPlayer();
             AssertUtil.NotNull(game.Board.PlayerUnit);
