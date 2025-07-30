@@ -8,6 +8,7 @@ using Wc3_Combat_Game.Entities.Components.Collider;
 using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.IO;
+using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Entities
@@ -115,7 +116,7 @@ namespace Wc3_Combat_Game.Entities
             Vector2 between = otherPosition - Position;
             return between.LengthSquared();
         }
-        public virtual void OnTerrainCollision(IBoardContext context) // Clearly should be an Event, really.
+        public virtual void OnTerrainCollision(Tile tile, Vector2 impactPoint, IBoardContext context)
         {
 
         }
