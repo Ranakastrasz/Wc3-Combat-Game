@@ -25,8 +25,6 @@ namespace Wc3_Combat_Game.Entities
         protected IDrawable? _drawer;
 
         protected PhysicsCircleCollider _physicsObject;
-        //protected ICollidable? _collider;
-        //protected IMoveable? _mover;
 
         public float Radius => _physicsObject.CollisionRadius;
 

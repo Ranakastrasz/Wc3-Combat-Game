@@ -139,8 +139,7 @@ namespace Wc3_Combat_Game.Entities
             }
 
             Controller?.Update(this, deltaTime, context);
-            //if(Mover != null)
-            //{
+
             if(TargetPoint != null)
             {
                 Vector2 moveVector = (Vector2)TargetPoint - Position;
@@ -157,7 +156,31 @@ namespace Wc3_Combat_Game.Entities
             {
                 _physicsObject.Velocity *= 0.5f;
             }
+            /*
+             if(TargetPoint != null)
+            {
+                Vector2 moveVector = (Vector2)TargetPoint - Position;
+                if(Vector2.DistanceSquared(Position, (Vector2)TargetPoint) < MoveSpeed * deltaTime)
+                    _physicsObject.Velocity = moveVector / deltaTime; // Just reach the point this frame.
+                else
+                    _physicsObject.Velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
+            }
+            if(Abilities[0].OnCooldown(context.CurrentTime))
+            {
+                _physicsObject.Velocity *= 0.5f; // Slow down while shooting.
+            }
+            if(!TimeUtils.HasElapsed(context.CurrentTime, SlowExpires, 0f))
+            {
+                _physicsObject.Velocity *= 0.5f;
+            }
             //}
+            base.Update(deltaTime, context); // Includes movement and collision.
+
+            // Units only move once tick of movement per "move order",
+            //_velocity = Vector2.Zero;
+            }
+             */
+
             base.Update(deltaTime, context); // Includes movement and collision.
 
             // Units only move once tick of movement per "move order",

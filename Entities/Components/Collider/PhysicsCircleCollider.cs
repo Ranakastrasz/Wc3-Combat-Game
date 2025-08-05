@@ -3,6 +3,7 @@
 using nkast.Aether.Physics2D.Dynamics;
 
 using Wc3_Combat_Game.Core.Context;
+using Wc3_Combat_Game.Entities.Components.Interface;
 
 namespace Wc3_Combat_Game.Entities.Components.Collider
 {
@@ -10,6 +11,7 @@ namespace Wc3_Combat_Game.Entities.Components.Collider
     public class PhysicsCircleCollider
     {
         private Body _body;
+        
 
         private static readonly float SCALAR = 64f;
         public PhysicsCircleCollider(object owner, World world, Vector2 position, float radius, bool isDynamic)

@@ -14,6 +14,29 @@ namespace Wc3_Combat_Game.Entities.Components.Movement
 {
     //public class UnitMover: IMoveable
     //{
+    //    public ICollidable? Collider { get; private set; }
+    //    private Vector2 _position;
+    //    private Vector2 _velocity;
+    //    public Vector2 Position => Collider != null ? Collider.Position : _position;
+    //
+    //    public Vector2 Velocity => Collider != null ? Collider.Velocity : _velocity;
+    //
+    //    Vector2 IMoveable.Velocity { get => Velocity; set => throw new NotImplementedException(); }
+    //
+    //    public void Teleport(Vector2 position, IBoardContext context)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //
+    //    public void Update(Entity owner, float deltaTime, IBoardContext context)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
+
+
+    //public class UnitMover: IMoveable
+    //{
     //    ICollidable? _collider;
     //    WorldPosition _position;
     //    Vector2 Position { get => _position.Position; set => _position.Position = value; }
