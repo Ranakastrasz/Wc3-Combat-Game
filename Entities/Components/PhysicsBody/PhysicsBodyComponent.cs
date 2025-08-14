@@ -102,6 +102,7 @@ namespace Wc3_Combat_Game.Entities.Components.Nebula
 
             _body = world.CreateBody(position * GameConstants.PHYSICS_SCALE, 0, BodyType.Dynamic);
             _body.Tag = owner;
+
             CollisionRadius = radius;
             if (CollisionRadius > 0f)
             {
@@ -114,7 +115,7 @@ namespace Wc3_Combat_Game.Entities.Components.Nebula
                 _body.CreateCircle(0.01f, density: 1f, offset: Vector2.Zero);
             }
 
-            //_collider.CollidesWith
+            _body.FixtureList[0].Friction = 0f;
 
         }
         
@@ -144,14 +145,21 @@ namespace Wc3_Combat_Game.Entities.Components.Nebula
         {
             if(_body == null || _body.World == null)
                 return;
+
+            var position = Position;
+            var diameter = CollisionRadius*2;
+            var angle = _body.Rotation;
             if(context.DebugSettings[IO.DebugSetting.DrawEntityCollisionBox])
             {
                 // Draw the circle collider
-                var position = Position;
-                var diameter = CollisionRadius*2;
                 g.DrawEllipse(context.DrawCache.GetPen(Color.Red), position.X - diameter / 2, position.Y - diameter / 2, diameter, diameter);
                 // Draw the body position
                 //g.DrawEllipse(context.DrawCache.GetPen(Color.Red),position, 2f);
+            }
+            if(context.DebugSettings[IO.DebugSetting.DrawEntityCollisionBox])
+            {
+                g.DrawLine(context.DrawCache.GetPen(Color.Blue), position.X, position.Y,
+                           position.X+diameter*MathF.Cos(angle),position.Y+diameter*MathF.Sin(angle));
             }
         }
     }

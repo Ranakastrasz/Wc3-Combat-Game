@@ -61,7 +61,7 @@ namespace Wc3_Combat_Game.Entities
                 }
 
             };
-            Drawer = new PolygonDrawable((context) => getColor(context), () => Position, () => this.IsAlive? _prototype.Radius * 2:_prototype.Radius, () => 1, () => true);
+            Drawer = new PolygonDrawable((context) => getColor(context), () => Position, () => this.IsAlive? _prototype.Radius * 2:_prototype.Radius, () => _physicsBody.Body.Rotation, () => 1, () => true);
             _team = caster?.Team ?? Team.Neutral;
 
             _despawnDelay = 1f; // For units specifically.
@@ -69,8 +69,12 @@ namespace Wc3_Combat_Game.Entities
 
             _physicsBody.Velocity = GeometryUtils.NormalizeAndScale(direction, prototype.Speed);
 
+
+            //_physicsBody.Body.Rotation = MathF.Atan2(direction.Y, direction.X);
+            // Just doing this broke collision entirely instead of partially.
+
             Body body = _physicsBody.Body;
-            body.FixedRotation = true;
+            //body.FixedRotation = true;
 
             if(body.FixtureList.Count > 0)
             {

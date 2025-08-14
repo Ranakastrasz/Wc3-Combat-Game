@@ -99,7 +99,7 @@ namespace Wc3_Combat_Game.Entities
                 }
 
             };
-            Drawer = new PolygonDrawable(getColor, () => Position, () => Radius * 2, () => prototype.PolygonCount , () => true);
+            Drawer = new PolygonDrawable(getColor, () => Position, () => Radius * 2, () => _physicsBody.Body.Rotation, () => prototype.PolygonCount , () => true);
 
             Body body = _physicsBody.Body;
             if(body.FixtureList.Count > 0)
@@ -143,10 +143,30 @@ namespace Wc3_Combat_Game.Entities
             if(TargetPoint != null)
             {
                 Vector2 moveVector = (Vector2)TargetPoint - Position;
-                if(Vector2.DistanceSquared(Position, (Vector2)TargetPoint) < MoveSpeed * deltaTime)
+                float distanceSquared = Vector2.DistanceSquared(Position, (Vector2)TargetPoint);
+                if(distanceSquared == 0f)
+                {
+                    _physicsBody.Velocity = Vector2.Zero;
+                    _physicsBody.Body.AngularVelocity = 0f;
+                }
+                else if(distanceSquared < MoveSpeed * deltaTime)
+                {
                     _physicsBody.Velocity = moveVector / deltaTime; // Just reach the point this frame.
+
+                    float targetAngle = MathF.Atan2(moveVector.Y, moveVector.X);
+
+                    float angleDifference = (targetAngle - _physicsBody.Body.Rotation + MathF.PI) % (2 * MathF.PI) - MathF.PI;
+                    _physicsBody.Body.AngularVelocity = angleDifference * 2f;
+                }
                 else
+                {
                     _physicsBody.Velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
+
+                    float targetAngle = MathF.Atan2(moveVector.Y, moveVector.X);
+
+                    float angleDifference = (targetAngle - _physicsBody.Body.Rotation + MathF.PI) % (2 * MathF.PI) - MathF.PI;
+                    _physicsBody.Body.AngularVelocity = angleDifference * 2f;
+                }
             }
             if(Abilities[0].OnCooldown(context.CurrentTime))
             {
