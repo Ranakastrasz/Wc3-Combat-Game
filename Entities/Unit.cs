@@ -101,16 +101,16 @@ namespace Wc3_Combat_Game.Entities
             };
             Drawer = new PolygonDrawable(getColor, () => Position, () => Radius * 2, () => prototype.PolygonCount , () => true);
 
-            Body body = _physicsObject.Body;
+            Body body = _physicsBody.Body;
             if(body.FixtureList.Count > 0)
             {
                 Fixture fixture = body.FixtureList[0];
-                fixture.CollisionCategories = PhysicsManager.Player | PhysicsManager.Unit;
+                fixture.CollisionCategories = PhysicsManager.Unit;
                 fixture.CollidesWith = PhysicsManager.Terrain | PhysicsManager.Unit | PhysicsManager.Projectile;
                 //fixture.IsSensor = false;
-                body.LinearDamping = 2f;
-                fixture.Friction = 0f;
-                fixture.Restitution = 0f; // unless bounce is needed
+                //body.LinearDamping = 2f;
+                //fixture.Friction = 0f;
+                //fixture.Restitution = 0f; // unless bounce is needed
             }
 
         }
@@ -144,17 +144,17 @@ namespace Wc3_Combat_Game.Entities
             {
                 Vector2 moveVector = (Vector2)TargetPoint - Position;
                 if(Vector2.DistanceSquared(Position, (Vector2)TargetPoint) < MoveSpeed * deltaTime)
-                    _physicsObject.Velocity = moveVector / deltaTime; // Just reach the point this frame.
+                    _physicsBody.Velocity = moveVector / deltaTime; // Just reach the point this frame.
                 else
-                    _physicsObject.Velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
+                    _physicsBody.Velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
             }
             if(Abilities[0].OnCooldown(context.CurrentTime))
             {
-                _physicsObject.Velocity *= 0.5f; // Slow down while shooting.
+                _physicsBody.Velocity *= 0.5f; // Slow down while shooting.
             }
             if(!TimeUtils.HasElapsed(context.CurrentTime, SlowExpires, 0f))
             {
-                _physicsObject.Velocity *= 0.5f;
+                _physicsBody.Velocity *= 0.5f;
             }
             /*
              if(TargetPoint != null)

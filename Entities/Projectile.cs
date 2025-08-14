@@ -67,9 +67,9 @@ namespace Wc3_Combat_Game.Entities
             _despawnDelay = 1f; // For units specifically.
 
 
-            _physicsObject.Velocity = GeometryUtils.NormalizeAndScale(direction, prototype.Speed);
+            _physicsBody.Velocity = GeometryUtils.NormalizeAndScale(direction, prototype.Speed);
 
-            Body body = _physicsObject.Body;
+            Body body = _physicsBody.Body;
             body.FixedRotation = true;
 
             if(body.FixtureList.Count > 0)
@@ -91,7 +91,7 @@ namespace Wc3_Combat_Game.Entities
 
                     var myEntity = caster;
                     var otherObject = f2.Body.Tag;
-                    // Custom filtering. May be possible to adjust mask for this, but not currently.
+
                     if(otherObject is Entity otherEntity)
                     {
                         if(otherEntity.IsAlive == false)
@@ -125,9 +125,26 @@ namespace Wc3_Combat_Game.Entities
                     if(otherObject is Entity otherEntity)
                     {
                         if(otherEntity.IsAlive == false)
-                            return false; // skip collision if other entity is already dead
+                            return false; // skip collision if other entity is already dead, because of a previous collision this tick.
+
+                        //contact.Restitution = 0f;
+                        contact.Enabled = false;
+
+                        // Get the velocity of the projectile before the collision.
+                        var projectileVelocity = f1.Body.LinearVelocity;
+
+                        // Get the normal of the collision (direction of impact).
+                        contact.GetWorldManifold(out Microsoft.Xna.Framework.Vector2 normal, out _);
+
+                        // Calculate the "bounced" velocity. This is a manual implementation
+                        // of a perfect bounce (reversing the velocity along the normal).
+                        var reflectionVector = Microsoft.Xna.Framework.Vector2.Reflect(projectileVelocity, normal);
+
+                        // Set the projectile's velocity to the calculated bounce vector.
+                        f1.Body.LinearVelocity = reflectionVector;
+
                         // Mark for impact this tick
-                        // Don't actually do anything though.
+                        // Don't otherwise run any onCollision effects. That is for the AfterCollision.
                         _hasImpactedThisTick = true;
 
 
@@ -151,6 +168,9 @@ namespace Wc3_Combat_Game.Entities
                         return; // Skip if already handled or dead
                     var myEntity = caster;
                     var otherObject = f2.Body.Tag;
+
+                    // Override contact properties to prevent further interactions
+
 
                     // optional normal and impulse get. Not needed yet.
                     // contact.GetWorldManifold(...) etc.
@@ -235,10 +255,10 @@ namespace Wc3_Combat_Game.Entities
 
             // Apply visual lingering effects here, but disable physics interaction immediately
 
-            _physicsObject.Body.LinearDamping = 10f; // Rapid deceleration for visual slow down and stop.
-            _physicsObject.Body.IsBullet = false; // Disable bullet behavior because we no longer need high detail collision detection
+            _physicsBody.Body.LinearDamping = 10f; // Rapid deceleration for visual slow down and stop.
+            _physicsBody.Body.IsBullet = false; // Disable bullet behavior because we no longer need high detail collision detection
 
-            Fixture fixture = _physicsObject.Body.FixtureList[0];
+            Fixture fixture = _physicsBody.Body.FixtureList[0];
             if(fixture != null)
             {
                 // Crucial: Only interact with Terrain.

@@ -7,6 +7,7 @@ using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Collider;
 using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Components.Interface;
+using Wc3_Combat_Game.Entities.Components.Nebula;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
@@ -24,14 +25,14 @@ namespace Wc3_Combat_Game.Entities
 
         protected IDrawable? _drawer;
 
-        protected PhysicsCircleCollider _physicsObject;
+        protected PhysicsBodyComponent _physicsBody;
 
-        public float Radius => _physicsObject.CollisionRadius;
+        public float Radius => _physicsBody.CollisionRadius;
 
         public float Diameter => Radius * 2f;
         protected Vector2 _BoundingSize => new Vector2(Diameter, Diameter);
 
-        public Vector2 Position { get => _physicsObject.Position; set => _physicsObject.Position = value; }
+        public Vector2 Position { get => _physicsBody.Position; set => _physicsBody.Position = value; }
         private bool _isAlive = true;
         float _lastKilled = float.NegativeInfinity;
         protected float _despawnDelay = GameConstants.FIXED_DELTA_TIME;
@@ -48,7 +49,7 @@ namespace Wc3_Combat_Game.Entities
         //public ICollidable? Collider { get => _collider; set => _collider = value; }
         //public IMoveable? Mover { get => _mover; set => _mover = value; }
         public IDrawable? Drawer { get => _drawer; protected set => _drawer = value; }
-        public PhysicsCircleCollider PhysicsObject { get => _physicsObject; protected set => _physicsObject = value; }
+        public PhysicsBodyComponent PhysicsBody { get => _physicsBody; protected set => _physicsBody = value; }
 
         public bool IsExpired(IBoardContext context) => !_isAlive && context.CurrentTime > _lastKilled + _despawnDelay;
 
@@ -57,13 +58,12 @@ namespace Wc3_Combat_Game.Entities
             Drawer = null;
 
             Team = Team.Neutral;
-            _physicsObject = new PhysicsCircleCollider(this, context.PhysicsWorld, position, radius, true);
+            _physicsBody = new PhysicsBodyComponent(this, context.PhysicsWorld, position, radius);
         }
 
 
         public virtual void Draw(Graphics g, IDrawContext context)
         {
-            DrawDebug(g, context);
 
             //if(!IsAlive) return;
             //var brush = context.DrawCache.GetSolidBrush(_fillColor);
@@ -72,16 +72,18 @@ namespace Wc3_Combat_Game.Entities
             //g.FillRectangle(brush, BoundingBox);
             Drawer?.Draw(g, context);
 
+            DrawDebug(g, context);
+
         }
         internal virtual void DrawDebug(Graphics g, IDrawContext context)
         {
             Drawer?.DrawDebug(g, context);
-            _physicsObject.DrawDebug(g, context);
+            _physicsBody.DrawDebug(g, context);
         }
 
         public virtual void Update(float deltaTime, IBoardContext context)
         {
-
+            _physicsBody.Update(deltaTime, context);
             //Mover?.Update(this, deltaTime, context);
             //Collider?.Update(this, deltaTime, context);
         }
@@ -136,10 +138,10 @@ namespace Wc3_Combat_Game.Entities
         public void Dispose()
         {
             GC.SuppressFinalize(this);
-            if(_physicsObject != null)
+            if(_physicsBody != null)
             {
-                _physicsObject.Dispose();
-                _physicsObject = null!;
+                _physicsBody.Dispose();
+                _physicsBody = null!;
             }
             if(_drawer != null)
             {

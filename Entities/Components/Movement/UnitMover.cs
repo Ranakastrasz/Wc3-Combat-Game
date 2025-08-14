@@ -1,38 +1,79 @@
-﻿using System.Numerics;
-
-using AssertUtils;
-
-using AStar;
-
-using Wc3_Combat_Game.Core.Context;
-using Wc3_Combat_Game.Entities.Components.Interface;
-using Wc3_Combat_Game.IO;
-using Wc3_Combat_Game.Terrain;
-using Wc3_Combat_Game.Util;
-
-namespace Wc3_Combat_Game.Entities.Components.Movement
-{
-    //public class UnitMover: IMoveable
-    //{
-    //    public ICollidable? Collider { get; private set; }
-    //    private Vector2 _position;
-    //    private Vector2 _velocity;
-    //    public Vector2 Position => Collider != null ? Collider.Position : _position;
-    //
-    //    public Vector2 Velocity => Collider != null ? Collider.Velocity : _velocity;
-    //
-    //    Vector2 IMoveable.Velocity { get => Velocity; set => throw new NotImplementedException(); }
-    //
-    //    public void Teleport(Vector2 position, IBoardContext context)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //
-    //    public void Update(Entity owner, float deltaTime, IBoardContext context)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
+﻿//using System.Numerics;
+//
+//using AssertUtils;
+//
+//using AStar;
+//
+//using Wc3_Combat_Game.Core.Context;
+//using Wc3_Combat_Game.Entities.Components.Interface;
+//using Wc3_Combat_Game.Entities.Components.Nebula;
+//using Wc3_Combat_Game.IO;
+//using Wc3_Combat_Game.Terrain;
+//using Wc3_Combat_Game.Util;
+//
+//namespace Wc3_Combat_Game.Entities.Components.Movement
+//{
+//    public class UnitMover: IMoveable
+//    {
+//        public PhysicsBodyComponent? physicsBody { get; private set; }
+//        public ICollidable? Collider { get; private set; }
+//        private Vector2 _position;
+//        private Vector2 _velocity;
+//        public Vector2 Position
+//        {
+//            get => physicsBody != null ? physicsBody.Position: _position;
+//            set
+//            {
+//                if(physicsBody != null)
+//                {
+//                    physicsBody.Position = value;
+//                }
+//                else
+//                {
+//                    _position = value;
+//                }
+//            }
+//        }
+//
+//        public Vector2 Velocity {
+//            get => physicsBody != null ? physicsBody.Velocity : _velocity;
+//            set
+//            {
+//                if(physicsBody != null)
+//                {
+//                    physicsBody.Velocity = value;
+//                }
+//                else
+//                {
+//                    _velocity = value;
+//                }
+//            }
+//        }
+//
+//        public UnitMover(PhysicsBodyComponent physicsBody, ICollidable collider)
+//        {
+//            this.physicsBody = physicsBody;
+//            Collider = collider;
+//            _velocity = Vector2.Zero;
+//        }
+//
+//        public void Teleport(Vector2 position, IBoardContext context)
+//        {
+//            if(Collider != null && !Collider.CollidesAt(position, context))
+//            {
+//                Position = position;
+//            }
+//            else
+//            {
+//                throw new InvalidOperationException("Cannot teleport to a position that collides with terrain.");
+//            }
+//        }
+//    
+//        public void Update(Entity owner, float deltaTime, IBoardContext context)
+//        {
+//
+//        }
+//    }
 
 
     //public class UnitMover: IMoveable
@@ -210,4 +251,4 @@ namespace Wc3_Combat_Game.Entities.Components.Movement
     //    //    }
     //    //}
     //}
-}
+//}

@@ -16,5 +16,7 @@
         public static readonly SizeF CAMERA_SCALE = new SizeF(800f,500f);
 
         public const float GAME_RESTART_DELAY = 3f;
+
+        public const float PHYSICS_SCALE = 1/64f;
     }
 }
