@@ -46,32 +46,32 @@ namespace Wc3_Combat_Game.Entities.Components.Nebula
         private float _collisionRadius
         {
             get => _collider?.Shape.Radius ?? 0f;
-            set
-            {
-                if(_collider != null)
-                {
-                    _body.Remove(_collider);
-                }
-                if(value > 0f)
-                {
-                    _body.CreateCircle(value, density: 1f, offset: Vector2.Zero);
-                }
-                else
-                {
-                    // Not sure if this is correct. Might want set 0 to disable collision instead.
-                    _body.CreateCircle(0.01f, density: 1f, offset: Vector2.Zero);
-                }
-            }
+            //set
+            //{
+            //    if(_collider == null)
+            //    {
+            //        _body.CreateCircle(value, density: 1f, offset: Vector2.Zero);
+            //    }
+            //    if(value > 0f)
+            //    {
+            //        _collider.
+            //    }
+            //    else
+            //    {
+            //        // Not sure if this is correct. Might want set 0 to disable collision instead.
+            //        _body.CreateCircle(0.01f, density: 1f, offset: Vector2.Zero);
+            //    }
+            //}
         }
         public float CollisionRadius
         {
             get => _collisionRadius / GameConstants.PHYSICS_SCALE;
-            set
-            {
-                 if (value < 0f)
-                      throw new ArgumentOutOfRangeException(nameof(value), "Collision radius cannot be negative.");
-                 _collisionRadius = value * GameConstants.PHYSICS_SCALE;
-            }
+            //set
+            //{
+            //     if (value < 0f)
+            //          throw new ArgumentOutOfRangeException(nameof(value), "Collision radius cannot be negative.");
+            //     _collisionRadius = value * GameConstants.PHYSICS_SCALE;
+            //}
         }
 
         public void Accelerate(System.Numerics.Vector2 acceleration, float deltaTime)
@@ -103,11 +103,11 @@ namespace Wc3_Combat_Game.Entities.Components.Nebula
             _body = world.CreateBody(position * GameConstants.PHYSICS_SCALE, 0, BodyType.Dynamic);
             _body.Tag = owner;
 
-            CollisionRadius = radius;
-            if (CollisionRadius > 0f)
+            //CollisionRadius = radius;
+            if (radius > 0f)
             {
                 // Create a circular fixture for the body.
-                _body.CreateCircle(_collisionRadius, density: 1f, offset: Vector2.Zero);
+                _body.CreateCircle(radius * GameConstants.PHYSICS_SCALE, density: 1f, offset: Vector2.Zero);
             }
             else
             {
