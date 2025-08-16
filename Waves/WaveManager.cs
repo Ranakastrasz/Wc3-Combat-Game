@@ -70,22 +70,22 @@ namespace Wc3_Combat_Game.Waves
             unit = unit.AddWeapon(meleeWeaponBase.WithDamage(5f));
             _waves.Add(new Wave(unit, 32));
 
-            //unit = new UnitPrototype(10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
-            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(10f));
-            //_waves.Add(new Wave(unit, 32));
-            //
-            //unit = new UnitPrototype(30f, 0.0f, 5f, 40f, Color.Orange, 5);
-            //unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f));
-            //_waves.Add(new Wave(unit, 16));
-            //
-            //unit = new UnitPrototype(80f, 2f, 10f, 50f, Color.Brown, 6);
-            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(25f));
-            //_waves.Add(new Wave(unit, 8));
-            //
-            //unit = new UnitPrototype(400f, 0f, 15f, 100f, Color.DarkRed, 4);
-            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(90f));
-            //unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f)); // Change to a ranged snare. Also, screw with other bits.
-            //_waves.Add(new Wave(unit, 1));
+            unit = new UnitPrototype(10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
+            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(10f));
+            _waves.Add(new Wave(unit, 32));
+            
+            unit = new UnitPrototype(30f, 0.0f, 5f, 40f, Color.Orange, 5);
+            unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f));
+            _waves.Add(new Wave(unit, 16));
+            
+            unit = new UnitPrototype(80f, 2f, 10f, 50f, Color.Brown, 6);
+            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(25f));
+            _waves.Add(new Wave(unit, 8));
+            
+            unit = new UnitPrototype(400f, 0f, 15f, 100f, Color.DarkRed, 4);
+            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(90f));
+            unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f)); // Change to a ranged snare. Also, screw withother bits.
+            _waves.Add(new Wave(unit, 1));
 
         }
         public void Update(float deltaTime, IBoardContext context)

@@ -40,7 +40,7 @@ namespace Wc3_Combat_Game.Entities.Components.Drawable
             {
                 case 0: // Or case 1:
                 case 1: // A single point or no vertices might imply a circle or nothing.
-                    DrawCircle(g, brush, position, rotation, diameter);
+                    DrawCircle(g, brush, position, diameter);
                     break;
                 case 2: // Line segment
                     DrawLine(g, pen, position, rotation, diameter);
@@ -58,7 +58,7 @@ namespace Wc3_Combat_Game.Entities.Components.Drawable
                     }
                     else // For 10+ vertices, draw a circle as an approximation.
                     {
-                        DrawCircle(g, brush, position, rotation, diameter);
+                        DrawCircle(g, brush, position, diameter);
                     }
                     break;
             }
@@ -67,15 +67,12 @@ namespace Wc3_Combat_Game.Entities.Components.Drawable
         /// <summary>
         /// Helper to draw a circle.
         /// </summary>
-        private void DrawCircle(Graphics g, SolidBrush brush, Vector2 center, float rotation, float diameter)
+        private void DrawCircle(Graphics g, SolidBrush brush, Vector2 center, float diameter)
         {
             var save = g.Save();
             g.TranslateTransform(center.X, center.Y);
-            g.RotateTransform(GeometryUtils.RadToDeg(rotation));
-
             RectangleF boundingBox = new RectangleF(-diameter / 2, -diameter / 2, diameter, diameter);
             g.FillEllipse(brush, boundingBox);
-
             g.Restore(save);
         }
 
@@ -113,23 +110,20 @@ namespace Wc3_Combat_Game.Entities.Components.Drawable
         /// <summary>
         /// Helper to draw a regular polygon.
         /// </summary>
-        private void DrawRegularPolygon(Graphics g, SolidBrush brush, Vector2 center, float rotation, float diameter, int sides)
+         private void DrawRegularPolygon(Graphics g, SolidBrush brush, Vector2 center, float rotation, float diameter, int sides)
         {
-            if(sides < 3) return; // A polygon needs at least 3 sides.
+            if (sides < 3) return;
 
             var save = g.Save();
             g.TranslateTransform(center.X, center.Y);
-            g.RotateTransform(GeometryUtils.RadToDeg(rotation));
 
             float radius = diameter / 2f;
             PointF[] points = new PointF[sides];
             double angleIncrement = 2 * Math.PI / sides;
 
-            // Start angle to orient the polygon. For a square, 45 degrees rotates it.
-            // For a general polygon, you might want 0 or -PI/2 (to have a flat top/bottom).
-            double startAngle = -Math.PI / 2; // Start from the top
+            double startAngle = rotation;// - Math.PI / 2;
 
-            for(int i = 0; i < sides; i++)
+            for (int i = 0; i < sides; i++)
             {
                 double angle = startAngle + i * angleIncrement;
                 points[i] = new PointF(
