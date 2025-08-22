@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entities\Components\Collider\CircleColliderComponent.cs" />
+    <Compile Remove="Entities\Components\Collider\PhysicsCircleCollider.cs" />
     <Compile Remove="IO\Load\EntityPrototyper.cs" />
   </ItemGroup>
 

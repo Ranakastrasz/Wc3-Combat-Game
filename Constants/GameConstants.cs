@@ -2,8 +2,8 @@
 {
     public static class GameConstants
     {
-        public const int TICK_DURATION_MS = 16;              // Duration of one tick in milliseconds
-        public const float FIXED_DELTA_TIME = TICK_DURATION_MS * 0.001f; // 0.016f
+        public const int TICK_DURATION_MS = 20;              // Duration of one tick in milliseconds
+        public const float FIXED_DELTA_TIME = TICK_DURATION_MS * 0.001f;
 
         public const float ENEMY_SPAWN_PADDING = 50f;
 

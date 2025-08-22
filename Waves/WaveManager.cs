@@ -84,7 +84,7 @@ namespace Wc3_Combat_Game.Waves
             
             unit = new UnitPrototype(400f, 0f, 15f, 100f, Color.DarkRed, 4);
             unit = unit.AddWeapon(meleeWeaponBase.WithDamage(90f));
-            unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f)); // Change to a ranged snare. Also, screw withother bits.
+            unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f)); // Change to a ranged snare. Also, screw with other bits.
             _waves.Add(new Wave(unit, 1));
 
         }

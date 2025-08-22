@@ -49,7 +49,7 @@ namespace Wc3_Combat_Game.Entities.Components.Drawable
                     DrawRegularPolygon(g, brush, position, rotation, diameter, 3);
                     break;
                 case 4: // Rectangle (now works correctly with rotation)
-                    DrawRectangle(g, brush, position, rotation, diameter);
+                    DrawSquare(g, brush, position, rotation, diameter);
                     break;
                 default: // For 5 to 10 vertices, draw a regular polygon. For 10+, draw a circle.
                     if(vertexCount >= 5 && vertexCount <= 10)
@@ -95,9 +95,9 @@ namespace Wc3_Combat_Game.Entities.Components.Drawable
         }
 
         /// <summary>
-        /// Helper to draw a rectangle.
+        /// Helper to draw a square.
         /// </summary>
-        private void DrawRectangle(Graphics g, SolidBrush brush, Vector2 center, float rotation, float size)
+        private void DrawSquare(Graphics g, SolidBrush brush, Vector2 center, float rotation, float size)
         {
             var save = g.Save();
             g.TranslateTransform(center.X, center.Y);
