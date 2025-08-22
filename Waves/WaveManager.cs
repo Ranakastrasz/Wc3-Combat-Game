@@ -149,11 +149,11 @@ namespace Wc3_Combat_Game.Waves
                             }
                         }
                         elitePrototype = elitePrototype.WithAbilities(abilities);
-                        unit = UnitFactory.SpawnUnit(elitePrototype, spawnPoint, new BasicAIController(), Team.Enemy, context);
+                        unit = UnitFactory.SpawnUnit(elitePrototype, spawnPoint, new UnitControllerCore(), Team.Enemy, context);
                     }
                     else
                     {
-                        unit = UnitFactory.SpawnUnit(_waves[_currentWave].Unit, spawnPoint, new BasicAIController(), Team.Enemy, context);
+                        unit = UnitFactory.SpawnUnit(_waves[_currentWave].Unit, spawnPoint, new UnitControllerCore(), Team.Enemy, context);
 
                     }
 

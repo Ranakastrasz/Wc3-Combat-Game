@@ -14,7 +14,7 @@ using Wc3_Combat_Game.Entities.Components.Interface;
 
 namespace Wc3_Combat_Game.Entities.Components.Controllers
 {
-    class BasicAIController: IUnitController
+    class UnitControllerCore: IUnitController
     {
         public Point[]? Path = null;
         public int CurrentWaypoint = 0;
