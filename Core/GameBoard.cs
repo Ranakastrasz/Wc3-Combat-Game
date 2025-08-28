@@ -10,6 +10,7 @@ using nkast.Aether.Physics2D.Dynamics;
 
 using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Core.Context;
+using Wc3_Combat_Game.Core.Event;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.Components.Controllers;
 using Wc3_Combat_Game.Entities.Components.Prototype;
@@ -62,6 +63,7 @@ namespace Wc3_Combat_Game.Core
         private Dictionary<Team, List<Unit>> _friendlyUnitsCache = new Dictionary<Team, List<Unit>>();
         private Dictionary<Team, List<Unit>> _enemyUnitsCache = new Dictionary<Team, List<Unit>>();
 
+        public EventBus EventBus { get; } = new EventBus();
 
         public Map Map
         {

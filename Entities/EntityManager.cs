@@ -109,6 +109,14 @@ namespace Wc3_Combat_Game.Entities
         {
             return _entities.Where(e => e.GetType() == type);
         }
+        public T? GetEntityByIndex(int index)
+        {
+            // Use lock to ensure thread safety
+            lock(_entityLock)
+            {
+                return _entities.FirstOrDefault(e => e.Index == index);
+            }
+        }
 
         public void Clear()
         {

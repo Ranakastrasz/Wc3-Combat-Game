@@ -2,12 +2,12 @@
 
 using nkast.Aether.Physics2D.Dynamics;
 
+using Wc3_Combat_Game.Core.Event;
 using Wc3_Combat_Game.Entities;
-using Wc3_Combat_Game.Terrain;
 
 namespace Wc3_Combat_Game.Core.Context
 {
-    public interface IBoardContext : IContext
+    public interface IBoardContext: IContext
     {
         PathFinder PathFinder { get; }
 
@@ -20,5 +20,6 @@ namespace Wc3_Combat_Game.Core.Context
         IReadOnlyList<Unit> GetFriendlyUnits(Team team);
         IReadOnlyList<Unit> GetEnemyUnits(Team team);
 
+        EventBus EventBus { get; }
     }
 }

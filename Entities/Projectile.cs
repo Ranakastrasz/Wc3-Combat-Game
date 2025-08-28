@@ -8,6 +8,7 @@ using nkast.Aether.Physics2D.Dynamics;
 using Wc3_Combat_Game.Actions.Interface;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
+using Wc3_Combat_Game.Core.Event.Wc3_Combat_Game.Core.Event;
 using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Components.Prototype;
 using Wc3_Combat_Game.Terrain;
@@ -172,7 +173,7 @@ namespace Wc3_Combat_Game.Entities
                         return; // Skip if already handled or dead
                     var myEntity = caster;
                     var otherObject = f2.Body.Tag;
-
+                    var targetId = otherObject is Entity e ? e.Index : -1;
                     // Override contact properties to prevent further interactions
 
 
@@ -183,6 +184,20 @@ namespace Wc3_Combat_Game.Entities
 
                     // Use the first contact point as the origin for the AOE
                     Microsoft.Xna.Framework.Vector2 impactPoint = points[0];
+
+                    
+                     /*
+                    // create the event and publish it
+                    var impactEvent = new ProjectileImpactEvent(
+                        projectileId: this.Index,
+                        casterId: Caster?.Index ?? -1, // Use a default value if Caster is null
+                        targetId: targetId,
+                        impactPoint: impactPoint,
+                        context: context
+                    );
+                    // Publish the event to notify other systems
+                    context.EventBus.Publish(impactEvent);
+                     */
 
                     if(otherObject is Entity otherEntity)
                     {

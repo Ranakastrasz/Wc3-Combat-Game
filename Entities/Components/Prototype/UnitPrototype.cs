@@ -23,6 +23,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
         public readonly int PolygonCount;
         public readonly ImmutableArray<AbilityPrototype> Abilities;
 
+        public static Dictionary<String, UnitPrototype> Prototypes = new();
 
         // Private constructor for "with" methods to use
         private UnitPrototype(
