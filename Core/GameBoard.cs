@@ -11,6 +11,7 @@ using nkast.Aether.Physics2D.Dynamics;
 using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Core.Event;
+using Wc3_Combat_Game.Core.Event.Wc3_Combat_Game.Core.Event;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.Components.Controllers;
 using Wc3_Combat_Game.Entities.Components.Prototype;
@@ -99,6 +100,7 @@ namespace Wc3_Combat_Game.Core
         public World PhysicsWorld { get => _physicsManager._world; }
 
         private WaveManager _waveManager;
+        private ImpactEventHandler _impactHandler;
 
         public IReadOnlyList<Unit> GetFriendlyUnits(Team team)
         {
@@ -175,6 +177,8 @@ namespace Wc3_Combat_Game.Core
             DrawCache = new DrawCache();
             _physicsManager = new PhysicsManager();
             _waveManager = new WaveManager();
+
+            _impactHandler = new ImpactEventHandler(this);
             //_physicsManager.RegisterForm(Controller?.View.DebugPanel); // Register the form if available.
         }
 

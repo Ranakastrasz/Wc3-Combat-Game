@@ -186,7 +186,7 @@ namespace Wc3_Combat_Game.Entities
                     Microsoft.Xna.Framework.Vector2 impactPoint = points[0];
 
                     
-                     /*
+                     
                     // create the event and publish it
                     var impactEvent = new ProjectileImpactEvent(
                         projectileId: this.Index,
@@ -197,22 +197,24 @@ namespace Wc3_Combat_Game.Entities
                     );
                     // Publish the event to notify other systems
                     context.EventBus.Publish(impactEvent);
-                     */
+                    Die(context);
+                    // Admittedly, I am uncertain, but there may be cases to not die.
+                    // but for now, dont worry about it.
 
-                    if(otherObject is Entity otherEntity)
-                    {
-                        if(otherEntity.IsAlive == false)
-                            return; // skip collision if other entity is already dead
-
-                        OnEntityCollision(otherEntity,impactPoint.ToNumerics(), context);
-                        Die(context);
-
-                    }
-                    else if(otherObject is Tile tile)
-                    {
-                        OnTerrainCollision(tile, impactPoint.ToNumerics(), context);
-                        Die(context);
-                    }
+                    //if(otherObject is Entity otherEntity)
+                    //{
+                    //    if(otherEntity.IsAlive == false)
+                    //        return; // skip collision if other entity is already dead
+                    //
+                    //    OnEntityCollision(otherEntity,impactPoint.ToNumerics(), context);
+                    //    Die(context);
+                    //
+                    //}
+                    //else if(otherObject is Tile tile)
+                    //{
+                    //    OnTerrainCollision(tile, impactPoint.ToNumerics(), context);
+                    //    Die(context);
+                    //}
                     _hasImpactedThisTick = false;
                 };
 
