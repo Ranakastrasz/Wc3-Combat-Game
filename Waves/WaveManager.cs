@@ -65,26 +65,34 @@ namespace Wc3_Combat_Game.Waves
                 0.5f,
                 150f,10f);
 
-            
-            var unit = new UnitPrototype(15f, 2f, 4f, 50f, Color.Brown, 6);
-            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(5f));
-            _waves.Add(new Wave(unit, 32));
+            //var snareProjectile = 
+            //
+            //var rangedWeaponSnare = new TargetedAbilityPrototype(
+                new ProjectileAction(new ProjectilePrototype("Snare Projectile",2.5f, 225, 16f,
+                    new SlowAction(0.5f), Color.Cyan)),
+                0.5f,
+                150f,5f);
 
-            unit = new UnitPrototype(10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
-            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(10f));
-            _waves.Add(new Wave(unit, 32));
+
+            var unit = new UnitPrototype("Basic",15f, 2f, 4f, 50f, Color.Brown, 6);
+            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(5f));
+            //_waves.Add(new Wave(unit, 32));
+            //
+            //unit = new UnitPrototype("Blitz",10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
+            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(10f));
+            //_waves.Add(new Wave(unit, 32));
+            //
+            //unit = new UnitPrototype("Blaster",30f, 0.0f, 5f, 40f, Color.Orange, 5);
+            //unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f));
+            //_waves.Add(new Wave(unit, 16));
+            //
+            //unit = new UnitPrototype("Brute",80f, 2f, 10f, 50f, Color.Brown, 6);
+            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(25f));
+            //_waves.Add(new Wave(unit, 8));
             
-            unit = new UnitPrototype(30f, 0.0f, 5f, 40f, Color.Orange, 5);
-            unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f));
-            _waves.Add(new Wave(unit, 16));
-            
-            unit = new UnitPrototype(80f, 2f, 10f, 50f, Color.Brown, 6);
-            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(25f));
-            _waves.Add(new Wave(unit, 8));
-            
-            unit = new UnitPrototype(400f, 0f, 15f, 100f, Color.DarkRed, 4);
+            unit = new UnitPrototype("Boss",400f, 0f, 15f, 100f, Color.DarkRed, 4);
             unit = unit.AddWeapon(meleeWeaponBase.WithDamage(90f));
-            unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f)); // Change to a ranged snare. Also, screw with other bits.
+            unit = unit.AddWeapon(rangedWeaponSnare);
             _waves.Add(new Wave(unit, 1));
 
         }

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Immutable;
+using System.Diagnostics;
 
 using Microsoft.Xna.Framework;
 
@@ -30,7 +31,7 @@ namespace Wc3_Combat_Game.Entities
         //private Vector2 _velocity;
         private float _timeToLive;
         private ProjectilePrototype _prototype;
-        public IGameplayAction? ImpactEffect => _prototype.ImpactEffect;
+        public ImmutableArray<IGameplayAction> ImpactEffects => _prototype.ImpactActions;
         public Entity? Caster;
         private Team _team;
 
@@ -185,8 +186,7 @@ namespace Wc3_Combat_Game.Entities
                     // Use the first contact point as the origin for the AOE
                     Microsoft.Xna.Framework.Vector2 impactPoint = points[0];
 
-                    
-                     
+                   
                     // create the event and publish it
                     var impactEvent = new ProjectileImpactEvent(
                         projectileId: this.Index,
@@ -197,24 +197,9 @@ namespace Wc3_Combat_Game.Entities
                     );
                     // Publish the event to notify other systems
                     context.EventBus.Publish(impactEvent);
+                    
                     Die(context);
-                    // Admittedly, I am uncertain, but there may be cases to not die.
-                    // but for now, dont worry about it.
 
-                    //if(otherObject is Entity otherEntity)
-                    //{
-                    //    if(otherEntity.IsAlive == false)
-                    //        return; // skip collision if other entity is already dead
-                    //
-                    //    OnEntityCollision(otherEntity,impactPoint.ToNumerics(), context);
-                    //    Die(context);
-                    //
-                    //}
-                    //else if(otherObject is Tile tile)
-                    //{
-                    //    OnTerrainCollision(tile, impactPoint.ToNumerics(), context);
-                    //    Die(context);
-                    //}
                     _hasImpactedThisTick = false;
                 };
 
@@ -254,18 +239,6 @@ namespace Wc3_Combat_Game.Entities
         {
             base.DrawDebug(g, context);
 
-        }
-
-        private void OnEntityCollision(Entity otherEntity, Vector2 impactPoint, IBoardContext context)
-        {
-            if(_team.IsHostileTo(otherEntity.Team))
-            {
-                ImpactEffect?.ExecuteOnEntity(Caster, this, otherEntity, context);
-            }
-        }
-        public override void OnTerrainCollision(Tile tile, Vector2 impactPoint, IBoardContext context)
-        {
-            ImpactEffect?.ExecuteOnPoint(Caster, this, impactPoint, context);
         }
 
 

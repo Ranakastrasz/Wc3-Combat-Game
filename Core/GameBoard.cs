@@ -211,56 +211,6 @@ namespace Wc3_Combat_Game.Core
         {
             _waveManager = new WaveManager();
             _waveManager.InitWaves(this.spawnPoints);
-
-            // Will be in wave class when we get there.
-            //_waveCurrent = -1;
-            //_waveSpawnsRemaining = 0;
-            //
-            //var meleeWeaponBase = new TargetedAbilityPrototype(null, 1f, 20f);
-            //var weapon5Damage = meleeWeaponBase.WithDamage(5f);
-            //var weapon10Damage = meleeWeaponBase.WithDamage(10f);
-            //var weapon25Damage = meleeWeaponBase.WithDamage(25f);
-            //var weapon200Damage = meleeWeaponBase.WithDamage(200f);
-            //
-            //var rangedWeaponBase = new TargetedAbilityPrototype(
-            //    new ProjectileAction(new ProjectilePrototype("Ranged Weapon",2.5f, 225f, 4f, null, Color.DarkMagenta)),
-            //    0.5f,
-            //    150f,10f);
-            //
-            //var unit = new UnitPrototype(15f, 2f, 4f, 50f, Color.Brown, 6);
-            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(5f));
-            //_waves.Add(new Wave(unit, 32));
-            //
-            //unit = new UnitPrototype(10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
-            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(10f));
-            //_waves.Add(new Wave(unit, 32));
-            //
-            //unit = new UnitPrototype(30f, 0.0f, 5f, 40f, Color.Orange, 5);
-            //unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f));
-            //_waves.Add(new Wave(unit, 16));
-            //
-            //unit = new UnitPrototype(80f, 2f, 10f, 50f, Color.Brown, 6);
-            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(25f));
-            //_waves.Add(new Wave(unit, 8));
-            //
-            //unit = new UnitPrototype(400f, 0f, 15f, 100f, Color.DarkRed, 4);
-            //unit = unit.AddWeapon(meleeWeaponBase.WithDamage(90f));
-            //unit = unit.AddWeapon(rangedWeaponBase.WithDamage(10f)); // Change to a ranged snare. Also, screw with other bits.
-            //_waves.Add(new Wave(unit, 1));
-
-
-
-
-
-            //var wave3Unit = new UnitPrototype(weapon10DamageRanged, 30f,   0f, 10f,0.5f, 5f,  40f, Color.Orange , UnitPrototype.DrawShape.Square);
-            //
-            ////_waves.Add(new Wave(new UnitPrototype(weapon5Damage       , 10f,   2f,  8f,  75f, Color.Brown  , UnitPrototype.DrawShape.Circle), 1));
-            //_waves.Add(new Wave(new UnitPrototype(weapon5Damage, 12f, 2f, 4f, 50f, Color.Brown, UnitPrototype.DrawShape.Circle), 32));
-            //_waves.Add(new Wave(new UnitPrototype(weapon10Damage, 10f, 0.1f, 4f, 75f, Color.Pink, UnitPrototype.DrawShape.Circle), 32));
-            //_waves.Add(new Wave(wave3Unit, 16));
-            //_waves.Add(new Wave(new UnitPrototype(weapon25Damage, 80f, 2f, 10f, 50f, Color.Brown, UnitPrototype.DrawShape.Square), 8));
-            //_waves.Add(new Wave(new UnitPrototype(weapon10DamageRangedRapid, 400f, 0f, 15f, 100f, Color.DarkRed, UnitPrototype.DrawShape.Square), 1));
-
         }
 
         public void InitPlayer()
@@ -276,11 +226,10 @@ namespace Wc3_Combat_Game.Core
                 0.20f,
                 float.PositiveInfinity,3f);
 
-            UnitPrototype playerUnit = new(100f,  3f, 5f, 150f, Color.Green, 0);
+            UnitPrototype playerUnit = new("Player", 100f,  3f, 5f, 150f, Color.Green, 0);
             playerUnit = playerUnit.AddWeapon(weapon);
             playerUnit = playerUnit.WithMana(100, 3f);
             PlayerUnit = UnitFactory.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
-
 
             AddUnit(PlayerUnit);
         }
@@ -417,42 +366,6 @@ namespace Wc3_Combat_Game.Core
             //    Console.WriteLine($"395 - Entity[{projectile.Index}] Pos({projectile.Position}, Velocity({projectile.PhysicsObject.Body.LinearVelocity})");
             //});
             // End Logic
-        }
-
-        private void CheckCollision(float deltaTime, IBoardContext context)
-        {
-            foreach(Projectile projectile in Projectiles.Entities.Where(p => p.IsAlive))
-            {
-                foreach(Unit unit in Units.Entities.Where(p => p.IsAlive && p.Team.IsHostileTo(projectile.Team)))
-                {
-                    if(projectile.Intersects(unit))
-                    {
-                        projectile.Die(this);
-                        projectile.ImpactEffect?.ExecuteOnEntity(projectile.Caster, projectile, unit, this);
-
-                        break;
-                    }
-                }
-            }
-
-            foreach(Projectile projectile in Projectiles.Entities)
-            {
-                if(!projectile.BoundingBox.IntersectsWith(Map.WorldBounds))
-                {
-                    projectile.Die(this);
-                }
-            }
-            AssertUtil.NotNull(PlayerUnit);
-            //if(!Map.WorldBounds.Contains(PlayerUnit.BoundingBox))
-            //{
-            //    var halfSize = PlayerUnit.BoundingBox;
-            //
-            //    Vector2 newPosition = new Vector2(
-            //        Math.Clamp(PlayerUnit.Position.X, Map.WorldBounds.Left + halfSize.Width, Map.WorldBounds.Right - halfSize.Width),
-            //        Math.Clamp(PlayerUnit.Position.Y, Map.WorldBounds.Top + halfSize.Height, Map.WorldBounds.Bottom - halfSize.Height));
-            //    PlayerUnit.Mover.Teleport(newPosition, context);
-            //
-            //}
         }
 
         public void AddProjectile(Projectile p)

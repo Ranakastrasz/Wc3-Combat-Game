@@ -50,7 +50,7 @@ namespace Wc3_Combat_Game.Core.Event
 
                 // This check is important because the projectile might have already been disposed
                 // before the event is processed.
-                if(projectile == null || projectile.ImpactEffect == null || caster == null)
+                if(projectile == null || projectile.ImpactEffects.Length == 0 || caster == null)
                 {
                     return;
                 }
@@ -61,13 +61,15 @@ namespace Wc3_Combat_Game.Core.Event
                     var target = _context.Entities.GetEntityByIndex(e.TargetId.Value);
                     if(target != null && caster.Team.IsHostileTo(target.Team))
                     {
-                        projectile.ImpactEffect.ExecuteOnEntity(caster, projectile, target, _context);
+                        foreach (var impact in projectile.ImpactEffects)
+                            impact.ExecuteOnEntity(caster, projectile, target, _context);
                     }
                 }
                 else
                 {
                     // Impacted terrain
-                    projectile.ImpactEffect.ExecuteOnPoint(caster, projectile, e.ImpactPoint.ToNumerics(), _context);
+                    foreach(var impact in projectile.ImpactEffects)
+                        impact.ExecuteOnPoint(caster, projectile, e.ImpactPoint.ToNumerics(), _context);
                 }
             }
         }

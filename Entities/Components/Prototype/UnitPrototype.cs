@@ -9,6 +9,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
     /// </summary>
     public readonly struct UnitPrototype
     {
+        public readonly string Name;
         public readonly float MaxLife;
         public readonly float LifeRegen;
         public readonly float MaxMana;
@@ -23,10 +24,10 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
         public readonly int PolygonCount;
         public readonly ImmutableArray<AbilityPrototype> Abilities;
 
-        public static Dictionary<String, UnitPrototype> Prototypes = new();
 
         // Private constructor for "with" methods to use
         private UnitPrototype(
+            string name,
             float maxLife, float lifeRegen,
             float maxMana, float manaRegen,
             float radius, float mass,
@@ -35,6 +36,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
             int polygonCount,
             ImmutableArray<AbilityPrototype> weapons)
         {
+            Name = name;
             MaxLife = maxLife;
             LifeRegen = lifeRegen;
             MaxMana = maxMana;
@@ -51,8 +53,8 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
         }
 
         // Initial constructor for basic properties
-        public UnitPrototype(float maxLife, float lifeRegen, float radius, float speed, Color fillColor, int polygonCount)
-            : this(maxLife, lifeRegen, 0f, 0f, radius, radius * radius, radius * radius, speed, fillColor, Color.White, Color.Gray, polygonCount, ImmutableArray<AbilityPrototype>.Empty)
+        public UnitPrototype(string name, float maxLife, float lifeRegen, float radius, float speed, Color fillColor, int polygonCount)
+            : this(name, maxLife, lifeRegen, 0f, 0f, radius, radius * radius, radius * radius, speed, fillColor, Color.White, Color.Gray, polygonCount, ImmutableArray<AbilityPrototype>.Empty)
         {
             // The 'this' call handles all field assignments.
         }
@@ -63,37 +65,34 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
         // "With" methods for step-by-step construction
         public UnitPrototype WithLife(float maxLife, float lifeRegen)
         {
-            return new UnitPrototype(maxLife, lifeRegen, MaxMana, ManaRegen, Radius, Mass, PushPriority, Speed, Color, DamagedColor, DeadColor, PolygonCount, Abilities);
+            return new UnitPrototype(Name, maxLife, lifeRegen, MaxMana, ManaRegen, Radius, Mass, PushPriority, Speed, Color, DamagedColor, DeadColor, PolygonCount, Abilities);
         }
         public UnitPrototype WithMana(float maxMana, float manaRegen)
         {
-            return new UnitPrototype(MaxLife, LifeRegen, maxMana, manaRegen, Radius, Mass, PushPriority, Speed, Color, DamagedColor, DeadColor, PolygonCount, Abilities);
+            return new UnitPrototype(Name, MaxLife, LifeRegen, maxMana, manaRegen, Radius, Mass, PushPriority, Speed, Color, DamagedColor, DeadColor, PolygonCount, Abilities);
         }
         public UnitPrototype WithRadius(float radius)
         {
-            return new UnitPrototype(MaxLife, LifeRegen, MaxMana, ManaRegen, radius, radius * radius, radius * radius, Speed, Color, DamagedColor, DeadColor, PolygonCount, Abilities);
+            return new UnitPrototype(Name, MaxLife, LifeRegen, MaxMana, ManaRegen, radius, radius * radius, radius * radius, Speed, Color, DamagedColor, DeadColor, PolygonCount, Abilities);
         }
         public UnitPrototype WithSpeed(float speed)
         {
-            return new UnitPrototype(MaxLife, LifeRegen, MaxMana, ManaRegen, Radius, Mass, PushPriority, speed, Color, DamagedColor, DeadColor, PolygonCount, Abilities);
+            return new UnitPrototype(Name, MaxLife, LifeRegen, MaxMana, ManaRegen, Radius, Mass, PushPriority, speed, Color, DamagedColor, DeadColor, PolygonCount, Abilities);
         }
 
 
         public UnitPrototype WithAbilities(AbilityPrototype[] abilities)
         {
-            return new UnitPrototype(MaxLife, LifeRegen, MaxMana, ManaRegen, Radius, Mass, PushPriority, Speed, Color, DamagedColor, DeadColor, PolygonCount, abilities.ToImmutableArray<AbilityPrototype>());
+            return new UnitPrototype(Name, MaxLife, LifeRegen, MaxMana, ManaRegen, Radius, Mass, PushPriority, Speed, Color, DamagedColor, DeadColor, PolygonCount, abilities.ToImmutableArray<AbilityPrototype>());
         }
 
-        // Example of adding one weapon at a time (if you prefer that granularity)
         public UnitPrototype AddWeapon(AbilityPrototype weapon)
         {
-            return new UnitPrototype(MaxLife, LifeRegen, MaxMana, ManaRegen, Radius, Mass, PushPriority, Speed, Color, DamagedColor, DeadColor, PolygonCount, Abilities.Add(weapon));
-
+            return new UnitPrototype(Name, MaxLife, LifeRegen, MaxMana, ManaRegen, Radius, Mass, PushPriority, Speed, Color, DamagedColor, DeadColor, PolygonCount, Abilities.Add(weapon));
         }
-        // If you want to modify other properties after initial construction
         public UnitPrototype WithColors(Color fillColor, Color damagedColor, Color deadColor, int polygonCount)
         {
-            return new UnitPrototype(MaxLife, LifeRegen, MaxMana, ManaRegen, Radius, Mass, PushPriority, Speed, fillColor, damagedColor, deadColor, polygonCount, Abilities);
+            return new UnitPrototype(Name, MaxLife, LifeRegen, MaxMana, ManaRegen, Radius, Mass, PushPriority, Speed, fillColor, damagedColor, deadColor, polygonCount, Abilities);
         }
 
 

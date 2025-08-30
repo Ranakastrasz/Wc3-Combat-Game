@@ -116,11 +116,6 @@ namespace Wc3_Combat_Game.Entities
             Vector2 between = otherPosition - Position;
             return between.LengthSquared();
         }
-        public virtual void OnTerrainCollision(Tile tile, Vector2 impactPoint, IBoardContext context)
-        {
-
-        }
-
         public virtual void InitializeInteractionState()
         {
         }

@@ -57,7 +57,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.Abilities
             switch(CastEffect) // Very messy but works for now.
             {
                 case ProjectileAction projectileAction:
-                    if(projectileAction.Prototype.ImpactEffect is DamageAction impactDamageAction)
+                    if(projectileAction.Prototype.ImpactActions[0] is DamageAction impactDamageAction)
                     {
                         damageValue = impactDamageAction.Damage;
                     }

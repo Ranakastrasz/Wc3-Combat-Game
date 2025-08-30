@@ -1,33 +1,48 @@
-﻿using AssertUtils;
+﻿using System.Collections.Immutable;
+
+using AssertUtils;
 
 using Wc3_Combat_Game.Actions.Interface;
+using Wc3_Combat_Game.Effects;
+using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
 
 namespace Wc3_Combat_Game.Entities.Components.Prototype
 {
-    public class ProjectilePrototype
+    public struct ProjectilePrototype
     {
         public string Name;
+
         public float Radius;
         public float Speed;
         public float Lifespan;
-        public IGameplayAction? ImpactEffect;
+        public bool Piercing;
+
+        public ImmutableArray<IGameplayAction> ImpactActions;
         public Color Color;
 
 
-        public ProjectilePrototype(string name, float radius, float speed, float lifespan, IGameplayAction? impactEffect, Color color)
+        private ProjectilePrototype(string name, float radius, float speed, float lifespan, ImmutableArray<IGameplayAction> impactActions, Color color)
         {
             Name = name;
             Radius = radius;
             Speed = speed;
             Lifespan = lifespan;
-            ImpactEffect = impactEffect;
+            ImpactActions = impactActions;
             Color = color;
         }
 
-        public static ProjectilePrototype Clone(ProjectilePrototype projectile)
+        public ProjectilePrototype(string name, float radius, float speed, float lifespan, IGameplayAction impactAction, Color color)
+            : this(name, radius, speed, lifespan,
+                  ImmutableArray.Create(impactAction),
+                  color)
         {
-            AssertUtil.NotNull(projectile);
-            return new ProjectilePrototype(projectile.Name, projectile.Radius, projectile.Speed, projectile.Lifespan, projectile.ImpactEffect, projectile.Color);
+
+        }
+
+        public ProjectilePrototype AddImpactAction(IGameplayAction impactAction)
+        {
+            return new ProjectilePrototype(Name, Radius, Speed, Lifespan, ImpactActions.Add(impactAction), Color);
         }
     }
+    
 }
