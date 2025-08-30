@@ -67,7 +67,7 @@ namespace Wc3_Combat_Game.Waves
 
             //var snareProjectile = 
             //
-            //var rangedWeaponSnare = new TargetedAbilityPrototype(
+            var rangedWeaponSnare = new TargetedAbilityPrototype(
                 new ProjectileAction(new ProjectilePrototype("Snare Projectile",2.5f, 225, 16f,
                     new SlowAction(0.5f), Color.Cyan)),
                 0.5f,
