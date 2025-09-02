@@ -27,7 +27,7 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
 
             if(move != Vector2.Zero)
                 // Wrong. Normalizes, but when diagonal, continues moving further on a single keystroke.
-                unit.TargetPoint = unit.Position + move * (unit.MoveSpeed * deltaTime);
+                unit.TargetPoint = unit.Position + move * (unit.MoveSpeed(context) * deltaTime);
 
 
 

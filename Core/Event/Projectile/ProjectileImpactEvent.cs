@@ -55,21 +55,20 @@ namespace Wc3_Combat_Game.Core.Event
                     return;
                 }
 
+                // This is where UI/Graphic effects should occur.
+
                 if(e.TargetId.HasValue)
                 {
                     // Impacted an entity
-                    var target = _context.Entities.GetEntityByIndex(e.TargetId.Value);
-                    if(target != null && caster.Team.IsHostileTo(target.Team))
-                    {
-                        foreach (var impact in projectile.ImpactEffects)
-                            impact.ExecuteOnEntity(caster, projectile, target, _context);
-                    }
+
+                    // Projectile.DrawExplosion
+                    // Projectile.PlayImpactSound
+                    // Etc
+
                 }
                 else
                 {
                     // Impacted terrain
-                    foreach(var impact in projectile.ImpactEffects)
-                        impact.ExecuteOnPoint(caster, projectile, e.ImpactPoint.ToNumerics(), _context);
                 }
             }
         }

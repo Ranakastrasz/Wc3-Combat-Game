@@ -9,12 +9,12 @@ using Wc3_Combat_Game.Entities.Components.Movement;
 
 namespace Wc3_Combat_Game.Actions
 {
-    internal class SlowAction: IGameplayAction
+    internal class DebuffAction: IGameplayAction
     {
 
         public float Duration;
 
-        internal SlowAction(float duration)
+        internal DebuffAction(float duration)
         {
             AssertUtil.NotLess(duration, 0, true);
             Duration = duration;

@@ -7,6 +7,7 @@ using nkast.Aether.Physics2D.Dynamics;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Abilities;
+using Wc3_Combat_Game.Entities.Components.Buffs;
 using Wc3_Combat_Game.Entities.Components.Collider;
 using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Components.Interface;
@@ -30,6 +31,8 @@ namespace Wc3_Combat_Game.Entities
         public Unit? TargetUnit { get; set; }
 
         public List<IAbility> Abilities = new();
+
+        public IBuffable Buffs = new Buffable();
 
         public Vector2? TargetPoint
         {
@@ -61,7 +64,9 @@ namespace Wc3_Combat_Game.Entities
 
         private Vector2? _targetPoint = null;
 
-        public float MoveSpeed { get; set; }
+        public float MoveSpeed(IContext context) => BaseMoveSpeed * (Buffs as Buffable)?.GetFullSpeedModifier(context) ?? BaseMoveSpeed;
+
+        public float BaseMoveSpeed { get; private set; }
         public float SlowExpires { get; internal set; }
 
         //public new IMoveable Mover { get;}
@@ -71,7 +76,7 @@ namespace Wc3_Combat_Game.Entities
             _prototype = prototype;
             Life = prototype.MaxLife;
             Mana = prototype.MaxMana;
-            MoveSpeed = prototype.Speed;
+            BaseMoveSpeed = prototype.Speed;
 
             for(int x = 0; x < _prototype.Abilities.Length; x++)
             {
@@ -149,7 +154,7 @@ namespace Wc3_Combat_Game.Entities
                     _physicsBody.Velocity = Vector2.Zero;
                     _physicsBody.Body.AngularVelocity = 0f;
                 }
-                else if(distanceSquared < MoveSpeed * deltaTime)
+                else if(distanceSquared < MoveSpeed(context) * deltaTime)
                 {
                     _physicsBody.Velocity = moveVector / deltaTime; // Just reach the point this frame.
 
@@ -160,7 +165,7 @@ namespace Wc3_Combat_Game.Entities
                 }
                 else
                 {
-                    _physicsBody.Velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed);
+                    _physicsBody.Velocity = GeometryUtils.NormalizeAndScale(moveVector, MoveSpeed(context));
 
                     float targetAngle = MathF.Atan2(moveVector.Y, moveVector.X);
 

@@ -1,5 +1,9 @@
 ﻿namespace Wc3_Combat_Game.Entities.Components.Interface
 {
+    /// <summary>
+    /// This is to be attached to a unit to handle the highly fluid vital stats, such as Health, shield, and Mana.
+    /// 
+    /// </summary>
     internal interface IVital
     {
         public float? Health { get; protected set; }

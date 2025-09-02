@@ -250,7 +250,7 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
                     combined = Vector2.Normalize(combined);
 
                 // Move the unit
-                Vector2 dir = combined * unit.MoveSpeed * deltaTime;
+                Vector2 dir = combined * unit.MoveSpeed(context) * deltaTime;
                 unit.TargetPoint = unit.Position + dir;
             }
             else

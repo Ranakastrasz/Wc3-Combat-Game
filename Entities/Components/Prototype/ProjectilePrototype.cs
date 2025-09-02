@@ -15,7 +15,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
         public float Radius;
         public float Speed;
         public float Lifespan;
-        public bool Piercing;
+        public bool PierceUnits; // May need terrain vs unit piercing later.
 
         public ImmutableArray<IGameplayAction> ImpactActions;
         public Color Color;

@@ -197,8 +197,24 @@ namespace Wc3_Combat_Game.Entities
                     );
                     // Publish the event to notify other systems
                     context.EventBus.Publish(impactEvent);
-                    
-                    Die(context);
+                    if(otherObject is Entity otherEntity)
+                    {
+                        if(otherEntity.IsAlive == false)
+                            return; // skip collision if other entity is already dead
+
+                        OnEntityCollision(otherEntity, impactPoint.ToNumerics(), context);
+                        //if(!_prototype.Piercing) // May handle piercing. But I think I need to handle it in multiple places.
+                        Die(context);
+
+                    }
+                    else if(otherObject is Tile tile)
+                    {
+                        OnTerrainCollision(tile, impactPoint.ToNumerics(), context);
+                        Die(context);
+                    }
+                    else
+                    {
+                    }
 
                     _hasImpactedThisTick = false;
                 };
@@ -241,7 +257,23 @@ namespace Wc3_Combat_Game.Entities
 
         }
 
-
+        private void OnEntityCollision(Entity otherEntity, Vector2 impactPoint, IBoardContext context)
+        {
+            if(_team.IsHostileTo(otherEntity.Team))
+            {
+                foreach(var ImpactEffect in ImpactEffects)
+                {
+                    ImpactEffect?.ExecuteOnEntity(Caster, this, otherEntity, context);
+                }
+            }
+        }
+        public void OnTerrainCollision(Tile tile, Vector2 impactPoint, IBoardContext context)
+        {
+            foreach(var ImpactEffect in ImpactEffects)
+            {
+                ImpactEffect?.ExecuteOnPoint(Caster, this, impactPoint, context);
+            }
+        }
         public override void Die(IBoardContext context)
         {
             if(!IsAlive) return;
