@@ -215,6 +215,10 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
                         else
                             targetedAbility.TryTargetPoint(unit, targetPosition, context);
                 }
+                else if (ability is SelfAbility selfAbility && canSeeTarget)
+                {
+                    selfAbility.TryTargetSelf(unit, context);
+                }
             }
 
             if(_TargetMovePosition != unit.Position)

@@ -352,6 +352,14 @@ namespace Wc3_Combat_Game.Entities
         {
             base.Die(context);
         }
+
+        internal void ApplyBuff(IBuffable.BuffType type, float duration, float modifier, IBoardContext context)
+        {
+            if(Buffs != null)
+            {
+                Buffs.ApplyBuff(type, duration, modifier, context);
+            }
+        }
     }
     static class UnitFactory
     {

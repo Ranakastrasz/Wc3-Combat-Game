@@ -31,9 +31,9 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
             Color = color;
         }
 
-        public ProjectilePrototype(string name, float radius, float speed, float lifespan, IGameplayAction impactAction, Color color)
+        public ProjectilePrototype(string name, float radius, float speed, float lifespan, IGameplayAction? impactAction, Color color)
             : this(name, radius, speed, lifespan,
-                  ImmutableArray.Create(impactAction),
+                  impactAction != null ? ImmutableArray.Create(impactAction) : ImmutableArray<IGameplayAction>.Empty,
                   color)
         {
 

@@ -69,7 +69,7 @@ namespace Wc3_Combat_Game.Waves
             //
             var rangedWeaponSnare = new TargetedAbilityPrototype(
                 new ProjectileAction(new ProjectilePrototype("Snare Projectile",2.5f, 225, 16f,
-                    new DebuffAction(0.5f), Color.Cyan)),
+                    new BuffAction(Entities.Components.Interface.IBuffable.BuffType.Slow,1f,0.5f), Color.Cyan)),
                 0.5f,
                 150f,5f);
 

@@ -12,6 +12,7 @@ namespace Wc3_Combat_Game.Entities.Components.Interface
 
         bool TryTargetEntity(Unit unit, Entity target, IBoardContext context) { return false; }
         bool TryTargetPoint(Unit unit, Vector2 target, IBoardContext context) { return false; }
+        bool TryTargetSelf(Unit unit, IBoardContext context) { return false; }
 
         bool CanUse(Unit unit, IContext context) { return false; }
 
@@ -20,5 +21,4 @@ namespace Wc3_Combat_Game.Entities.Components.Interface
         float GetTimeSinceLastUse(IContext context); // For display
         bool OnCooldown(float currentTime);
     }
-
 }

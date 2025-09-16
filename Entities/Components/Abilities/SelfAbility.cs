@@ -8,7 +8,7 @@ using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Entities.Components.Abilities
 {
-    class UntargetedAbility: IAbility
+    class SelfAbility: IAbility
     {
         protected float _cooldown;
         protected float _lastShotTime = float.NegativeInfinity;
@@ -21,14 +21,14 @@ namespace Wc3_Combat_Game.Entities.Components.Abilities
 
 
 
-        public UntargetedAbility(TargetedAbilityPrototype prototype)
+        public SelfAbility(TargetedAbilityPrototype prototype)
         {
             _prototype = prototype;
             _CastEffect = prototype.CastEffect;
             _cooldown = prototype.Cooldown;
         }
 
-        public bool TryTargetPoint(Unit unit, Vector2 target, IBoardContext context)
+        public bool TryTargetSelf(Unit unit, IBoardContext context)
         {
             if(!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
@@ -43,7 +43,7 @@ namespace Wc3_Combat_Game.Entities.Components.Abilities
                 }
             }
 
-            _CastEffect?.ExecuteOnPoint(unit, unit, target, context);
+            _CastEffect?.ExecuteOnPoint(unit, unit, unit.Position, context);
 
             _lastShotTime = context.CurrentTime;
             return true;
