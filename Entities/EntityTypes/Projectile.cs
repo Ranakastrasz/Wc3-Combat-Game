@@ -20,7 +20,7 @@ using static Wc3_Combat_Game.Core.GameConstants;
 using Color = System.Drawing.Color;
 using Vector2 = System.Numerics.Vector2;
 
-namespace Wc3_Combat_Game.Entities
+namespace Wc3_Combat_Game.Entities.EntityTypes
 {
     /// <summary>
     /// Projectile object representing bullets, missiles, or other fired entities.
@@ -63,7 +63,7 @@ namespace Wc3_Combat_Game.Entities
                 }
 
             };
-            Drawer = new PolygonDrawable((context) => getColor(context), () => Position, () => this.IsAlive? _prototype.Radius * 2:_prototype.Radius, () => _physicsBody.Body.Rotation, () => 1, () => true);
+            Drawer = new PolygonDrawable((context) => getColor(context), () => Position, () => IsAlive? _prototype.Radius * 2:_prototype.Radius, () => _physicsBody.Body.Rotation, () => 1, () => true);
             _team = caster?.Team ?? Team.Neutral;
 
             _despawnDelay = 1f; // For units specifically.
@@ -189,7 +189,7 @@ namespace Wc3_Combat_Game.Entities
                    
                     // create the event and publish it
                     var impactEvent = new ProjectileImpactEvent(
-                        projectileId: this.Index,
+                        projectileId: Index,
                         casterId: Caster?.Index ?? -1, // Use a default value if Caster is null
                         targetId: targetId,
                         impactPoint: impactPoint,

@@ -4,11 +4,12 @@ using Wc3_Combat_Game.Actions.Interface;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
+using Wc3_Combat_Game.Entities.EntityTypes;
 using Wc3_Combat_Game.Util;
 
 namespace Wc3_Combat_Game.Entities.Components.Abilities
 {
-    class TargetedAbility: IAbility
+    public class Ability
     {
         protected float _cooldown;
         protected float _lastShotTime = float.NegativeInfinity;
@@ -20,16 +21,18 @@ namespace Wc3_Combat_Game.Entities.Components.Abilities
         public float UseRange => _range;
         public float UseRangeSqr => _rangeSqr;
 
-        protected IGameplayAction? _CastEffect;
+        protected IGameplayAction? _targetEffect;
+        protected IGameplayAction? _casterEffect;
 
         protected readonly AbilityPrototype _prototype;
 
 
 
-        public TargetedAbility(TargetedAbilityPrototype prototype)
+        public Ability(AbilityPrototype prototype)
         {
             _prototype = prototype;
-            _CastEffect = prototype.CastEffect;
+            _targetEffect = prototype.TargetEffect;
+            _casterEffect = prototype.CasterEffect;
             _cooldown = prototype.Cooldown;
             _range = prototype.CastRange;
             _rangeSqr = _range * _range;
@@ -40,7 +43,7 @@ namespace Wc3_Combat_Game.Entities.Components.Abilities
             if(!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
 
-            if(_prototype is TargetedAbilityPrototype basic) // This is hidious, and needs to be encapsulated better.
+            if(_prototype is AbilityPrototype basic) // This is hidious, and needs to be encapsulated better.
             {
                 if(basic.ManaCost > 0)
                 {
@@ -50,7 +53,9 @@ namespace Wc3_Combat_Game.Entities.Components.Abilities
                 }
             }
 
-            _CastEffect?.ExecuteOnPoint(unit, unit, target, context);
+            _targetEffect?.ExecuteOnPoint(unit, unit, target, context);
+
+            _casterEffect?.ExecuteOnEntity(unit, unit, unit, context);
 
             _lastShotTime = context.CurrentTime;
             return true;
@@ -61,7 +66,9 @@ namespace Wc3_Combat_Game.Entities.Components.Abilities
             if(!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
 
-            _CastEffect?.ExecuteOnEntity(unit, unit, target, context);
+            _targetEffect?.ExecuteOnEntity(unit, unit, target, context);
+
+            _casterEffect?.ExecuteOnEntity(unit, unit, unit, context);
 
             _lastShotTime = context.CurrentTime;
             return true;
@@ -78,6 +85,14 @@ namespace Wc3_Combat_Game.Entities.Components.Abilities
         public bool OnCooldown(float currentTime)
         {
             return !TimeUtils.HasElapsed(currentTime, _lastShotTime, _cooldown);
+        }
+
+        internal void TryTarget(Unit unit, Unit? targetUnit, Vector2 targetPosition, IBoardContext context)
+        {
+            if(targetUnit != null)
+                TryTargetEntity(unit, targetUnit, context);
+            else
+                TryTargetPoint(unit, targetPosition, context);
         }
     }
 }

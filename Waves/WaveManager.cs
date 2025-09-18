@@ -6,10 +6,10 @@ using AssertUtils;
 using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
-using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.Components.Controllers;
 using Wc3_Combat_Game.Entities.Components.Prototype;
 using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
+using Wc3_Combat_Game.Entities.EntityTypes;
 using Wc3_Combat_Game.Util;
 
 
@@ -54,22 +54,22 @@ namespace Wc3_Combat_Game.Waves
             AssertUtil.NotNull(spawnPoints);
             _spawnPoints = spawnPoints;
 
-            var meleeWeaponBase = new TargetedAbilityPrototype(null, 1f, 20f);
+            var meleeWeaponBase = new AbilityPrototype(null, null, 1f, 20f);
             var weapon5Damage = meleeWeaponBase.WithDamage(5f);
             var weapon10Damage = meleeWeaponBase.WithDamage(10f);
             var weapon25Damage = meleeWeaponBase.WithDamage(25f);
             var weapon200Damage = meleeWeaponBase.WithDamage(200f);
 
-            var rangedWeaponBase = new TargetedAbilityPrototype(
-                new ProjectileAction(new ProjectilePrototype("Ranged Weapon",2.5f, 225f, 4f, null, Color.DarkMagenta)),
+            var rangedWeaponBase = new AbilityPrototype(
+                new ProjectileAction(new ProjectilePrototype("Ranged Weapon",2.5f, 225f, 4f, null, Color.DarkMagenta)), null,
                 0.5f,
                 150f,10f);
 
             //var snareProjectile = 
             //
-            var rangedWeaponSnare = new TargetedAbilityPrototype(
+            var rangedWeaponSnare = new AbilityPrototype(
                 new ProjectileAction(new ProjectilePrototype("Snare Projectile",2.5f, 225, 16f,
-                    new BuffAction(Entities.Components.Interface.IBuffable.BuffType.Slow,1f,0.5f), Color.Cyan)),
+                    new BuffAction(Entities.Components.Interface.IBuffable.BuffType.Slow,1f,0.5f), Color.Cyan)), null,
                 0.5f,
                 150f,5f);
 
@@ -149,7 +149,7 @@ namespace Wc3_Combat_Game.Waves
                         {
                             AbilityPrototype ability = elitePrototype.Abilities[x];
                             // hacky solution.
-                            if(ability is TargetedAbilityPrototype targetedAbility)
+                            if(ability is AbilityPrototype targetedAbility)
                             {
                                 float damage =  targetedAbility.GetDamage();
                                 targetedAbility = targetedAbility.WithDamage(damage * 4);
@@ -157,11 +157,11 @@ namespace Wc3_Combat_Game.Waves
                             }
                         }
                         elitePrototype = elitePrototype.WithAbilities(abilities);
-                        unit = UnitFactory.SpawnUnit(elitePrototype, spawnPoint, new UnitControllerCore(), Team.Enemy, context);
+                        unit = Unit.SpawnUnit(elitePrototype, spawnPoint, new UnitControllerCore(), Team.Enemy, context);
                     }
                     else
                     {
-                        unit = UnitFactory.SpawnUnit(_waves[_currentWave].Unit, spawnPoint, new UnitControllerCore(), Team.Enemy, context);
+                        unit = Unit.SpawnUnit(_waves[_currentWave].Unit, spawnPoint, new UnitControllerCore(), Team.Enemy, context);
 
                     }
 

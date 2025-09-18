@@ -3,6 +3,7 @@
 using Wc3_Combat_Game.Actions.Interface;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.Entities.EntityTypes;
 
 namespace Wc3_Combat_Game.Actions
 {

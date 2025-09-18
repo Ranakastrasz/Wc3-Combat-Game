@@ -11,6 +11,7 @@ using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
 using Wc3_Combat_Game.Entities.Components.Abilities;
 using Wc3_Combat_Game.Entities.Components.Interface;
+using Wc3_Combat_Game.Entities.EntityTypes;
 
 namespace Wc3_Combat_Game.Entities.Components.Controllers
 {
@@ -204,20 +205,20 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
 
             // Action phase: Attack if possible, then move towards target position.
             // Ideally, you delegate this to the unit, I.e. Unit.TryShootEntity/Point.
-            foreach(IAbility ability in unit.Abilities)
+            foreach(Ability ability in unit.Abilities)
             {
-                if(ability is TargetedAbility targetedAbility && canSeeTarget)
+                if(ability is Ability targetedAbility && canSeeTarget)
                 {
                     float distSqr = unit.DistanceSquaredTo(targetPosition);
                     if(distSqr <= targetedAbility.UseRangeSqr)
-                        if(unit.TargetUnit != null)
-                            targetedAbility.TryTargetEntity(unit, unit.TargetUnit, context);
-                        else
-                            targetedAbility.TryTargetPoint(unit, targetPosition, context);
-                }
-                else if (ability is SelfAbility selfAbility && canSeeTarget)
-                {
-                    selfAbility.TryTargetSelf(unit, context);
+                        targetedAbility.TryTarget(unit, unit.TargetUnit, targetPosition, context);
+                        //if(unit.TargetUnit != null)
+                        //    targetedAbility.TryTargetEntity(unit, unit.TargetUnit, context);
+                        //else
+                        //    targetedAbility.TryTargetPoint(unit, targetPosition, context);
+
+                    // Might need extra logic here, mostly for self-targeting and ally targeting, and non-primary target targeting.
+                    // but for now, just, If you have a target. Self-targeted when you have a valid target as an example is good enough for now.
                 }
             }
 

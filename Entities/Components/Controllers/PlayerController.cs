@@ -2,6 +2,7 @@
 
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
+using Wc3_Combat_Game.Entities.EntityTypes;
 using Wc3_Combat_Game.IO;
 
 namespace Wc3_Combat_Game.Entities.Components.Controllers

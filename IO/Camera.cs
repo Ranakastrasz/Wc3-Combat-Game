@@ -1,7 +1,7 @@
 ﻿using System.Drawing.Drawing2D;
 using System.Numerics;
 
-using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.Entities.EntityTypes;
 
 namespace Wc3_Combat_Game.IO
 {

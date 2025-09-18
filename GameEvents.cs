@@ -2,7 +2,9 @@
 
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.Entities.Components.Abilities;
 using Wc3_Combat_Game.Entities.Components.Interface;
+using Wc3_Combat_Game.Entities.EntityTypes;
 
 namespace Wc3_Combat_Game.Events
 {
@@ -36,11 +38,11 @@ namespace Wc3_Combat_Game.Events
     public class AbilityUsedEvent: GameEvent
     {
         public Unit Unit { get; }
-        public IAbility Ability { get; }
+        public Ability Ability { get; }
         public Entity? TargetEntity { get; }
         public Vector2? TargetPoint { get; }
 
-        public AbilityUsedEvent(Unit unit, IAbility ability, IBoardContext context, Entity? targetEntity = null, Vector2? targetPoint = null)
+        public AbilityUsedEvent(Unit unit, Ability ability, IBoardContext context, Entity? targetEntity = null, Vector2? targetPoint = null)
             : base(context, unit)
         {
             Unit = unit;

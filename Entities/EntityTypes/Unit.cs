@@ -17,7 +17,7 @@ using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
 using Wc3_Combat_Game.Util;
 
 
-namespace Wc3_Combat_Game.Entities
+namespace Wc3_Combat_Game.Entities.EntityTypes
 {
     /// <summary>
     /// Represents a living or interactive game unit with health and actions.
@@ -30,7 +30,7 @@ namespace Wc3_Combat_Game.Entities
         public IUnitController? Controller = null;
         public Unit? TargetUnit { get; set; }
 
-        public List<IAbility> Abilities = new();
+        public List<Ability> Abilities = new();
 
         public IBuffable Buffs = new Buffable();
 
@@ -67,7 +67,6 @@ namespace Wc3_Combat_Game.Entities
         public float MoveSpeed(IContext context) => BaseMoveSpeed * (Buffs as Buffable)?.GetFullSpeedModifier(context) ?? BaseMoveSpeed;
 
         public float BaseMoveSpeed { get; private set; }
-        public float SlowExpires { get; internal set; }
 
         //public new IMoveable Mover { get;}
 
@@ -80,16 +79,16 @@ namespace Wc3_Combat_Game.Entities
 
             for(int x = 0; x < _prototype.Abilities.Length; x++)
             {
-                if(prototype.Abilities[x] is TargetedAbilityPrototype basic)
+                if(prototype.Abilities[x] is AbilityPrototype basic)
                 {
-                    Abilities.Add(new TargetedAbility(basic));
+                    Abilities.Add(new Ability(basic));
                 }
             }
             _despawnDelay = 1f;
 
             Func<IDrawContext, Color> getColor = (context) =>
             {
-                
+
                 if(!TimeUtils.HasElapsed(context.CurrentTime, _lastDamaged, s_DamageFlashTime))
                 {
                     return prototype.DamagedColor;
@@ -104,7 +103,7 @@ namespace Wc3_Combat_Game.Entities
                 }
 
             };
-            Drawer = new PolygonDrawable(getColor, () => Position, () => Radius * 2, () => _physicsBody.Body.Rotation, () => prototype.PolygonCount , () => true);
+            Drawer = new PolygonDrawable(getColor, () => Position, () => Radius * 2, () => _physicsBody.Body.Rotation, () => prototype.PolygonCount, () => true);
 
             Body body = _physicsBody.Body;
             if(body.FixtureList.Count > 0)
@@ -131,6 +130,8 @@ namespace Wc3_Combat_Game.Entities
                 base.Update(deltaTime, context); // Includes movement and collision.
                 return;
             }
+
+            // This goes into IVital or something, I dunno.
             if(context.Map?[context.Map.ToGrid(Position)].GetChar == 'F')
             {
                 // If on a fountain tile, regenerate health and mana faster.
@@ -172,14 +173,6 @@ namespace Wc3_Combat_Game.Entities
                     float angleDifference = (targetAngle - _physicsBody.Body.Rotation + MathF.PI) % (2 * MathF.PI) - MathF.PI;
                     _physicsBody.Body.AngularVelocity = angleDifference * 2f;
                 }
-            }
-            if(Abilities[0].OnCooldown(context.CurrentTime))
-            {
-                _physicsBody.Velocity *= 0.5f; // Slow down while shooting.
-            }
-            if(!TimeUtils.HasElapsed(context.CurrentTime, SlowExpires, 0f))
-            {
-                _physicsBody.Velocity *= 0.5f;
             }
             /*
              if(TargetPoint != null)
@@ -360,9 +353,7 @@ namespace Wc3_Combat_Game.Entities
                 Buffs.ApplyBuff(type, duration, modifier, context);
             }
         }
-    }
-    static class UnitFactory
-    {
+
         public static Unit SpawnUnit(UnitPrototype prototype, Vector2 position, IUnitController controller, Team team, IBoardContext context)
         {
             Unit unit = new Unit(prototype, position, context)

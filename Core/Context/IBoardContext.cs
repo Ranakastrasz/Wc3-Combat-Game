@@ -4,6 +4,7 @@ using nkast.Aether.Physics2D.Dynamics;
 
 using Wc3_Combat_Game.Core.Event;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.Entities.EntityTypes;
 
 namespace Wc3_Combat_Game.Core.Context
 {

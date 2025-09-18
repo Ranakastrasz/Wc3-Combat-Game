@@ -16,6 +16,7 @@ using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.Components.Controllers;
 using Wc3_Combat_Game.Entities.Components.Prototype;
 using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
+using Wc3_Combat_Game.Entities.EntityTypes;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
@@ -218,18 +219,19 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(Controller);
             AssertUtil.NotNull(Controller.Input);
 
-            TargetedAbilityPrototype weapon = new TargetedAbilityPrototype(new ProjectileAction(new ProjectilePrototype("Player Weapon",2.5f,
+            AbilityPrototype weapon = new AbilityPrototype(new ProjectileAction(new ProjectilePrototype("Player Weapon",2.5f,
                 600f,
                 2f,
                 new DamageAction(10f),
                 Color.Orange)),
+                null,
                 0.20f,
                 float.PositiveInfinity,3f);
 
             UnitPrototype playerUnit = new("Player", 100f,  3f, 5f, 150f, Color.Green, 0);
             playerUnit = playerUnit.AddWeapon(weapon);
             playerUnit = playerUnit.WithMana(100, 3f);
-            PlayerUnit = UnitFactory.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
+            PlayerUnit = Unit.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
 
             AddUnit(PlayerUnit);
         }
