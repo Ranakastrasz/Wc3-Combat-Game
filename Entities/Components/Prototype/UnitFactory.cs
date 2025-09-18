@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -46,6 +47,28 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
             unit = unit.AddAbility(AbilityFactory.CreateMeleeWeapon(90f));
             return unit.AddAbility(AbilityFactory.CreateSnareWeapon());
         }
+        public static UnitPrototype CreateEliteUnit(UnitPrototype baseUnit)
+        {
+            var elitePrototype = baseUnit with
+            {
+                MaxLife = baseUnit.MaxLife * 4,
+                LifeRegen = baseUnit.LifeRegen * 4,
+                Speed = baseUnit.Speed * 1.2f,
+                Radius = baseUnit.Radius * 1.5f,
+            };
 
+            // We need a more elegant way to get and set damage.
+            // Let's assume a better Prototype and Ability structure.
+            var eliteAbilities = ImmutableArray.CreateBuilder<AbilityPrototype>();
+            foreach(var ability in elitePrototype.Abilities)
+            {
+                // This part assumes you've refactored AbilityPrototype to not use a switch
+                // A better way would be for the ability itself to have a "WithIncreasedDamage" method.
+                var modifiedAbility = ability.WithIncreasedDamage(4);
+                eliteAbilities.Add(modifiedAbility);
+            }
+
+            return elitePrototype with { Abilities = eliteAbilities.ToImmutable() };
+        }
     }
 }

@@ -136,40 +136,16 @@ namespace Wc3_Combat_Game.Waves
             {
                 if(_waveSpawnsRemaining > 0)
                 {
-                    Vector2 spawnPoint = _spawnPoints[RandomUtils.RandomIntBelow(_spawnPoints.Count)]; // Poor, but for now
-                    Unit unit;
+                    Vector2 spawnPoint = _spawnPoints[RandomUtils.RandomIntBelow(_spawnPoints.Count)];
+                    UnitPrototype unitPrototype = _waves[_currentWave].Unit;
+
+                    // Check for the last unit of the wave.
                     if(_waveSpawnsRemaining == _waves[_currentWave].CountToSpawn && _waves[_currentWave].CountToSpawn > 1)
                     {
-                        UnitPrototype elitePrototype = _waves[_currentWave].Unit;
-                        elitePrototype = elitePrototype with
-                        {
-                            MaxLife = elitePrototype.MaxLife * 4,
-                            LifeRegen = elitePrototype.LifeRegen * 4,
-                            Speed = elitePrototype.Speed * 1.2f,
-                            Radius = elitePrototype.Radius * 1.5f,
-                        };
-
-                        AbilityPrototype[] abilities = new AbilityPrototype[elitePrototype.Abilities.Length];
-                        for(int x = 0; x < elitePrototype.Abilities.Length; x++)
-                        {
-                            AbilityPrototype ability = elitePrototype.Abilities[x];
-                            // hacky solution.
-                            if(ability is AbilityPrototype targetedAbility)
-                            {
-                                float damage =  targetedAbility.GetDamage();
-                                targetedAbility = targetedAbility.WithDamage(damage * 4);
-                                abilities[x] = targetedAbility;
-                            }
-                        }
-                        elitePrototype = elitePrototype with { Abilities = abilities.ToImmutableArray() };
-
-                        unit = Unit.SpawnUnit(elitePrototype, spawnPoint, new UnitControllerCore(), Team.Enemy, context);
+                        unitPrototype = UnitFactory.CreateEliteUnit(unitPrototype);
                     }
-                    else
-                    {
-                        unit = Unit.SpawnUnit(_waves[_currentWave].Unit, spawnPoint, new UnitControllerCore(), Team.Enemy, context);
 
-                    }
+                    Unit unit = Unit.SpawnUnit(unitPrototype, spawnPoint, new UnitControllerCore(), Team.Enemy, context);
 
                     //unit.TargetUnit = PlayerUnit;
                     context.AddUnit(unit);

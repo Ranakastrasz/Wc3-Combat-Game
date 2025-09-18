@@ -1,5 +1,6 @@
 ﻿using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Actions.Interface;
+using Wc3_Combat_Game.Entities.Components.Abilities;
 
 namespace Wc3_Combat_Game.Entities.Components.Prototype.Abilities
 {
@@ -73,6 +74,11 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.Abilities
                     break;
             }
             return damageValue;
+        }
+
+        internal AbilityPrototype WithIncreasedDamage(float multiplier)
+        {
+            return this.WithDamage(GetDamage() * multiplier);
         }
     }
 }
