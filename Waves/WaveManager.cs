@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Immutable;
 using System.Numerics;
 
 using AssertUtils;
@@ -91,8 +92,8 @@ namespace Wc3_Combat_Game.Waves
             //_waves.Add(new Wave(unit, 8));
             
             unit = new UnitPrototype("Boss",400f, 0f, 15f, 100f, Color.DarkRed, 4);
-            unit = unit.AddWeapon(meleeWeaponBase.WithDamage(90f));
-            unit = unit.AddWeapon(rangedWeaponSnare);
+            unit = unit.AddAbility(meleeWeaponBase.WithDamage(90f));
+            unit = unit.AddAbility(rangedWeaponSnare);
             _waves.Add(new Wave(unit, 1));
 
         }
@@ -140,10 +141,14 @@ namespace Wc3_Combat_Game.Waves
                     if(_waveSpawnsRemaining == _waves[_currentWave].CountToSpawn && _waves[_currentWave].CountToSpawn > 1)
                     {
                         UnitPrototype elitePrototype = _waves[_currentWave].Unit;
-                        elitePrototype = elitePrototype.WithLife(elitePrototype.MaxLife * 4, elitePrototype.LifeRegen * 4);
-                        elitePrototype = elitePrototype.WithSpeed(elitePrototype.Speed * 1.2f);
-                        elitePrototype = elitePrototype.WithRadius(elitePrototype.Radius * 1.5f);
-                        //elitePrototype = elitePrototype.WithColors(Color.Black, elitePrototype.DamagedColor, elitePrototype.DeadColor, elitePrototype.PolygonCount);
+                        elitePrototype = elitePrototype with
+                        {
+                            MaxLife = elitePrototype.MaxLife * 4,
+                            LifeRegen = elitePrototype.LifeRegen * 4,
+                            Speed = elitePrototype.Speed * 1.2f,
+                            Radius = elitePrototype.Radius * 1.5f,
+                        };
+
                         AbilityPrototype[] abilities = new AbilityPrototype[elitePrototype.Abilities.Length];
                         for(int x = 0; x < elitePrototype.Abilities.Length; x++)
                         {
@@ -156,7 +161,8 @@ namespace Wc3_Combat_Game.Waves
                                 abilities[x] = targetedAbility;
                             }
                         }
-                        elitePrototype = elitePrototype.WithAbilities(abilities);
+                        elitePrototype = elitePrototype with { Abilities = abilities.ToImmutableArray() };
+
                         unit = Unit.SpawnUnit(elitePrototype, spawnPoint, new UnitControllerCore(), Team.Enemy, context);
                     }
                     else

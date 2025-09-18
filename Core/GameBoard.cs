@@ -229,8 +229,8 @@ namespace Wc3_Combat_Game.Core
                 float.PositiveInfinity,3f);
 
             UnitPrototype playerUnit = new("Player", 100f,  3f, 5f, 150f, Color.Green, 0);
-            playerUnit = playerUnit.AddWeapon(weapon);
-            playerUnit = playerUnit.WithMana(100, 3f);
+            playerUnit = playerUnit.AddAbility(weapon);
+            playerUnit = playerUnit with { MaxMana = 100, ManaRegen = 3f };
             PlayerUnit = Unit.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
 
             AddUnit(PlayerUnit);
