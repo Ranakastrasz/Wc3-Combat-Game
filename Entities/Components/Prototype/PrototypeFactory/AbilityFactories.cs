@@ -3,7 +3,7 @@ using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Components.Prototype;
 using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
 
-namespace Wc3_Combat_Game.Entities.Components.Abilities
+namespace Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory
 {
     // Factory for weapon varients, I think.
     //
