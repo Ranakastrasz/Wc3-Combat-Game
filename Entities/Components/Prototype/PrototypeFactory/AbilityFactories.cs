@@ -22,23 +22,35 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory
 
     public class AbilityFactory
     {
-        public static AbilityPrototype CreateMeleeWeapon(float damage)
+
+
+        public static AbilityPrototype CreateInstantWeapon(float damage, float cooldown, float range, float? recoilFactor = null, float recoilDuration = 0f)
         {
-            // Add more parameters like attack speed, range if needed
-            return new AbilityPrototype(null, null, 1f, 20f).WithDamage(damage);
+
+            AbilityPrototype prototype = new AbilityPrototype(null, null, 1f, 20f).WithDamage(damage);
+
+
+            if (recoilFactor != null && recoilDuration != 0f)
+            {
+                prototype = prototype with      {
+                    CasterEffect = new BuffAction(IBuffable.BuffType.Slow, recoilFactor.Value, recoilDuration)
+                };
+            }
+
+            return prototype;
         }
 
-        public static AbilityPrototype CreateRangedWeapon(float damage)
-        {
-            ProjectileAction projectile = new ProjectileAction(new ProjectilePrototype("Ranged Weapon", 2.5f, 225f, 4f, null, Color.DarkMagenta));
-            return new AbilityPrototype(projectile, null, 0.5f, 150f, 10f).WithDamage(damage);
-        }
-
-        public static AbilityPrototype CreateSnareWeapon()
-        {
-            ProjectileAction projectile = new ProjectileAction(new ProjectilePrototype("Snare Projectile", 2.5f, 225, 16f,
-            new BuffAction(IBuffable.BuffType.Slow, 1f, 0.5f), Color.Cyan));
-            return new AbilityPrototype(projectile, null, 0.5f, 150f, 5f);
-        }
+        //public static AbilityPrototype CreateRangedWeapon(float damage)
+        //{
+        //    ProjectileAction projectile = new ProjectileAction(new ProjectilePrototype("Ranged Weapon", 2.5f, 225f, /4f, /null, Color.DarkMagenta));
+        //    return new AbilityPrototype(projectile, null, 0.5f, 150f, 10f).WithDamage(damage);
+        //}
+        //
+        //public static AbilityPrototype CreateSnareWeapon()
+        //{
+        //    ProjectileAction projectile = new ProjectileAction(new ProjectilePrototype("Snare Projectile", 2.5f, /225, /16f,
+        //    new BuffAction(IBuffable.BuffType.Slow, 0.5f, 1f), Color.Cyan));
+        //    return new AbilityPrototype(projectile, null, 0.5f, 150f, 5f);
+        //}
     }
 }

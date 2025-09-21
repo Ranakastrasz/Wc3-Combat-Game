@@ -20,11 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="GameData\EnemyData.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="GameData\EnemyData.json">
+    <Content Include="Data\EnemyData.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

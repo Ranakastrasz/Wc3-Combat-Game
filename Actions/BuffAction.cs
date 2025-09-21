@@ -14,15 +14,15 @@ namespace Wc3_Combat_Game.Actions
     internal readonly struct BuffAction: IGameplayAction
     {
         public readonly IBuffable.BuffType Type;
-        public readonly float Duration;
         public readonly float Modifier;
+        public readonly float Duration;
 
-        internal BuffAction(IBuffable.BuffType type, float duration, float modifier)
+        internal BuffAction(IBuffable.BuffType type, float modifier, float duration)
         {
             AssertUtil.NotLess(duration, 0, true);
             Type = type;
-            Duration = duration;
             Modifier = modifier;
+            Duration = duration;
         }
 
         public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)

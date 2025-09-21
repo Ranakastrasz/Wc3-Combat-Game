@@ -4,13 +4,13 @@ using Wc3_Combat_Game.Entities.Components.Abilities;
 
 namespace Wc3_Combat_Game.Entities.Components.Prototype.Abilities
 {
-    public class AbilityPrototype: ICloneable
+    public record AbilityPrototype
     {
-        public IGameplayAction? TargetEffect { get; private set; }
-        public IGameplayAction? CasterEffect { get; private set; }
-        public float Cooldown { get; private set; }
-        public float CastRange { get; private set; }
-        public float ManaCost { get; private set; }
+        public IGameplayAction? TargetEffect { get; init; }
+        public IGameplayAction? CasterEffect { get; init; }
+        public float Cooldown { get; init; }
+        public float CastRange { get; init; }
+        public float ManaCost { get; init; }
 
         public AbilityPrototype(IGameplayAction? targetEffect, IGameplayAction? casterEffect, float cooldown, float castRange, float manaCost = 0f)
         {
@@ -21,10 +21,6 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.Abilities
             ManaCost = manaCost;
         }
 
-        public object Clone()
-        {
-            return MemberwiseClone();
-        }
         public AbilityPrototype WithDamage(float damage)
         {
             IGameplayAction? newEffect;
