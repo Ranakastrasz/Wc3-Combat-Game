@@ -8,6 +8,7 @@ using AssertUtils;
 
 using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Components.Prototype;
 using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
 using Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory;
@@ -21,14 +22,15 @@ namespace Wc3_Combat_Game.Data
         public static void BuildWaves(List<Wave> _waves)
         {
 
-            var rangedWeaponBase = new AbilityPrototype(
-                    new ProjectileAction(new ProjectilePrototype(2.5f, 225f, 4f, null, int.MaxValue, Color.DarkMagenta)), null,
+            var rangedWeapon = new AbilityPrototype(
+                    new ProjectileAction(new ProjectilePrototype(2.5f, 225f, 4f,
+                        new DamageAction(10f), int.MaxValue, Color.DarkMagenta)), null,
                     0.5f,
                     150f,10f);
 
             var rangedWeaponSnare = new AbilityPrototype(
                     new ProjectileAction(new ProjectilePrototype(2.5f, 225, 16f,
-                        new BuffAction(Entities.Components.Interface.IBuffable.BuffType.Slow,0.5f,1f),int.MaxValue, Color.Cyan)), null,
+                        new BuffAction(IBuffable.BuffType.Slow,0.5f,1f),int.MaxValue, Color.Cyan)), null,
                     0.5f,
                     150f,5f);
 
@@ -39,9 +41,10 @@ namespace Wc3_Combat_Game.Data
         
             unit = new UnitPrototype("Blitz",10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
             unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(10f, 1, 20, 0.0f, 0.5f));
+            _waves.Add(new Wave(unit, 32));
 
             unit = new UnitPrototype("Blaster",30f, 0.0f, 5f, 40f, Color.Orange, 5);
-            unit = unit.AddAbility(rangedWeaponBase.WithDamage(10f));
+            unit = unit.AddAbility(rangedWeapon);
             _waves.Add(new Wave(unit, 16));
         
             unit = new UnitPrototype("Brute",80f, 2f, 10f, 50f, Color.Brown, 6);

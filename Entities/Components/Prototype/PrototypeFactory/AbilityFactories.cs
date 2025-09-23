@@ -33,6 +33,34 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory
             RegisteredAbilities[id] = prototype;
         }
 
+        public class AbilityBuilder
+        {
+            AbilityPrototype _prototype;
+            public AbilityBuilder(float cooldown, float range)
+            {
+                _prototype = new AbilityPrototype(null, null, cooldown, range);
+            }
+
+            public AbilityBuilder WithTargetEffect(IGameplayAction effect)
+            {
+                _prototype = _prototype with { TargetEffect = effect };
+                return this;
+            }
+            public AbilityBuilder WithCasterEffect(IGameplayAction effect)
+            {
+                _prototype = _prototype with { CasterEffect = effect };
+                return this;
+            }
+            public AbilityBuilder WithManaCost(float manaCost)
+            {
+                _prototype = _prototype with { ManaCost = manaCost };
+                return this;
+            }
+
+            public AbilityPrototype Build() => _prototype;
+
+        }
+
         /*
          * Recoil is a debuff that slows an attacker after their attack.
          * Used to simulate the time it takes to recover from a powerful attack.
@@ -58,7 +86,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory
          */
         public static AbilityPrototype CreateInstantWeapon(float damage, float cooldown, float range, float? recoilFactor = null, float recoilDuration = 0f)
         {
-
+            
             AbilityPrototype prototype = new AbilityPrototype(null, null, 1f, 20f).WithDamage(damage);
             
             if (recoilFactor != null && recoilDuration != 0f)
@@ -68,26 +96,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory
 
             return prototype;
         }
-        /*
-         
-            var weaponProjectile = new ProjectilePrototype(
-                "Gun",
-                2.5f,
-                600f,
-                2f,
-                new DamageAction(10f),
-                Color.Orange);
-            return new AbilityPrototype(
-                new ProjectileAction(weaponProjectile),
-                new BuffAction(Entities.Components.Interface.IBuffable.BuffType.Slow, 0f, 0.5f),
-                0.20f,
-                float.PositiveInfinity,
-                3f);
-         */
-        /*
-         * Inspiration
-function AddClassAttack takes integer UnitType, integer Bind, integer SalvoSize, real SalvoReloadTime, real ManaCosts, real Speed, real SpeedMinFactor, real Acceleration, real Friction, real ShadowSize, real AimingOrCruiseZ, real AimingTimeout, real Interception, real LiftFactor, real Randomness, real AngleZ, real TurretAngle, real TurretAngleRange, real Damage, real AOE, real Range, real Cooldown, string Targets, real XOffset, real YOffset, real ZOffset, integer Special, real Scale, integer BigExplosion, string Effect, string Effect2 returns integer
-         */
+
         public static AbilityPrototype CreateRangedWeapon(float manaCost, float recoilFactor, float recoilDuration, float speed, float damage, float aoe, float range, float cooldown, float radius, int vertexes, Color color)
         {
             DamageAction damageAction = /*(aoe > 0f) ? new AoeAction(new DamageAction(Damage), aoe) :*/ new DamageAction(damage);
@@ -104,6 +113,8 @@ function AddClassAttack takes integer UnitType, integer Bind, integer SalvoSize,
 
             return new AbilityPrototype(projectile, recoilAction, cooldown, range, manaCost);
         }
+
+
         
         //public static AbilityPrototype CreateSnareWeapon()
         //{
