@@ -346,11 +346,11 @@ namespace Wc3_Combat_Game.Entities.EntityTypes
             base.Die(context);
         }
 
-        internal void ApplyBuff(IBuffable.BuffType type, float duration, float modifier, IBoardContext context)
+        internal void ApplyBuff(IBuffable.BuffType type, float duration, float factor, IBoardContext context)
         {
             if(Buffs != null)
             {
-                Buffs.ApplyBuff(type, duration, modifier, context);
+                Buffs.ApplyBuff(type, duration, factor, context);
             }
         }
 

@@ -219,10 +219,11 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(Controller);
             AssertUtil.NotNull(Controller.Input);
 
-            AbilityPrototype weapon = new AbilityPrototype(new ProjectileAction(new ProjectilePrototype("Player Weapon",2.5f,
+            AbilityPrototype weapon = new AbilityPrototype(new ProjectileAction(new ProjectilePrototype(2.5f,
                 600f,
                 2f,
                 new DamageAction(10f),
+                int.MaxValue,
                 Color.Orange)),
                 null,
                 0.20f,

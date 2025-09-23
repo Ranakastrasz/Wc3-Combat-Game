@@ -10,7 +10,6 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
 {
     public struct ProjectilePrototype
     {
-        public string Name;
 
         public float Radius;
         public float Speed;
@@ -21,9 +20,8 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
         public Color Color;
 
 
-        private ProjectilePrototype(string name, float radius, float speed, float lifespan, ImmutableArray<IGameplayAction> impactActions, Color color)
+        private ProjectilePrototype(float radius, float speed, float lifespan, ImmutableArray<IGameplayAction> impactActions, Color color)
         {
-            Name = name;
             Radius = radius;
             Speed = speed;
             Lifespan = lifespan;
@@ -31,8 +29,8 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
             Color = color;
         }
 
-        public ProjectilePrototype(string name, float radius, float speed, float lifespan, IGameplayAction? impactAction, Color color)
-            : this(name, radius, speed, lifespan,
+        public ProjectilePrototype(float radius, float speed, float lifespan, IGameplayAction? impactAction, int vertextCount, Color color)
+            : this(radius, speed, lifespan,
                   impactAction != null ? ImmutableArray.Create(impactAction) : ImmutableArray<IGameplayAction>.Empty,
                   color)
         {
@@ -41,7 +39,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype
 
         public ProjectilePrototype AddImpactAction(IGameplayAction impactAction)
         {
-            return new ProjectilePrototype(Name, Radius, Speed, Lifespan, ImpactActions.Add(impactAction), Color);
+            return new ProjectilePrototype(Radius, Speed, Lifespan, ImpactActions.Add(impactAction), Color);
         }
     }
     

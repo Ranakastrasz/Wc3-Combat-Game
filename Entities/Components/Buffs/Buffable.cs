@@ -14,7 +14,7 @@ namespace Wc3_Combat_Game.Entities.Components.Buffs;
 
 // Attach to unit.
 // This handles a short list of simplified, hardcoded debuffs
-// Units will always query this type of object when getting modifiers for attributes.
+// Units will always query this type of object when getting factors for attributes.
 // This may also handle some collision callback for the "Charge" effect, insofar as declaring that charge is active.
 
 
@@ -25,9 +25,9 @@ namespace Wc3_Combat_Game.Entities.Components.Buffs;
 // one stat set for each buff for the time being anyway.
 internal class Buffable: IBuffable
 {
-    float SpeedModifier = 1.0f;
-    float SlowModifier = 1.0f;
-    float DamageModifier = 1.0f;
+    float SpeedFactor = 1.0f;
+    float SlowFactor = 1.0f;
+    float DamageFactor = 1.0f;
 
     float SpeedExpires = float.NegativeInfinity;
     float SlowExpires = float.NegativeInfinity;
@@ -39,16 +39,16 @@ internal class Buffable: IBuffable
 
     public float GetFullSpeedModifier(IContext context)
     {
-        return GetSpeedModifier(context) * GetSlowModifier(context);
+        return GetSpeedFactor(context) * GetSlowFactor(context);
     }
 
-    private float GetSpeedModifier(IContext context)
+    private float GetSpeedFactor(IContext context)
     {
         if (TimeUtils.HasElapsed(context.CurrentTime, SpeedExpires, 0))
         {
-            SpeedModifier = 1.0f;
+            SpeedFactor = 1.0f;
         }
-        return SpeedModifier;
+        return SpeedFactor;
     }
 
     private float GetSpeedDuration(IContext context)
@@ -59,19 +59,19 @@ internal class Buffable: IBuffable
         }
         return SpeedExpires - context.CurrentTime;
     }
-    private void SetSpeedBuff(float duration, float modifier, IContext context)
+    private void SetSpeedBuff(float duration, float factor, IContext context)
     {
         SpeedExpires = context.CurrentTime + duration;
-        SpeedModifier = modifier;
+        SpeedFactor = factor;
     }
 
-    private float GetSlowModifier(IContext context)
+    private float GetSlowFactor(IContext context)
     {
         if(TimeUtils.HasElapsed(context.CurrentTime, SlowExpires, 0))
         {
-            SlowModifier = 1.0f;
+            SlowFactor = 1.0f;
         }
-        return SlowModifier;
+        return SlowFactor;
     }
     private float GetSlowDuration(IContext context)
     {
@@ -81,19 +81,19 @@ internal class Buffable: IBuffable
         }
         return SlowExpires - context.CurrentTime;
     }
-    private void SetSlowBuff(float duration, float modifier, IContext context)
+    private void SetSlowBuff(float duration, float factor, IContext context)
     {
         SlowExpires = context.CurrentTime + duration;
-        SlowModifier = modifier;
+        SlowFactor = factor;
     }
 
-    private float GetDamageModifier(IContext context)
+    private float GetDamageFactor(IContext context)
     {
         if (TimeUtils.HasElapsed(context.CurrentTime, DamageModifierExpires, 0))
         {
-            DamageModifier = 1.0f;
+            DamageFactor = 1.0f;
         }
-        return DamageModifier;
+        return DamageFactor;
     }
     private float GetDamageDuration(IContext context)
     {
@@ -103,10 +103,10 @@ internal class Buffable: IBuffable
         }
         return DamageModifierExpires - context.CurrentTime;
     }
-    private void SetDamageBuff(float duration, float modifier, IContext context)
+    private void SetDamageBuff(float duration, float factor, IContext context)
     {
         DamageModifierExpires = context.CurrentTime + duration;
-        DamageModifier = modifier;
+        DamageFactor = factor;
     }
 
     private float GetChargeDuration(IContext context)
@@ -141,27 +141,27 @@ internal class Buffable: IBuffable
     {
         return buff switch
         {
-            BuffType.Speed => GetSpeedModifier(context),
-            BuffType.Slow => GetSlowModifier(context),
-            BuffType.Damage => GetDamageModifier(context),
+            BuffType.Speed => GetSpeedFactor(context),
+            BuffType.Slow => GetSlowFactor(context),
+            BuffType.Damage => GetDamageFactor(context),
             BuffType.Charge => GetChargeDuration(context) > 0 ? 1.0f : 0.0f,
             BuffType.Shield => GetShieldDuration(context) > 0 ? 1.0f : 0.0f,
             _ => 1.0f,
         };
     }
 
-    public void ApplyBuff(BuffType buff, float duration, float modifier, IContext context)
+    public void ApplyBuff(BuffType buff, float duration, float factor, IContext context)
     {
         switch (buff)
         {
             case BuffType.Speed:
-                SetSpeedBuff(duration, modifier, context);
+                SetSpeedBuff(duration, factor, context);
                 break;
             case BuffType.Slow:
-                SetSlowBuff(duration, modifier, context);
+                SetSlowBuff(duration, factor, context);
                 break;
             case BuffType.Damage:
-                SetDamageBuff(duration, modifier, context);
+                SetDamageBuff(duration, factor, context);
                 break;
             case BuffType.Charge:
                 SetChargeBuff(duration, context);

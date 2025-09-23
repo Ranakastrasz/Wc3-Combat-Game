@@ -22,6 +22,6 @@ namespace Wc3_Combat_Game.Entities.Components.Interface
         }
 
         public float GetBuffState(BuffType buff, IContext context);
-        public void ApplyBuff(BuffType buff, float duration, float modifier, IContext context);
+        public void ApplyBuff(BuffType buff, float duration, float factor, IContext context);
     }
 }

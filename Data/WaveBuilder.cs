@@ -22,13 +22,13 @@ namespace Wc3_Combat_Game.Data
         {
 
             var rangedWeaponBase = new AbilityPrototype(
-                    new ProjectileAction(new ProjectilePrototype("Ranged Weapon",2.5f, 225f, 4f, null, Color.DarkMagenta)), null,
+                    new ProjectileAction(new ProjectilePrototype(2.5f, 225f, 4f, null, int.MaxValue, Color.DarkMagenta)), null,
                     0.5f,
                     150f,10f);
 
             var rangedWeaponSnare = new AbilityPrototype(
-                    new ProjectileAction(new ProjectilePrototype("Snare Projectile",2.5f, 225, 16f,
-                        new BuffAction(Entities.Components.Interface.IBuffable.BuffType.Slow,0.5f,1f), Color.Cyan)), null,
+                    new ProjectileAction(new ProjectilePrototype(2.5f, 225, 16f,
+                        new BuffAction(Entities.Components.Interface.IBuffable.BuffType.Slow,0.5f,1f),int.MaxValue, Color.Cyan)), null,
                     0.5f,
                     150f,5f);
 

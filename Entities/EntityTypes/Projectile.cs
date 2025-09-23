@@ -225,7 +225,7 @@ namespace Wc3_Combat_Game.Entities.EntityTypes
             }
             else
             {
-                throw new Exception($"Projectile fixture for {prototype.Name} is null or empty. Ensure the prototype has a valid fixture.");
+                throw new Exception($"Projectile fixture is null or empty. Ensure the prototype has a valid fixture.");
             }
 
         }
