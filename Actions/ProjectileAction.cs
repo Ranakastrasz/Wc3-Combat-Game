@@ -9,9 +9,9 @@ using Wc3_Combat_Game.Entities.EntityTypes;
 
 namespace Wc3_Combat_Game.Actions
 {
-    internal class ProjectileAction: IGameplayAction
+    internal record ProjectileAction: IGameplayAction
     {
-        public ProjectilePrototype Prototype;
+        public ProjectilePrototype Prototype { get; init; }
 
         public ProjectileAction(ProjectilePrototype prototype)
         {

@@ -1,0 +1,56 @@
+﻿using System.Numerics;
+
+using Wc3_Combat_Game.Actions.Interface;
+using Wc3_Combat_Game.Core.Context;
+using Wc3_Combat_Game.Entities;
+using Wc3_Combat_Game.Entities.EntityTypes;
+using Wc3_Combat_Game.Util;
+
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+
+
+namespace Wc3_Combat_Game.Actions
+{
+    public record AoeDamageAction: IGameplayAction
+    {
+        public float DamageMax { get; init; }
+        public float DamageMin { get; init; }
+        public float Radius { get; init; }
+        public bool OnTargetOnly { get; init; }
+
+        public AoeDamageAction(float damageMax, float damageMin, float radius, bool onTargetOnly = false)
+        {
+            DamageMax = damageMax;
+            DamageMin = damageMin;
+            Radius = radius;
+            OnTargetOnly = onTargetOnly;
+        }
+
+        public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)
+        {
+            ExecuteOnPoint(Caster, Emitter, Target.Position, context);
+        }
+
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, Vector2 TargetPoint, IBoardContext context)
+        {
+            if(Caster == null) return; // May need to somehow pass a team though instead at some point instead for the baseclass, for sourceless, but team-owned effects.
+            context.Entities.ForEach(e =>
+            {
+                if(e is Unit unit)
+                {
+                    if(Caster.Team.IsHostileTo(e.Team))
+                    {
+                        Vector2 origin = OnTargetOnly ? TargetPoint : (Emitter?.Position ?? TargetPoint);
+                        float distance = GeometryUtils.DistanceTo(origin, e.Position);
+                        if(distance < Radius)
+                        {
+                            float damage = (Radius - distance) / Radius; // 0..1 scale
+                            damage = (1.0f - damage) * DamageMin + damage * DamageMax; // real scale
+                            unit.Damage(damage, context);
+                        }
+                    }
+                }
+            });
+        }
+    }
+}

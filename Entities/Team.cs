@@ -1,4 +1,4 @@
-﻿namespace Wc3_Combat_Game.Core
+﻿namespace Wc3_Combat_Game.Entities
 {
     public enum Team
     {

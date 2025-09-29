@@ -1,5 +1,4 @@
-﻿using Wc3_Combat_Game.Core;
-using Wc3_Combat_Game.Core.Context;
+﻿using Wc3_Combat_Game.Core.Context;
 
 namespace Wc3_Combat_Game.Entities
 {

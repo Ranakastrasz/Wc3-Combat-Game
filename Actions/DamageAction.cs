@@ -7,10 +7,10 @@ using Wc3_Combat_Game.Entities.EntityTypes;
 
 namespace Wc3_Combat_Game.Actions
 {
-    internal class DamageAction: IGameplayAction
+    internal record DamageAction: IGameplayAction
     {
 
-        public float Damage;
+        public float Damage { get; init; }
 
         internal DamageAction(float damage)
         {

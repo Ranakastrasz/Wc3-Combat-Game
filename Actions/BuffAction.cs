@@ -11,11 +11,11 @@ using Wc3_Combat_Game.Entities.EntityTypes;
 
 namespace Wc3_Combat_Game.Actions
 {
-    internal readonly struct BuffAction: IGameplayAction
+    internal record BuffAction: IGameplayAction
     {
-        public readonly IBuffable.BuffType Type;
-        public readonly float Factor;
-        public readonly float Duration;
+        public IBuffable.BuffType Type { get; init; }
+        public float Factor { get; init; }
+        public float Duration { get; init; }
 
         internal BuffAction(IBuffable.BuffType type, float factor, float duration)
         {

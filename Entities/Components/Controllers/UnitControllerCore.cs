@@ -4,7 +4,6 @@ using System.Numerics;
 using AssertUtils;
 
 using AStar;
-using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Terrain;
