@@ -12,6 +12,7 @@ using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Core.Event;
 using Wc3_Combat_Game.Core.Event.Wc3_Combat_Game.Core.Event;
+using Wc3_Combat_Game.Data;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.Components.Controllers;
 using Wc3_Combat_Game.Entities.Components.Prototype;
@@ -219,19 +220,20 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(Controller);
             AssertUtil.NotNull(Controller.Input);
 
-            AbilityPrototype weapon = new AbilityPrototype(new ProjectileAction(new ProjectilePrototype(2.5f,
-                600f,
-                2f,
-                new DamageAction(10f),
-                int.MaxValue,
-                Color.Orange)),
-                null,
-                0.20f,
-                float.PositiveInfinity,3f);
-
-            UnitPrototype playerUnit = new("Player", 100f,  3f, 5f, 150f, Color.Green, 0);
-            playerUnit = playerUnit.AddAbility(weapon);
-            playerUnit = playerUnit with { MaxMana = 100, ManaRegen = 3f };
+            //AbilityPrototype weapon = new AbilityPrototype(new ProjectileAction(new ProjectilePrototype(2.5f,
+            //    600f,
+            //    2f,
+            //    new DamageAction(10f),
+            //    int.MaxValue,
+            //    Color.Orange)),
+            //    null,
+            //    0.20f,
+            //    float.PositiveInfinity,3f);
+            //
+            //UnitPrototype playerUnit = new("Player", 100f,  3f, 5f, 150f, Color.Green, 0);
+            //playerUnit = playerUnit.AddAbility(weapon);
+            //playerUnit = playerUnit with { MaxMana = 100, ManaRegen = 3f };
+            UnitPrototype playerUnit = PlayerBuilder.BuildPlayer();
             PlayerUnit = Unit.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
 
             AddUnit(PlayerUnit);

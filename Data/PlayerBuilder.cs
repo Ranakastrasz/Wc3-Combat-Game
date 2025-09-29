@@ -23,15 +23,20 @@ namespace Wc3_Combat_Game.Data
     public static class PlayerBuilder
     {
 
-        public static void BuildPlayer()
+        public static UnitPrototype BuildPlayer()
         {
 
             AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(3f,0.5f,0.5f,600f,10f,0f,int.MaxValue,0.5f,2.5f,3,Color.Orange);
+            ProjectileAction targetEffect = weapon.TargetEffect as ProjectileAction;
+            targetEffect = targetEffect with { ProjectileCount = 3, FullSpreadAngleDeg = 15f };
+
+            weapon = weapon with { TargetEffect = targetEffect };
 
             UnitPrototype playerUnit = new("Player", 100f,  3f, 5f, 150f, Color.Green, 0);
             playerUnit = playerUnit.AddAbility(weapon);
             playerUnit = playerUnit with { MaxMana = 100, ManaRegen = 3f };
 
+            return playerUnit;
         }
     }
 }
