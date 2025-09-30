@@ -7,6 +7,7 @@ using AssertUtils;
 using nkast.Aether.Physics2D.Dynamics;
 
 using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.Util.UnitConversion;
 
 namespace Wc3_Combat_Game
 {
@@ -27,15 +28,24 @@ namespace Wc3_Combat_Game
             GameController game = new GameController();
 
 
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.Append("Welcome to the WC3 Combat Game!\n");
+            stringBuilder.Append("Press Enter to start the game!\n");
+            stringBuilder.Append("Type 'listclasses' to list all classes and properties in the assembly.\n");
+            stringBuilder.Append("Type 'scaledemo' to run the scale demonstration.\n");
 
 
-            Console.WriteLine("Type 'listclasses' to list all classes and properties in the assembly, or press Enter to start the game.");
+            Console.WriteLine(stringBuilder);
             string? input = Console.ReadLine();
             input = input?.ToLower();
             switch(input)
             {
                 case "listclasses":
                     ListClasses(); // Debugging utility to list all classes and properties in the assembly
+                    return;
+                case "scaledemo":
+                    ScaleDemonstration.Run(); // Uncomment if you want to run the scale demonstration
                     return;
 
                 default:
