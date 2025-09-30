@@ -39,10 +39,10 @@ namespace Wc3_Combat_Game.Data
         { 
             AbilityPrototype sprint = new AbilityPrototype(
                 null,
-                new BuffAction(Entities.Components.Interface.IBuffable.BuffType.Speed,3f,1f),
-                10f,
+                new BuffAction(Entities.Components.Interface.IBuffable.BuffType.Speed,3f,0.25f),
+                3f,
                 0f,
-                20f);
+                15f);
             return sprint;
         }
 

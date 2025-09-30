@@ -11,6 +11,7 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
     {
         private InputManager _input;
 
+        // These things will be done differently, later.
         private Dictionary<Keys, Vector2> _movementDirections = new()
         {
             { Keys.W, new Vector2(0, -1) },
@@ -18,11 +19,12 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
             { Keys.A, new Vector2(-1, 0) },
             { Keys.D, new Vector2(1, 0) },
         };
-        private Dictionary<Keys, int> _abilityKeys = new()
+
+        private int _leftMouseAbility = 0; // First ability is left mouse, til Input handler hook does both jobs.
+        private Dictionary <int, Keys> _abilityKeys = new()
         {
-            { Keys.Q, 0 },
-            { Keys.E, 1 },
-            { Keys.Space, 2 },
+            { 1, Keys.Q },
+            { 2, Keys.Space },
         };
 
         public PlayerController(InputManager input)
@@ -45,15 +47,24 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
                 unit.TargetPoint = unit.Position + move * (unit.MoveSpeed(context) * deltaTime);
 
 
-
-            if(unit.Abilities[0] != null)
+            // Abilities
+            for(int x = 0; x < unit.Abilities.Count; x++)
+            {
+                if(unit.Abilities[x] == null) continue;
+                if(_abilityKeys.TryGetValue(x, out Keys key))
+                {
+                    if(_input.WasKeyPressedThisFrame(key))
+                        unit.Abilities[x].TryTargetPoint(unit, _input.CurrentMousePosition, context);
+                }
+            }
+            if(unit.Abilities[_leftMouseAbility] != null)
             {
 
                 if(_input.IsMouseClicked())
-                    unit.Abilities[0].TryTargetPoint(unit, _input.MouseClickedPosition, context);
+                    unit.Abilities[_leftMouseAbility].TryTargetPoint(unit, _input.MouseClickedPosition, context);
 
                 else if(_input.IsMouseDown())
-                    unit.Abilities[0].TryTargetPoint(unit, _input.CurrentMousePosition, context);
+                    unit.Abilities[_leftMouseAbility].TryTargetPoint(unit, _input.CurrentMousePosition, context);
             }
         }
         public void DrawDebug(Graphics g, IDrawContext context, Unit unit)
