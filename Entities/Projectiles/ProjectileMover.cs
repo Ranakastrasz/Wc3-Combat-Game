@@ -2,17 +2,20 @@
 
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
+using Wc3_Combat_Game.Util.UnitConversion;
+
+using static Wc3_Combat_Game.Util.UnitConversion.GameSpace;
 
 namespace Wc3_Combat_Game.Entities.Projectiles
 {
     public class ProjectileMover: IMoveable
     {
-        private WorldPosition _position;
+        private WorldVector2 _position;
         private Vector2 _velocity;
         public Vector2 Velocity { get => _velocity; set => _velocity = value; }
-        public WorldPosition Position { get => _position; }
+        public WorldVector2 Position { get => _position; }
 
-        public ProjectileMover(WorldPosition position, Vector2 velocity)
+        public ProjectileMover(WorldVector2 position, Vector2 velocity)
         { 
             Velocity = velocity;
             _position = position;
@@ -21,12 +24,12 @@ namespace Wc3_Combat_Game.Entities.Projectiles
 
         public void Teleport(Vector2 position, IBoardContext context)
         {
-            _position.Position = position;
+            _position = new WorldVector2(position);
         }
 
         public void Update(Entity owner, float deltaTime, IBoardContext context)
         {
-            _position.Position += _velocity * deltaTime;
+            _position = new WorldVector2(_position.Value + _velocity * deltaTime);
         }
     }
 }
