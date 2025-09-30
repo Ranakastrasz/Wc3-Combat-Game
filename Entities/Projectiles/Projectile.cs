@@ -11,7 +11,7 @@ using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Core.Event.Wc3_Combat_Game.Core.Event;
 using Wc3_Combat_Game.Entities.Components.Drawable;
-using Wc3_Combat_Game.Entities.Components.Prototype;
+using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
 

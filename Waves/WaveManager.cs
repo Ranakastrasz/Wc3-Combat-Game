@@ -8,11 +8,9 @@ using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Data;
 using Wc3_Combat_Game.Entities;
-using Wc3_Combat_Game.Entities.Components.Controllers;
-using Wc3_Combat_Game.Entities.Components.Prototype;
-using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
-using Wc3_Combat_Game.Entities.Components.Prototype.Factories;
-using Wc3_Combat_Game.Entities.EntityTypes;
+using Wc3_Combat_Game.Entities.Units;
+using Wc3_Combat_Game.Entities.Units.Controllers;
+using Wc3_Combat_Game.Entities.Units.Prototypes;
 using Wc3_Combat_Game.Util;
 
 

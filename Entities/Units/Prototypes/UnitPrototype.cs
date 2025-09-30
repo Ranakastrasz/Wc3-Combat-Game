@@ -1,8 +1,8 @@
 ﻿using System.Collections.Immutable;
 
-using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
+using Wc3_Combat_Game.Entities.Units.Abilities;
 
-namespace Wc3_Combat_Game.Entities.Components.Prototype
+namespace Wc3_Combat_Game.Entities.Units.Prototypes
 {
     /// <summary>
     /// Represents a Prefab for a living or interactive game unit with health and actions.

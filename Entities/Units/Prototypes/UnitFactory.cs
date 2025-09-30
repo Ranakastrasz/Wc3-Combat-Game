@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
-using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
-using Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory;
+using Wc3_Combat_Game.Entities.Units.Abilities;
 
-namespace Wc3_Combat_Game.Entities.Components.Prototype.Factories
+namespace Wc3_Combat_Game.Entities.Units.Prototypes
 {
     public static class UnitFactory
     {

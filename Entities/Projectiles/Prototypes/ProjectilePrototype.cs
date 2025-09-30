@@ -4,9 +4,8 @@ using AssertUtils;
 
 using Wc3_Combat_Game.Actions.Interface;
 using Wc3_Combat_Game.Effects;
-using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
 
-namespace Wc3_Combat_Game.Entities.Components.Prototype
+namespace Wc3_Combat_Game.Entities.Projectiles.Prototypes
 {
     public struct ProjectilePrototype
     {

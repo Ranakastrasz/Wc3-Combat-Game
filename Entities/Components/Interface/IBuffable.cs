@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Wc3_Combat_Game.Core.Context;
 
-using static Wc3_Combat_Game.Entities.Components.Buffs.Buffable;
+using static Wc3_Combat_Game.Entities.Units.Buffs.Buffable;
 
 namespace Wc3_Combat_Game.Entities.Components.Interface
 {

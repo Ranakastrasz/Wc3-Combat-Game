@@ -6,7 +6,7 @@ using AssertUtils;
 
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
-using Wc3_Combat_Game.Entities.EntityTypes;
+using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.IO;
 
 using static Wc3_Combat_Game.Core.GameController;

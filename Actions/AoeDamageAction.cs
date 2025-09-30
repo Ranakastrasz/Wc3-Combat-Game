@@ -3,7 +3,7 @@
 using Wc3_Combat_Game.Actions.Interface;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
-using Wc3_Combat_Game.Entities.EntityTypes;
+using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.Util;
 
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;

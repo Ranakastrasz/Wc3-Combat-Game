@@ -4,10 +4,9 @@ using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Actions.Interface;
 using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Components.Interface;
-using Wc3_Combat_Game.Entities.Components.Prototype;
-using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
+using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
 
-namespace Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory
+namespace Wc3_Combat_Game.Entities.Units.Abilities
 {
     // Factory for weapon varients, I think.
     //
@@ -100,7 +99,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory
         public static AbilityPrototype CreateRangedWeapon(float manaCost, float recoilFactor, float recoilDuration, float speed, float damage, float aoe, float range, float cooldown, float radius, int vertexes, Color color)
         {
 
-            IGameplayAction damageAction = (aoe > 0f) ? new AoeDamageAction(damage,damage*0.5f,aoe) : new DamageAction(damage);
+            IGameplayAction damageAction = aoe > 0f ? new AoeDamageAction(damage,damage*0.5f,aoe) : new DamageAction(damage);
 
 
             ProjectilePrototype weaponProjectile = new ProjectilePrototype(
@@ -111,7 +110,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory
                 vertexes,
                 color);
             ProjectileAction projectile = new ProjectileAction(weaponProjectile);
-            IGameplayAction? recoilAction = (recoilDuration > 0f) ? CreateRecoilAction(recoilFactor, recoilDuration) : null;
+            IGameplayAction? recoilAction = recoilDuration > 0f ? CreateRecoilAction(recoilFactor, recoilDuration) : null;
 
             return new AbilityPrototype(projectile, recoilAction, cooldown, range, manaCost);
         }

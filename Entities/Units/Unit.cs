@@ -6,18 +6,15 @@ using nkast.Aether.Physics2D.Dynamics;
 
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
-using Wc3_Combat_Game.Entities.Components.Abilities;
-using Wc3_Combat_Game.Entities.Components.Buffs;
-using Wc3_Combat_Game.Entities.Components.Collider;
 using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Components.Interface;
-using Wc3_Combat_Game.Entities.Components.Movement;
-using Wc3_Combat_Game.Entities.Components.Prototype;
-using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
+using Wc3_Combat_Game.Entities.Units.Abilities;
+using Wc3_Combat_Game.Entities.Units.Buffs;
+using Wc3_Combat_Game.Entities.Units.Prototypes;
 using Wc3_Combat_Game.Util;
 
 
-namespace Wc3_Combat_Game.Entities.EntityTypes
+namespace Wc3_Combat_Game.Entities.Units
 {
     /// <summary>
     /// Represents a living or interactive game unit with health and actions.

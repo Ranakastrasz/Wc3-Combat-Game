@@ -44,4 +44,8 @@
     <ProjectReference Include="..\AStar\AStar\AStar.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\Components\Prototype\PrototypeFactory\" />
+  </ItemGroup>
+
 </Project>

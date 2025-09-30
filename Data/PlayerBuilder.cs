@@ -11,11 +11,9 @@ using nkast.Aether.Physics2D.Controllers;
 
 using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Core;
-using Wc3_Combat_Game.Entities.Components.Controllers;
-using Wc3_Combat_Game.Entities.Components.Prototype;
-using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
-using Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory;
 using Wc3_Combat_Game.Entities.EntityTypes;
+using Wc3_Combat_Game.Entities.Units.Abilities;
+using Wc3_Combat_Game.Entities.Units.Prototypes;
 using Wc3_Combat_Game.Terrain;
 
 namespace Wc3_Combat_Game.Data

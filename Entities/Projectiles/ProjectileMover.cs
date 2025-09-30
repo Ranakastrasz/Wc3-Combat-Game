@@ -3,7 +3,7 @@
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
 
-namespace Wc3_Combat_Game.Entities.Components.Movement
+namespace Wc3_Combat_Game.Entities.Projectiles
 {
     public class ProjectileMover: IMoveable
     {

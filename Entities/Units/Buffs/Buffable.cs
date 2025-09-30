@@ -10,7 +10,7 @@ using Wc3_Combat_Game.Util;
 
 using static Wc3_Combat_Game.Entities.Components.Interface.IBuffable;
 
-namespace Wc3_Combat_Game.Entities.Components.Buffs;
+namespace Wc3_Combat_Game.Entities.Units.Buffs;
 
 // Attach to unit.
 // This handles a short list of simplified, hardcoded debuffs

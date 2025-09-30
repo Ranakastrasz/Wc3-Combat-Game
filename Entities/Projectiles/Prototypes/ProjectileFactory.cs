@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
-using Wc3_Combat_Game.Entities.Components.Abilities;
 using Wc3_Combat_Game.Entities.Components.Interface;
-using Wc3_Combat_Game.Entities.Components.Prototype.Abilities;
 
-namespace Wc3_Combat_Game.Entities.Components.Prototype
+namespace Wc3_Combat_Game.Entities.Projectiles.Prototypes
 {
     public static class ProjectileFactory
     {

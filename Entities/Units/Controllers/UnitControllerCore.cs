@@ -8,11 +8,11 @@ using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.IO;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
-using Wc3_Combat_Game.Entities.Components.Abilities;
 using Wc3_Combat_Game.Entities.Components.Interface;
-using Wc3_Combat_Game.Entities.EntityTypes;
+using Wc3_Combat_Game.Entities.Units;
+using Wc3_Combat_Game.Entities.Units.Abilities;
 
-namespace Wc3_Combat_Game.Entities.Components.Controllers
+namespace Wc3_Combat_Game.Entities.Units.Controllers
 {
     class UnitControllerCore: IUnitController
     {

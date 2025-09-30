@@ -1,8 +1,8 @@
 ﻿using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Actions.Interface;
-using Wc3_Combat_Game.Entities.Components.Abilities;
+using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
 
-namespace Wc3_Combat_Game.Entities.Components.Prototype.Abilities
+namespace Wc3_Combat_Game.Entities.Units.Abilities
 {
     public record AbilityPrototype
     {
@@ -74,7 +74,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.Abilities
 
         internal AbilityPrototype WithIncreasedDamage(float multiplier)
         {
-            return this.WithDamage(GetDamage() * multiplier);
+            return WithDamage(GetDamage() * multiplier);
         }
     }
 }

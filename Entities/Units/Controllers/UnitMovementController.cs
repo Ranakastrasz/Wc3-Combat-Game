@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 
 using Point = Microsoft.Xna.Framework.Point;
 
-namespace Wc3_Combat_Game.Entities.Components.Controllers
+namespace Wc3_Combat_Game.Entities.Units.Controllers
 {
     public class UnitMovementController
     {

@@ -2,10 +2,10 @@
 
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
-using Wc3_Combat_Game.Entities.EntityTypes;
+using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.IO;
 
-namespace Wc3_Combat_Game.Entities.Components.Controllers
+namespace Wc3_Combat_Game.Entities.Units.Controllers
 {
     class PlayerController: IUnitController
     {
