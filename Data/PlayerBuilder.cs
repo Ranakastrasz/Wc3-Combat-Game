@@ -64,10 +64,46 @@ namespace Wc3_Combat_Game.Data
             playerUnit = playerUnit.AddAbility(manabolt);
             playerUnit = playerUnit.AddAbility(manabomb);
             playerUnit = playerUnit.AddAbility(sprint);
+
+            //
+            //
+            //
+
             
             playerUnit = playerUnit with { MaxMana = 100, ManaRegen = 3f };
 
             return playerUnit;
+        }
+
+        public static void RegisterHotkeys()
+        {
+            // Register hotkeys for player abilities
+            // Manabolt -> Left mouse click.
+            // Manabomb, -> Q
+            // Sprint, -> Spacebar.
+
+            // Originally, before deciding on WASD, it was going to be
+            /*
+             F - Manabolt
+             D - Arcane Curse
+             S - Sprint
+             A - Arcane Elemental
+             R - Manabomb
+             E - Shield
+             W - Blink
+             */
+            // However, A new method is going to be needed.
+            // 
+            /*
+             Movement Utility   Spacebar    Sprint      Excellent choice for a phase/dodge/sprint key in a top-down game.
+            Core Attack	        LMB	        Manabolt    The primary attack/spammable skill.
+            Flask/Restore       1           Flask       Dedicates the top-row index finger key to the essential panic/sustain button.
+            Secondary Attack    Q           Manabomb            Your current, well-placed tactical attack.
+            Defensive/Utility   E           Shield              Easy to hit with the middle finger for a quick defense.
+            Mobility/Dodge      F           Blink               Reserve the highly accessible 'F' for an instant, crucial action.
+            Tactical/CC	        R           Arcane Curse        A tactical, area-of-effect, or cooldown-based spell.
+            Summon/Ultimate	    2           Arcane Elemental    Placed on a number key as it's often a "set-and-forget" or long-cooldown skill.
+             */
         }
     }
 }
