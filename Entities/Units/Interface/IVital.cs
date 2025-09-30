@@ -1,4 +1,4 @@
-﻿namespace Wc3_Combat_Game.Entities.Components.Interface
+﻿namespace Wc3_Combat_Game.Entities.Units.Interface
 {
     /// <summary>
     /// This is to be attached to a unit to handle the highly fluid vital stats, such as Health, shield, and Mana.

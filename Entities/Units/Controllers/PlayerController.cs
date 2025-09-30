@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 
 using Wc3_Combat_Game.Core.Context;
-using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.IO;
 

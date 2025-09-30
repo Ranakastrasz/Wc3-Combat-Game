@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Wc3_Combat_Game.Core.Context;
-using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Util;
 
-using static Wc3_Combat_Game.Entities.Components.Interface.IBuffable;
+using static Wc3_Combat_Game.Entities.Units.Buffs.IBuffable;
 
 namespace Wc3_Combat_Game.Entities.Units.Buffs;
 

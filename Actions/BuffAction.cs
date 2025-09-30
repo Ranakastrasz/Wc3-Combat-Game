@@ -5,8 +5,8 @@ using AssertUtils;
 using Wc3_Combat_Game.Actions.Interface;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
-using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Units;
+using Wc3_Combat_Game.Entities.Units.Buffs;
 
 namespace Wc3_Combat_Game.Actions
 {

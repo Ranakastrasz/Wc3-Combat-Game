@@ -8,7 +8,7 @@ using Wc3_Combat_Game.Core.Context;
 
 using static Wc3_Combat_Game.Entities.Units.Buffs.Buffable;
 
-namespace Wc3_Combat_Game.Entities.Components.Interface
+namespace Wc3_Combat_Game.Entities.Units.Buffs
 {
     public interface IBuffable
     {

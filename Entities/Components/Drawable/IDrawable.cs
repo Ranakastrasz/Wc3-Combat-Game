@@ -1,6 +1,6 @@
 ﻿using Wc3_Combat_Game.Core.Context;
 
-namespace Wc3_Combat_Game.Entities.Components.Interface
+namespace Wc3_Combat_Game.Entities.Components.Drawable
 {
     public interface IDrawable
     {

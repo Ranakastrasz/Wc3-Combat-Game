@@ -8,9 +8,9 @@ using AssertUtils;
 
 using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Entities;
-using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
 using Wc3_Combat_Game.Entities.Units.Abilities;
+using Wc3_Combat_Game.Entities.Units.Buffs;
 using Wc3_Combat_Game.Entities.Units.Prototypes;
 using Wc3_Combat_Game.Waves;
 

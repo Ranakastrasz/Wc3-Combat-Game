@@ -1,7 +1,6 @@
 ﻿using Wc3_Combat_Game.Core.Context;
-using Wc3_Combat_Game.Entities.Units;
 
-namespace Wc3_Combat_Game.Entities.Components.Interface
+namespace Wc3_Combat_Game.Entities.Units.Controllers
 {
     public interface IUnitController
     {

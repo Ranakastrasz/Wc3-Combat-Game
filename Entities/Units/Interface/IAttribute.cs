@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Wc3_Combat_Game.Entities.Components.Interface
+namespace Wc3_Combat_Game.Entities.Units.Interface
 {
     internal interface IAttribute
     {

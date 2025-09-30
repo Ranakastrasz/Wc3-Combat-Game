@@ -13,6 +13,7 @@ using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Entities.EntityTypes;
 using Wc3_Combat_Game.Entities.Units.Abilities;
+using Wc3_Combat_Game.Entities.Units.Buffs;
 using Wc3_Combat_Game.Entities.Units.Prototypes;
 using Wc3_Combat_Game.Terrain;
 
@@ -37,7 +38,7 @@ namespace Wc3_Combat_Game.Data
         { 
             AbilityPrototype sprint = new AbilityPrototype(
                 null,
-                new BuffAction(Entities.Components.Interface.IBuffable.BuffType.Speed,3f,0.25f),
+                new BuffAction(IBuffable.BuffType.Speed,3f,0.25f),
                 3f,
                 0f,
                 15f);

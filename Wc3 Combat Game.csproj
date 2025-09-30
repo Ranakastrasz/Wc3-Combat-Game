@@ -46,6 +46,7 @@
 
   <ItemGroup>
     <Folder Include="Entities\Components\Prototype\PrototypeFactory\" />
+    <Folder Include="Entities\Units\Controllers\Orders\" />
   </ItemGroup>
 
 </Project>

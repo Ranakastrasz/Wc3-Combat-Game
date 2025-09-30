@@ -3,8 +3,8 @@
 using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Actions.Interface;
 using Wc3_Combat_Game.Entities.Components.Drawable;
-using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
+using Wc3_Combat_Game.Entities.Units.Buffs;
 
 namespace Wc3_Combat_Game.Entities.Units.Abilities
 {
