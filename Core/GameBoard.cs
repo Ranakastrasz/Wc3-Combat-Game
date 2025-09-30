@@ -220,19 +220,6 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(Controller);
             AssertUtil.NotNull(Controller.Input);
 
-            //AbilityPrototype weapon = new AbilityPrototype(new ProjectileAction(new ProjectilePrototype(2.5f,
-            //    600f,
-            //    2f,
-            //    new DamageAction(10f),
-            //    int.MaxValue,
-            //    Color.Orange)),
-            //    null,
-            //    0.20f,
-            //    float.PositiveInfinity,3f);
-            //
-            //UnitPrototype playerUnit = new("Player", 100f,  3f, 5f, 150f, Color.Green, 0);
-            //playerUnit = playerUnit.AddAbility(weapon);
-            //playerUnit = playerUnit with { MaxMana = 100, ManaRegen = 3f };
             UnitPrototype playerUnit = PlayerBuilder.BuildPlayer();
             PlayerUnit = Unit.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
 
