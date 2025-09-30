@@ -11,6 +11,20 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
     {
         private InputManager _input;
 
+        private Dictionary<Keys, Vector2> _movementDirections = new()
+        {
+            { Keys.W, new Vector2(0, -1) },
+            { Keys.S, new Vector2(0, 1) },
+            { Keys.A, new Vector2(-1, 0) },
+            { Keys.D, new Vector2(1, 0) },
+        };
+        private Dictionary<Keys, int> _abilityKeys = new()
+        {
+            { Keys.Q, 0 },
+            { Keys.E, 1 },
+            { Keys.Space, 2 },
+        };
+
         public PlayerController(InputManager input)
         {
             _input = input;
@@ -32,8 +46,9 @@ namespace Wc3_Combat_Game.Entities.Components.Controllers
 
 
 
-            if(unit.Abilities != null)
+            if(unit.Abilities[0] != null)
             {
+
                 if(_input.IsMouseClicked())
                     unit.Abilities[0].TryTargetPoint(unit, _input.MouseClickedPosition, context);
 

@@ -99,7 +99,7 @@ namespace Wc3_Combat_Game.Entities.Components.Prototype.PrototypeFactory
 
         public static AbilityPrototype CreateRangedWeapon(float manaCost, float recoilFactor, float recoilDuration, float speed, float damage, float aoe, float range, float cooldown, float radius, int vertexes, Color color)
         {
-            DamageAction damageAction = /*(aoe > 0f) ? new AoeAction(new DamageAction(Damage), aoe) :*/ new DamageAction(damage);
+            IGameplayAction damageAction = (aoe > 0f) ? new AoeDamageAction(damage,damage*0.5f,aoe) : new DamageAction(damage);
 
             ProjectilePrototype weaponProjectile = new ProjectilePrototype(
                 radius,
