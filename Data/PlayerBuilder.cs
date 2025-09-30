@@ -25,7 +25,7 @@ namespace Wc3_Combat_Game.Data
 
         private static AbilityPrototype BuildManabolt()
         {
-            AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(3f,0.5f,0.5f,600f,10f,0f,int.MaxValue,0.5f,2.5f,3,Color.Orange);
+            AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(3f,0.5f,0.5f,600f,10f,0f,int.MaxValue,0.2f,2.5f,3,Color.Orange);
             return weapon;
         }
 
@@ -64,6 +64,7 @@ namespace Wc3_Combat_Game.Data
             playerUnit = playerUnit.AddAbility(manabolt);
             playerUnit = playerUnit.AddAbility(manabomb);
             playerUnit = playerUnit.AddAbility(sprint);
+            
             playerUnit = playerUnit with { MaxMana = 100, ManaRegen = 3f };
 
             return playerUnit;
