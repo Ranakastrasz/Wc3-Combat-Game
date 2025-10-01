@@ -5,6 +5,7 @@ using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.Util;
+using Wc3_Combat_Game.Util.UnitConversion;
 
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
@@ -28,10 +29,10 @@ namespace Wc3_Combat_Game.Actions
 
         public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)
         {
-            ExecuteOnPoint(Caster, Emitter, Target.Position, context);
+            ExecuteOnPoint(Caster, Emitter, Target.Position.WorldVector(), context);
         }
 
-        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, Vector2 TargetPoint, IBoardContext context)
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector2 TargetPoint, IBoardContext context)
         {
             if(Caster == null) return; // May need to somehow pass a team though instead at some point instead for the baseclass, for sourceless, but team-owned effects.
             context.Entities.ForEach(e =>
@@ -40,7 +41,7 @@ namespace Wc3_Combat_Game.Actions
                 {
                     if(Caster.Team.IsHostileTo(e.Team))
                     {
-                        Vector2 origin = OnTargetOnly ? TargetPoint : (Emitter?.Position ?? TargetPoint);
+                        Vector2 origin = OnTargetOnly ? TargetPoint.Value : (Emitter?.Position ?? TargetPoint.Value);
                         float distance = GeometryUtils.DistanceTo(origin, e.Position);
                         if(distance < Radius)
                         {

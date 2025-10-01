@@ -79,6 +79,8 @@ namespace Wc3_Combat_Game.Util.UnitConversion
         public float X { get; }
         public float Y { get; }
 
+        public Vector2 Value => new Vector2(X, Y);
+
         public WorldVector2(float x, float y)
         {
             X = x;
@@ -99,6 +101,7 @@ namespace Wc3_Combat_Game.Util.UnitConversion
     {
         public float X { get; }
         public float Y { get; }
+        public Vector2 Value => new Vector2(X, Y);
 
         public PhysicsVector2(float x, float y)
         {
@@ -131,7 +134,7 @@ namespace Wc3_Combat_Game.Util.UnitConversion
     {
         public float X { get; }
         public float Y { get; }
-
+        public Vector2 Value => new Vector2(X, Y);
         public GridVector2(float x, float y)
         {
             X = x;

@@ -14,6 +14,7 @@ using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
 using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
+using Wc3_Combat_Game.Util.UnitConversion;
 
 using static Wc3_Combat_Game.Core.GameConstants;
 
@@ -271,7 +272,7 @@ namespace Wc3_Combat_Game.Entities.EntityTypes
         {
             foreach(var ImpactEffect in ImpactEffects)
             {
-                ImpactEffect?.ExecuteOnPoint(Caster, this, impactPoint, context);
+                ImpactEffect?.ExecuteOnPoint(Caster, this, impactPoint.WorldVector(), context);
             }
         }
         public override void Die(IBoardContext context)

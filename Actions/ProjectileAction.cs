@@ -5,6 +5,7 @@ using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.EntityTypes;
 using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
+using Wc3_Combat_Game.Util.UnitConversion;
 
 
 namespace Wc3_Combat_Game.Actions
@@ -27,15 +28,15 @@ namespace Wc3_Combat_Game.Actions
 
         public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)
         {
-            ExecuteOnPoint(Caster, Emitter, Target.Position, context);
+            ExecuteOnPoint(Caster, Emitter, Target.Position.WorldVector(), context);
         }
 
-        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, Vector2 TargetPoint, IBoardContext context)
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector2 TargetPoint, IBoardContext context)
         {
             //Projectile projectile = new Projectile(Caster.Position, Prototype);
             // Hardcode requirements for now
             if(Caster == null || Emitter == null) return;
-            Vector2 directionToTarget = TargetPoint - Caster.Position;
+            Vector2 directionToTarget = TargetPoint.Value - Caster.Position;
             if(ProjectileCount > 1)
             {
                 float angleStep = FullSpreadAngleRad / (ProjectileCount - 1);

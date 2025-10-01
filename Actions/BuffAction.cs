@@ -7,6 +7,7 @@ using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.Entities.Units.Buffs;
+using Wc3_Combat_Game.Util.UnitConversion;
 
 namespace Wc3_Combat_Game.Actions
 {
@@ -31,7 +32,7 @@ namespace Wc3_Combat_Game.Actions
                 unit.ApplyBuff(Type, Duration, Factor, context);
             }
         }
-        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, Vector2 TargetPoint, IBoardContext context)
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector2 TargetPoint, IBoardContext context)
         {
             // DoNothing.
             // Damage requires a target, or an AOE Effect to find targets.

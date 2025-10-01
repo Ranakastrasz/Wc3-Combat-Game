@@ -4,7 +4,6 @@ using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Util.UnitConversion;
 
-using static Wc3_Combat_Game.Util.UnitConversion.GameSpace;
 
 namespace Wc3_Combat_Game.Entities.Projectiles
 {

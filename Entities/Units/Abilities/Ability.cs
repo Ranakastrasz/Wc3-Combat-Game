@@ -5,6 +5,7 @@ using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.Util;
+using Wc3_Combat_Game.Util.UnitConversion;
 
 namespace Wc3_Combat_Game.Entities.Units.Abilities
 {
@@ -52,7 +53,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
                 }
             }
 
-            _targetEffect?.ExecuteOnPoint(unit, unit, target, context);
+            _targetEffect?.ExecuteOnPoint(unit, unit, target.WorldVector(), context);
 
             _casterEffect?.ExecuteOnEntity(unit, unit, unit, context);
 
