@@ -28,7 +28,7 @@ namespace Wc3_Combat_Game.Actions
 
         public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)
         {
-            ExecuteOnPoint(Caster, Emitter, Target.Position.WorldVector(), context);
+            ExecuteOnPoint(Caster, Emitter, Target.Position.World(), context);
         }
 
         public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector TargetPoint, IBoardContext context)

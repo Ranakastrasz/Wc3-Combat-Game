@@ -16,10 +16,10 @@ namespace Wc3_Combat_Game.Actions
     {
         public float DamageMax { get; init; }
         public float DamageMin { get; init; }
-        public float Radius { get; init; }
+        public WorldLength Radius { get; init; }
         public bool OnTargetOnly { get; init; }
 
-        public AoeDamageAction(float damageMax, float damageMin, float radius, bool onTargetOnly = false)
+        public AoeDamageAction(float damageMax, float damageMin, WorldLength radius, bool onTargetOnly = false)
         {
             DamageMax = damageMax;
             DamageMin = damageMin;
@@ -29,7 +29,7 @@ namespace Wc3_Combat_Game.Actions
 
         public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)
         {
-            ExecuteOnPoint(Caster, Emitter, Target.Position.WorldVector(), context);
+            ExecuteOnPoint(Caster, Emitter, Target.Position.World(), context);
         }
 
         public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector TargetPoint, IBoardContext context)
@@ -41,8 +41,8 @@ namespace Wc3_Combat_Game.Actions
                 {
                     if(Caster.Team.IsHostileTo(targetCandidate.Team))
                     {
-                        WorldVector origin = OnTargetOnly ? TargetPoint : (Emitter?.Position.WorldVector() ?? TargetPoint);
-                        float distance = GeometryUtils.DistanceTo(origin.Value, targetCandidate.Position);
+                        WorldVector origin = OnTargetOnly ? TargetPoint : (Emitter?.Position.World() ?? TargetPoint);
+                        WorldLength distance = GeometryUtils.DistanceTo(origin, targetCandidate.Position.World());
                         if(distance < Radius)
                         {
                             float damage = (Radius - distance) / Radius; // 0..1 scale

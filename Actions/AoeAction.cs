@@ -12,23 +12,25 @@ namespace Wc3_Combat_Game.Actions
 {
     public record AoeAction: IGameplayAction
     {
-        public IGameplayAction Action { get; init; }
-        public float Radius { get; init; }
+        public IGameplayAction? Action { get; init; }
+        public WorldLength Radius { get; init; }
         public bool OnTargetOnly { get; init; }
 
-        public AoeAction(float radius, IGameplayAction action)
+        public AoeAction(WorldLength radius, IGameplayAction? action, bool onTargetOnly)
         {
             Radius = radius;
             Action = action;
+            OnTargetOnly = onTargetOnly;
         }
 
         public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)
         {
-            ExecuteOnPoint(Caster,Emitter,Target.Position.WorldVector(),context);
+            ExecuteOnPoint(Caster,Emitter,Target.Position.World(),context);
         }
 
-        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector TargetPoint, IBoardContext context)
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldPoint TargetPoint, IBoardContext context)
         {
+            if(Action == null) return;
             if(Caster == null) return; // May need to somehow pass a team though instead at some point.
             context.Entities.ForEach(e =>
             {
@@ -36,8 +38,8 @@ namespace Wc3_Combat_Game.Actions
                 {
                     if(Caster.Team.IsHostileTo(e.Team))
                     {
-                        Vector2 origin = TargetPoint.Value;
-                        float distance = GeometryUtils.DistanceTo(origin, e.Position);
+                        WorldVector origin = OnTargetOnly ? TargetPoint : (Emitter?.Position.World() ?? TargetPoint);
+                        WorldLength distance = GeometryUtils.DistanceTo(origin, e.Position.World());
                         if(distance < Radius)
                         {
                             ExecuteOnEntity(Caster, Emitter, e, context);

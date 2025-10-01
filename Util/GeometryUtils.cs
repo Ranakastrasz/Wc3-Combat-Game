@@ -42,12 +42,12 @@ namespace Wc3_Combat_Game.Util
         }
         public static float DistanceTo(Vector2 from, Vector2 to) =>
             Vector2.Distance(from, to);
-        public static float DistanceTo(WorldVector from, WorldVector to) =>
-            Vector2.Distance(from.Value, to.Value);
-        public static float DistanceTo(PhysicsVector from, PhysicsVector to) =>
-            Vector2.Distance(from.Value, to.Value);
-        public static float DistanceTo(GridVector from, GridVector to) =>
-            Vector2.Distance(from.Value, to.Value);
+        public static WorldLength DistanceTo(WorldVector from, WorldVector to) => 
+            new WorldLength(Vector2.Distance(from.Value, to.Value));
+        public static PhysicsLength DistanceTo(PhysicsVector from, PhysicsVector to) =>
+            new PhysicsLength(Vector2.Distance(from.Value, to.Value));
+        public static GridLength DistanceTo(GridVector from, GridVector to) =>
+            new GridLength(Vector2.Distance(from.Value, to.Value));
 
         public static float DistanceTo(Point from, Point to) =>
             Vector2.Distance(from.ToVector2(), to.ToVector2());

@@ -53,7 +53,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
                 }
             }
 
-            _targetEffect?.ExecuteOnPoint(unit, unit, target.WorldVector(), context);
+            _targetEffect?.ExecuteOnPoint(unit, unit, target.World(), context);
 
             _casterEffect?.ExecuteOnEntity(unit, unit, unit, context);
 

@@ -24,14 +24,24 @@ namespace Wc3_Combat_Game.Util.UnitConversion
         public WorldLength(float value) => Value = value;
 
         public static WorldLength FromWorld(float value) => new WorldLength(value);
+        public float PhysicsValue => Value / WorldToPhysicsFactor;
+        public float GridValue => Value / WorldToGridFactor;
 
         public static WorldLength operator +(WorldLength a, WorldLength b) => new WorldLength(a.Value + b.Value);
         public static WorldLength operator -(WorldLength a, WorldLength b) => new WorldLength(a.Value - b.Value);
         public static WorldLength operator *(WorldLength a, float factor) => new WorldLength(a.Value * factor);
         public static WorldLength operator *(float factor, WorldLength a) => a * factor;
         public static WorldLength operator /(WorldLength a, float factor) => new WorldLength(a.Value / factor);
-
         public static float operator /(WorldLength a, WorldLength b) => a.Value / b.Value;
+
+        public static bool operator ==(WorldLength a, WorldLength b) => a.Value == b.Value;
+        public static bool operator !=(WorldLength a, WorldLength b) => a.Value != b.Value;
+        public static bool operator > (WorldLength a, WorldLength b) => a.Value > b.Value;
+        public static bool operator >=(WorldLength a, WorldLength b) => a.Value >= b.Value;
+        public static bool operator < (WorldLength a, WorldLength b) => a.Value < b.Value;
+        public static bool operator <=(WorldLength a, WorldLength b) => a.Value <= b.Value;
+        public override bool Equals(object? obj) => obj is WorldLength other && this == other;
+        public override int GetHashCode() => Value.GetHashCode();
 
         public override string ToString() => $"{Value:F2} World";
     }
@@ -41,7 +51,7 @@ namespace Wc3_Combat_Game.Util.UnitConversion
     {
         public float Value { get; }
 
-        private PhysicsLength(float value) => Value = value;
+        public PhysicsLength(float value) => Value = value;
 
         // Implicit conversion from WorldLength to PhysicsLength (World / 32)
         public static implicit operator PhysicsLength(WorldLength w) => new PhysicsLength(w.Value / WorldLength.WorldToPhysicsFactor);
@@ -50,8 +60,25 @@ namespace Wc3_Combat_Game.Util.UnitConversion
         public static explicit operator WorldLength(PhysicsLength p) => new WorldLength(p.Value * WorldLength.WorldToPhysicsFactor);
 
         public static PhysicsLength FromPhysics(float value) => new PhysicsLength(value);
-
         public float WorldValue => Value * WorldLength.WorldToPhysicsFactor;
+        public float GridValue => Value * (WorldLength.WorldToPhysicsFactor / WorldLength.WorldToGridFactor);
+
+        public static PhysicsLength operator +(PhysicsLength a, PhysicsLength b) => new PhysicsLength(a.Value + b.Value);
+        public static PhysicsLength operator -(PhysicsLength a, PhysicsLength b) => new PhysicsLength(a.Value - b.Value);
+        public static PhysicsLength operator *(PhysicsLength a, float factor) => new PhysicsLength(a.Value * factor);
+        public static PhysicsLength operator *(float factor, PhysicsLength a) => a * factor;
+        public static PhysicsLength operator /(PhysicsLength a, float factor) => new PhysicsLength(a.Value / factor);
+        public static float operator /(PhysicsLength a, PhysicsLength b) => a.Value / b.Value;
+
+        public static bool operator ==(PhysicsLength a, PhysicsLength b) => a.Value == b.Value;
+        public static bool operator !=(PhysicsLength a, PhysicsLength b) => a.Value != b.Value;
+        public static bool operator > (PhysicsLength a, PhysicsLength b) => a.Value > b.Value;
+        public static bool operator >=(PhysicsLength a, PhysicsLength b) => a.Value >= b.Value;
+        public static bool operator < (PhysicsLength a, PhysicsLength b) => a.Value < b.Value;
+        public static bool operator <=(PhysicsLength a, PhysicsLength b) => a.Value <= b.Value;
+        public override bool Equals(object? obj) => obj is PhysicsLength other && this == other;
+        public override int GetHashCode() => Value.GetHashCode();
+
 
         public override string ToString() => $"{Value:F2} Physics";
     }
@@ -60,7 +87,7 @@ namespace Wc3_Combat_Game.Util.UnitConversion
     public readonly struct GridLength
     {
         public float Value { get; }
-        private GridLength(float value) => Value = value;
+        public GridLength(float value) => Value = value;
 
         // Implicit conversion from WorldLength to GridLength (World / 64)
         public static implicit operator GridLength(WorldLength w) => new GridLength(w.Value / WorldLength.WorldToGridFactor);
@@ -71,6 +98,23 @@ namespace Wc3_Combat_Game.Util.UnitConversion
         public static GridLength FromGrid(float value) => new GridLength(value);
 
         public float WorldValue => Value * WorldLength.WorldToGridFactor;
+        public float PhysicsValue => Value * (WorldLength.WorldToGridFactor / WorldLength.WorldToPhysicsFactor);
+
+        public static GridLength operator +(GridLength a, GridLength b) => new GridLength(a.Value + b.Value);
+        public static GridLength operator -(GridLength a, GridLength b) => new GridLength(a.Value - b.Value);
+        public static GridLength operator *(GridLength a, float factor) => new GridLength(a.Value * factor);
+        public static GridLength operator *(float factor, GridLength a) => a * factor;
+        public static GridLength operator /(GridLength a, float factor) => new GridLength(a.Value / factor);
+        public static float operator /(GridLength a, GridLength b) => a.Value / b.Value;
+
+        public static bool operator ==(GridLength a, GridLength b) => a.Value == b.Value;
+        public static bool operator !=(GridLength a, GridLength b) => a.Value != b.Value;
+        public static bool operator >(GridLength a, GridLength b) => a.Value > b.Value;
+        public static bool operator >=(GridLength a, GridLength b) => a.Value >= b.Value;
+        public static bool operator <(GridLength a, GridLength b) => a.Value < b.Value;
+        public static bool operator <=(GridLength a, GridLength b) => a.Value <= b.Value;
+        public override bool Equals(object? obj) => obj is GridLength other && this == other;
+        public override int GetHashCode() => Value.GetHashCode();
 
         public override string ToString() => $"{Value:F2} Grid";
     }
@@ -100,8 +144,23 @@ namespace Wc3_Combat_Game.Util.UnitConversion
         public static WorldVector operator -(WorldVector a, WorldVector b) => new WorldVector(a.Value - b.Value);
         public static WorldVector operator *(WorldVector a, float s) => new WorldVector(a.Value * s);
         public static WorldVector operator *(float s, WorldVector a) => a * s;
+        public static WorldVector operator /(WorldVector a, float s) => new WorldVector(a.Value / s);
+        public static float operator /(WorldVector a, WorldVector b) => a.Value.Length() / b.Value.Length();
+
+        // Comparison operators based on vector length
+
+        public static bool operator ==(WorldVector a, WorldVector b) => a.Value == b.Value;
+        public static bool operator !=(WorldVector a, WorldVector b) => a.Value != b.Value;
+        public static bool operator > (WorldVector a, WorldVector b) => a.Value.LengthSquared() > b.Value.LengthSquared();
+        public static bool operator >=(WorldVector a, WorldVector b) => a.Value.LengthSquared() >= b.Value.LengthSquared();
+        public static bool operator < (WorldVector a, WorldVector b) => a.Value.LengthSquared() < b.Value.LengthSquared();
+        public static bool operator <=(WorldVector a, WorldVector b) => a.Value.LengthSquared() <= b.Value.LengthSquared();
+
+        public override bool Equals(object? obj) => obj is WorldVector other && this == other;
+        public override int GetHashCode() => Value.GetHashCode();
 
         public override string ToString() => $"({X:F2}, {Y:F2}) World";
+
     }
 
     // Physics scale: World / 32
@@ -136,7 +195,21 @@ namespace Wc3_Combat_Game.Util.UnitConversion
         public static PhysicsVector operator -(PhysicsVector a, PhysicsVector b) => new PhysicsVector(a.Value - b.Value);
         public static PhysicsVector operator *(PhysicsVector a, float s) => new PhysicsVector(a.Value * s);
         public static PhysicsVector operator *(float s, PhysicsVector a) => a * s;
+        public static WorldVector operator /(PhysicsVector a, float s) => new WorldVector(a.Value / s);
+        public static float operator /(PhysicsVector a, PhysicsVector b) => a.Value.Length() / b.Value.Length();
 
+
+        // Comparison operators based on vector length
+
+        public static bool operator ==(PhysicsVector a, PhysicsVector b) => a.Value == b.Value;
+        public static bool operator !=(PhysicsVector a, PhysicsVector b) => a.Value != b.Value;
+        public static bool operator > (PhysicsVector a, PhysicsVector b) => a.Value.LengthSquared() > b.Value.LengthSquared();
+        public static bool operator >=(PhysicsVector a, PhysicsVector b) => a.Value.LengthSquared() >= b.Value.LengthSquared();
+        public static bool operator < (PhysicsVector a, PhysicsVector b) => a.Value.LengthSquared() < b.Value.LengthSquared();
+        public static bool operator <=(PhysicsVector a, PhysicsVector b) => a.Value.LengthSquared() <= b.Value.LengthSquared();
+
+        public override bool Equals(object? obj) => obj is PhysicsVector other && this == other;
+        public override int GetHashCode() => Value.GetHashCode();
         public override string ToString() => $"({X:F5}, {Y:F5}) Physics";
     }
 
@@ -170,7 +243,19 @@ namespace Wc3_Combat_Game.Util.UnitConversion
         public static GridVector operator -(GridVector a, GridVector b) => new GridVector(a.Value - b.Value);
         public static GridVector operator *(GridVector a, float s) => new GridVector(a.Value * s);
         public static GridVector operator *(float s, GridVector a) => a * s;
+        public static WorldVector operator /(GridVector a, float s) => new WorldVector(a.Value / s);
+        public static float operator /(GridVector a, GridVector b) => a.Value.Length() / b.Value.Length();
 
+        // Comparison operators based on vector length
+
+        public static bool operator ==(GridVector a, GridVector b) => a.Value == b.Value;
+        public static bool operator !=(GridVector a, GridVector b) => a.Value != b.Value;
+        public static bool operator > (GridVector a, GridVector b) => a.Value.LengthSquared() > b.Value.LengthSquared();
+        public static bool operator >=(GridVector a, GridVector b) => a.Value.LengthSquared() >= b.Value.LengthSquared();
+        public static bool operator < (GridVector a, GridVector b) => a.Value.LengthSquared() < b.Value.LengthSquared();
+        public static bool operator <=(GridVector a, GridVector b) => a.Value.LengthSquared() <= b.Value.LengthSquared();
+        public override bool Equals(object? obj) => obj is GridVector other && this == other;
+        public override int GetHashCode() => Value.GetHashCode();
         public override string ToString() => $"({X:F5}, {Y:F5}) Grid";
     }
 
@@ -185,7 +270,7 @@ namespace Wc3_Combat_Game.Util.UnitConversion
         public static GridLength Grid(this float value) => GridLength.FromGrid(value);
 
         // For Vector2 (Fluent construction)
-        public static WorldVector WorldVector(this Vector2 value) => new WorldVector(value);
+        public static WorldVector World(this Vector2 value) => new WorldVector(value);
         public static WorldVector WorldVector(this (float x, float y) values) => new WorldVector(values.x, values.y);
         public static PhysicsVector PhysicsVector(this Vector2 value) => new PhysicsVector(value);
         public static PhysicsVector PhysicsVector(this (float x, float y) values) => new PhysicsVector(values.x, values.y);

@@ -272,7 +272,7 @@ namespace Wc3_Combat_Game.Entities.EntityTypes
         {
             foreach(var ImpactEffect in ImpactEffects)
             {
-                ImpactEffect?.ExecuteOnPoint(Caster, this, impactPoint.WorldVector(), context);
+                ImpactEffect?.ExecuteOnPoint(Caster, this, impactPoint.World(), context);
             }
         }
         public override void Die(IBoardContext context)

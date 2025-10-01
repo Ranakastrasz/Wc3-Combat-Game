@@ -5,6 +5,7 @@ using Wc3_Combat_Game.Actions.Interface;
 using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
 using Wc3_Combat_Game.Entities.Units.Buffs;
+using Wc3_Combat_Game.Util.UnitConversion;
 
 namespace Wc3_Combat_Game.Entities.Units.Abilities
 {
@@ -99,7 +100,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
         public static AbilityPrototype CreateRangedWeapon(float manaCost, float recoilFactor, float recoilDuration, float speed, float damage, float aoe, float range, float cooldown, float radius, int vertexes, Color color)
         {
 
-            IGameplayAction damageAction = aoe > 0f ? new AoeDamageAction(damage,damage*0.5f,aoe) : new DamageAction(damage);
+            IGameplayAction damageAction = aoe > 0f ? new AoeDamageAction(damage,damage*0.5f,aoe.World()) : new DamageAction(damage);
 
 
             ProjectilePrototype weaponProjectile = new ProjectilePrototype(
