@@ -23,10 +23,34 @@ namespace Wc3_Combat_Game.Data
         {
 
             var rangedWeapon = new AbilityPrototype(
-                    new ProjectileAction(new ProjectilePrototype(2.5f, 225f, 4f,
+                    new ProjectileAction(new ProjectilePrototype(2.5f, 150f, 4f,
                         new DamageAction(10f), int.MaxValue, Color.DarkMagenta)), null,
-                    0.5f,
+                    1.5f,
                     150f,10f);
+            var rangedWeaponLight = new AbilityPrototype(
+                    new ProjectileAction(new ProjectilePrototype(1.5f, 225f, 4f,
+                        new DamageAction(5f), 2, Color.White)), null,
+                    1.5f,
+                    150f,10f);
+
+            var heavyProjectile = new ProjectilePrototype(4f, 250f, int.MaxValue,
+                        new DamageAction(45f), int.MaxValue, Color.DarkMagenta);
+
+            var rangedWeaponHeavy = new AbilityPrototype(
+                    new ProjectileAction(heavyProjectile), null,
+                    2f,
+                    225f,10f);
+
+            var spreadHeavyAction = new ProjectileAction(heavyProjectile)
+            {
+                ProjectileCount = 5,
+                FullSpreadAngleDeg = 90f
+            };
+
+            var rangedWeaponHeavyFan = new AbilityPrototype(
+                    spreadHeavyAction, null,
+                    5f,
+                    200f,10f);
 
             var rangedWeaponSnare = new AbilityPrototype(
                     new ProjectileAction(new ProjectilePrototype(2.5f, 225, 16f,
@@ -36,11 +60,11 @@ namespace Wc3_Combat_Game.Data
 
 
             var unit = new UnitPrototype("Basic",15f, 2f, 4f, 50f, Color.Brown, 6);
-            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(5f,1,20,0.0f,0.5f));
+            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(5f,1,20,0.25f,0.5f));
             _waves.Add(new Wave(unit, 32));
         
             unit = new UnitPrototype("Blitz",10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
-            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(10f, 1, 20, 0.0f, 0.5f));
+            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(10f, 1, 20, 0.25f, 0.5f));
             _waves.Add(new Wave(unit, 32));
 
             unit = new UnitPrototype("Blaster",30f, 0.0f, 5f, 40f, Color.Orange, 5);
@@ -48,13 +72,39 @@ namespace Wc3_Combat_Game.Data
             _waves.Add(new Wave(unit, 16));
         
             unit = new UnitPrototype("Brute",80f, 2f, 10f, 50f, Color.Brown, 6);
-            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(25f, 1, 20, 0.0f, 0.5f));
+            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(25f, 1, 20, 0.25f, 0.5f));
             _waves.Add(new Wave(unit, 8));
 
             unit = new UnitPrototype("Boss",400f, 0f, 15f, 100f, Color.DarkRed, 4);
-            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(90f, 2, 20, 0.0f, 0.5f));
+            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(90f, 2, 20, 0.25f, 0.5f));
             unit = unit.AddAbility(rangedWeaponSnare);
             _waves.Add(new Wave(unit, 1));
+
+            unit = new UnitPrototype("Swarmer",10f, 0.0f, 3f, 40f, Color.OrangeRed, int.MaxValue);
+            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(5f, 1, 20, 0.25f, 0.5f));
+            _waves.Add(new Wave(unit, 64));
+
+            unit = new UnitPrototype("Light Blaster",15f, 0.0f, 3.5f, 30f, Color.SaddleBrown, 5);
+            unit = unit.AddAbility(rangedWeaponLight);
+            _waves.Add(new Wave(unit, 32));
+
+            unit = new UnitPrototype("Elite Brute",100f, 3f, 10f, 60f, Color.Maroon, 6);
+            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(30f, 1, 20, 0.25f, 0.5f));
+            unit = unit.AddAbility(rangedWeaponSnare);
+            _waves.Add(new Wave(unit, 16));
+
+            unit = new UnitPrototype("Elite Blaster",320f, 0f, 6f, 50f, Color.Purple, 5);
+            unit = unit.AddAbility(rangedWeaponHeavy);
+            unit = unit.AddAbility(rangedWeaponSnare);
+            _waves.Add(new Wave(unit, 8));
+
+            unit = new UnitPrototype("Elite Boss",500f, 0f, 15f, 75f, Color.DarkMagenta, 4);
+            unit = unit.AddAbility(rangedWeaponHeavyFan);
+            unit = unit.AddAbility(rangedWeaponHeavy);
+            unit = unit.AddAbility(rangedWeaponSnare);
+            unit = unit.AddAbility(rangedWeaponSnare);
+            _waves.Add(new Wave(unit, 1));
+
         }
         
     }

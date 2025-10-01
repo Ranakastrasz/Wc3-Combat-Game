@@ -1,18 +1,29 @@
-﻿using Wc3_Combat_Game.Entities.Units.Prototypes;
+﻿using System.Collections.Immutable;
+
+using Wc3_Combat_Game.Entities.Units.Prototypes;
 
 namespace Wc3_Combat_Game.Waves
 {
-    public struct Wave
+    public record Wave
     {
-        public UnitPrototype Unit { get; }
-        public int CountToSpawn { get; }
+        public ImmutableList<Tuple<UnitPrototype, int>> UnitAndCount { get; }
 
+        public UnitPrototype Unit => UnitAndCount[0].Item1;
+        public int CountToSpawn => UnitAndCount[0].Item2;
+
+        private Wave(ImmutableList<Tuple<UnitPrototype, int>> unitAndCount)
+        {
+            UnitAndCount = unitAndCount;
+        }
         public Wave(UnitPrototype unit, int toSpawn)
         {
-            Unit = unit;
-            CountToSpawn = toSpawn;
+            UnitAndCount = ImmutableList.Create(Tuple.Create(unit, toSpawn));
         }
-
+        public Wave AddUnit(UnitPrototype unit, int count)
+        {
+            var newUnitAndCount = UnitAndCount.Add(Tuple.Create(unit, count));
+            return new Wave(newUnitAndCount);
+        }
     }
 }
 
