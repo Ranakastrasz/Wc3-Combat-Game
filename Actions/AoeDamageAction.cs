@@ -32,17 +32,17 @@ namespace Wc3_Combat_Game.Actions
             ExecuteOnPoint(Caster, Emitter, Target.Position.WorldVector(), context);
         }
 
-        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector2 TargetPoint, IBoardContext context)
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector TargetPoint, IBoardContext context)
         {
             if(Caster == null) return; // May need to somehow pass a team though instead at some point instead for the baseclass, for sourceless, but team-owned effects.
-            context.Entities.ForEach(e =>
+            context.Entities.ForEach(targetCandidate =>
             {
-                if(e is Unit unit)
+                if(targetCandidate is Unit unit)
                 {
-                    if(Caster.Team.IsHostileTo(e.Team))
+                    if(Caster.Team.IsHostileTo(targetCandidate.Team))
                     {
-                        Vector2 origin = OnTargetOnly ? TargetPoint.Value : (Emitter?.Position ?? TargetPoint.Value);
-                        float distance = GeometryUtils.DistanceTo(origin, e.Position);
+                        WorldVector origin = OnTargetOnly ? TargetPoint : (Emitter?.Position.WorldVector() ?? TargetPoint);
+                        float distance = GeometryUtils.DistanceTo(origin.Value, targetCandidate.Position);
                         if(distance < Radius)
                         {
                             float damage = (Radius - distance) / Radius; // 0..1 scale

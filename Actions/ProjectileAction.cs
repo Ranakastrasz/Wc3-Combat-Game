@@ -31,7 +31,7 @@ namespace Wc3_Combat_Game.Actions
             ExecuteOnPoint(Caster, Emitter, Target.Position.WorldVector(), context);
         }
 
-        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector2 TargetPoint, IBoardContext context)
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector TargetPoint, IBoardContext context)
         {
             //Projectile projectile = new Projectile(Caster.Position, Prototype);
             // Hardcode requirements for now

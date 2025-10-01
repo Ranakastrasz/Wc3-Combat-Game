@@ -12,8 +12,9 @@ namespace Wc3_Combat_Game.Actions
 {
     public record AoeAction: IGameplayAction
     {
-        public float Radius { get; init; }
         public IGameplayAction Action { get; init; }
+        public float Radius { get; init; }
+        public bool OnTargetOnly { get; init; }
 
         public AoeAction(float radius, IGameplayAction action)
         {
@@ -26,7 +27,7 @@ namespace Wc3_Combat_Game.Actions
             ExecuteOnPoint(Caster,Emitter,Target.Position.WorldVector(),context);
         }
 
-        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector2 TargetPoint, IBoardContext context)
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector TargetPoint, IBoardContext context)
         {
             if(Caster == null) return; // May need to somehow pass a team though instead at some point.
             context.Entities.ForEach(e =>

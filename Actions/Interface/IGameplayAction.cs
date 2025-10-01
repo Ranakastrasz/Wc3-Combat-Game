@@ -16,6 +16,6 @@ namespace Wc3_Combat_Game.Actions.Interface
         // May need to somehow pass a team though instead at some point instead, for sourceless, but team-owned effects.
 
         public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context);
-        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector2 TargetPoint, IBoardContext context);
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector TargetPoint, IBoardContext context);
     }
 }

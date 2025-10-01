@@ -27,7 +27,7 @@ namespace Wc3_Combat_Game.Actions
             }
         }
 
-        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector2 TargetPoint, IBoardContext context)
+        public void ExecuteOnPoint(Entity? Caster, Entity? Emitter, WorldVector TargetPoint, IBoardContext context)
         {
             // DoNothing.
             // Damage requires a target, or an AOE Effect to find targets.

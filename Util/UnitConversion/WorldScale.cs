@@ -1,13 +1,19 @@
-﻿using System;
+﻿global using WorldPoint = Wc3_Combat_Game.Util.UnitConversion.WorldVector;
+global using PhysicsPoint = Wc3_Combat_Game.Util.UnitConversion.PhysicsVector;
+global using GridPoint = Wc3_Combat_Game.Util.UnitConversion.GridVector;
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Wc3_Combat_Game.Util.UnitConversion
 {
-    
+
     public readonly struct WorldLength
     {
         public const float WorldToPhysicsFactor = 32f;
@@ -74,89 +80,96 @@ namespace Wc3_Combat_Game.Util.UnitConversion
     //-------------------------------------------------------------------------
 
     // World scale: Base scale
-    public struct WorldVector2
+    public readonly struct WorldVector
     {
-        public float X { get; }
-        public float Y { get; }
+        public Vector2 Value { get; }
+        public readonly float X => Value.X;
+        public readonly float Y => Value.Y;
 
-        public Vector2 Value => new Vector2(X, Y);
-
-        public WorldVector2(float x, float y)
+        public WorldVector(Vector2 value)
         {
-            X = x;
-            Y = y;
+            Value = value;
+        }
+        public WorldVector(float x, float y)
+        {
+            Value = new Vector2(x, y);
         }
 
         // Simple arithmetic operator overloads
-        public static WorldVector2 operator +(WorldVector2 a, WorldVector2 b) => new WorldVector2(a.X + b.X, a.Y + b.Y);
-        public static WorldVector2 operator -(WorldVector2 a, WorldVector2 b) => new WorldVector2(a.X - b.X, a.Y - b.Y);
-        public static WorldVector2 operator *(WorldVector2 a, float s) => new WorldVector2(a.X * s, a.Y * s);
-        public static WorldVector2 operator *(float s, WorldVector2 a) => new WorldVector2(a.X * s, a.Y * s);
+        public static WorldVector operator +(WorldVector a, WorldVector b) => new WorldVector(a.Value + b.Value);
+        public static WorldVector operator -(WorldVector a, WorldVector b) => new WorldVector(a.Value - b.Value);
+        public static WorldVector operator *(WorldVector a, float s) => new WorldVector(a.Value * s);
+        public static WorldVector operator *(float s, WorldVector a) => a * s;
 
         public override string ToString() => $"({X:F2}, {Y:F2}) World";
     }
 
     // Physics scale: World / 32
-    public struct PhysicsVector2
+    public readonly struct PhysicsVector
     {
-        public float X { get; }
-        public float Y { get; }
-        public Vector2 Value => new Vector2(X, Y);
+        public Vector2 Value { get; }
+        public readonly float X => Value.X;
+        public readonly float Y => Value.Y;
 
-        public PhysicsVector2(float x, float y)
+        public PhysicsVector(Vector2 value)
         {
-            X = x;
-            Y = y;
+            Value = value;
+        }
+        public PhysicsVector(float x, float y)
+        {
+            Value = new Vector2(x, y);
         }
 
         // Implicit conversion from WorldVector2 to PhysicsVector2 (World / 32)
-        public static implicit operator PhysicsVector2(WorldVector2 w) =>
-            new PhysicsVector2(
+        public static implicit operator PhysicsVector(WorldVector w) =>
+            new PhysicsVector(
                 w.X / WorldLength.WorldToPhysicsFactor,
                 w.Y / WorldLength.WorldToPhysicsFactor);
 
         // Explicit conversion from PhysicsVector2 to WorldVector2 (Physics * 32)
-        public static explicit operator WorldVector2(PhysicsVector2 p) =>
-            new WorldVector2(
+        public static explicit operator WorldVector(PhysicsVector p) =>
+            new WorldVector(
                 p.X * WorldLength.WorldToPhysicsFactor,
                 p.Y * WorldLength.WorldToPhysicsFactor);
 
-        public static PhysicsVector2 operator +(PhysicsVector2 a, PhysicsVector2 b) => new PhysicsVector2(a.X + b.X, a.Y + b.Y);
-        public static PhysicsVector2 operator -(PhysicsVector2 a, PhysicsVector2 b) => new PhysicsVector2(a.X - b.X, a.Y - b.Y);
-        public static PhysicsVector2 operator *(PhysicsVector2 a, float s) => new PhysicsVector2(a.X * s, a.Y * s);
-        public static PhysicsVector2 operator *(float s, PhysicsVector2 a) => new PhysicsVector2(a.X * s, a.Y * s);
+        public static PhysicsVector operator +(PhysicsVector a, PhysicsVector b) => new PhysicsVector(a.Value + b.Value);
+        public static PhysicsVector operator -(PhysicsVector a, PhysicsVector b) => new PhysicsVector(a.Value - b.Value);
+        public static PhysicsVector operator *(PhysicsVector a, float s) => new PhysicsVector(a.Value * s);
+        public static PhysicsVector operator *(float s, PhysicsVector a) => a * s;
 
         public override string ToString() => $"({X:F5}, {Y:F5}) Physics";
     }
 
     // Grid scale: World / 64
-    public struct GridVector2
+    public readonly struct GridVector
     {
-        public float X { get; }
-        public float Y { get; }
-        public Vector2 Value => new Vector2(X, Y);
-        public GridVector2(float x, float y)
+        public Vector2 Value { get; }
+        public readonly float X => Value.X;
+        public readonly float Y => Value.Y;
+        public GridVector(Vector2 value)
         {
-            X = x;
-            Y = y;
+            Value = value;
+        }
+        public GridVector(float x, float y)
+        {
+            Value = new Vector2(x, y);
         }
 
         // Implicit conversion from WorldVector2 to GridVector2 (World / 64)
-        public static implicit operator GridVector2(WorldVector2 w) =>
-            new GridVector2(
+        public static implicit operator GridVector(WorldVector w) =>
+            new GridVector(
                 w.X / WorldLength.WorldToGridFactor,
                 w.Y / WorldLength.WorldToGridFactor);
 
         // Explicit conversion from GridVector2 to WorldVector2 (Grid * 64)
-        public static explicit operator WorldVector2(GridVector2 g) =>
-            new WorldVector2(
+        public static explicit operator WorldVector(GridVector g) =>
+            new WorldVector(
                 g.X * WorldLength.WorldToGridFactor,
                 g.Y * WorldLength.WorldToGridFactor);
-
-        public static GridVector2 operator +(GridVector2 a, GridVector2 b) => new GridVector2(a.X + b.X, a.Y + b.Y);
-        public static GridVector2 operator -(GridVector2 a, GridVector2 b) => new GridVector2(a.X - b.X, a.Y - b.Y);
-        public static GridVector2 operator *(GridVector2 a, float s) => new GridVector2(a.X * s, a.Y * s);
-        public static GridVector2 operator *(float s, GridVector2 a) => new GridVector2(a.X * s, a.Y * s);
+        public static GridVector operator +(GridVector a, GridVector b) => new GridVector(a.Value + b.Value);
+        public static GridVector operator -(GridVector a, GridVector b) => new GridVector(a.Value - b.Value);
+        public static GridVector operator *(GridVector a, float s) => new GridVector(a.Value * s);
+        public static GridVector operator *(float s, GridVector a) => a * s;
 
         public override string ToString() => $"({X:F5}, {Y:F5}) Grid";
     }
@@ -172,12 +185,12 @@ namespace Wc3_Combat_Game.Util.UnitConversion
         public static GridLength Grid(this float value) => GridLength.FromGrid(value);
 
         // For Vector2 (Fluent construction)
-        public static WorldVector2 WorldVector(this Vector2 value) => new WorldVector2(value.X, value.Y);
-        public static WorldVector2 WorldVector(this (float x, float y) values) => new WorldVector2(values.x, values.y);
-        public static PhysicsVector2 PhysicsVector2(this Vector2 value) => new PhysicsVector2(value.X, value.Y);
-        public static PhysicsVector2 PhysicsVector(this (float x, float y) values) => new PhysicsVector2(values.x, values.y);
-        public static GridVector2 GridVector2(this Vector2 value) => new GridVector2(value.X, value.Y);
-        public static GridVector2 GridVector(this (float x, float y) values) => new GridVector2(values.x, values.y);
+        public static WorldVector WorldVector(this Vector2 value) => new WorldVector(value);
+        public static WorldVector WorldVector(this (float x, float y) values) => new WorldVector(values.x, values.y);
+        public static PhysicsVector PhysicsVector(this Vector2 value) => new PhysicsVector(value);
+        public static PhysicsVector PhysicsVector(this (float x, float y) values) => new PhysicsVector(values.x, values.y);
+        public static GridVector GridVector(this Vector2 value) => new GridVector(value);
+        public static GridVector GridVector(this (float x, float y) values) => new GridVector(values.x, values.y);
     }
 
     public class ScaleDemonstration
@@ -226,11 +239,11 @@ namespace Wc3_Combat_Game.Util.UnitConversion
             System.Console.WriteLine($"Multiplied: {multiplied}"); // 15.00 World
 
             // Vector2 usage example
-            WorldVector2 wVec1 = (2f, 4f).WorldVector();
+            WorldVector wVec1 = (2f, 4f).WorldVector();
             WorldLength wLength = 10f.World();
 
             // Vector arithmetic
-            WorldVector2 wVec2 = wVec1 * 2;
+            WorldVector wVec2 = wVec1 * 2;
             System.Console.WriteLine($"Vector: {wVec2}"); // (4.00, 8.00) World
 
             System.Console.WriteLine("--- Projectile Scale Conversions ---");

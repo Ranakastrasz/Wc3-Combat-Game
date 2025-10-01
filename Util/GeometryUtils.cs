@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
 
+using Wc3_Combat_Game.Util.UnitConversion;
+
 namespace Wc3_Combat_Game.Util
 {
     public static partial class GeometryUtils
@@ -40,6 +42,13 @@ namespace Wc3_Combat_Game.Util
         }
         public static float DistanceTo(Vector2 from, Vector2 to) =>
             Vector2.Distance(from, to);
+        public static float DistanceTo(WorldVector from, WorldVector to) =>
+            Vector2.Distance(from.Value, to.Value);
+        public static float DistanceTo(PhysicsVector from, PhysicsVector to) =>
+            Vector2.Distance(from.Value, to.Value);
+        public static float DistanceTo(GridVector from, GridVector to) =>
+            Vector2.Distance(from.Value, to.Value);
+
         public static float DistanceTo(Point from, Point to) =>
             Vector2.Distance(from.ToVector2(), to.ToVector2());
         public static float DistanceSquared(Point from, Point to) =>
