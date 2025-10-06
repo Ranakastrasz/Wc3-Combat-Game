@@ -102,7 +102,6 @@ namespace Wc3_Combat_Game.Data
             unit = unit.AddAbility(rangedWeaponHeavyFan);
             unit = unit.AddAbility(rangedWeaponHeavy);
             unit = unit.AddAbility(rangedWeaponSnare);
-            unit = unit.AddAbility(rangedWeaponSnare);
             _waves.Add(new Wave(unit, 1));
 
         }

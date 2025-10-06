@@ -33,7 +33,15 @@ namespace Wc3_Combat_Game.Entities.Projectiles.Prototypes
                   impactAction != null ? ImmutableArray.Create(impactAction) : ImmutableArray<IGameplayAction>.Empty,
                   color)
         {
+        }
 
+        public ProjectilePrototype() 
+        {
+            Radius = 0;
+            Speed = 0;
+            Lifespan = 0;
+            ImpactActions = ImmutableArray<IGameplayAction>.Empty;
+            Color = Color.White;
         }
 
         public ProjectilePrototype AddImpactAction(IGameplayAction impactAction)
