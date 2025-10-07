@@ -64,6 +64,8 @@ namespace Wc3_Combat_Game.Core
         private int _framesRendered; // an increasing count
         public int Fps { get; private set; } // the FPS calculated from the last measurement
 
+        public event Action? GameRestartRequested; // Event to be fired when the restart delay is over
+
 
         public GameController()
         {
@@ -134,12 +136,20 @@ namespace Wc3_Combat_Game.Core
             {
                 if(TimeUtils.HasElapsed(GlobalTime, _gameOverTime, GameConstants.GAME_RESTART_DELAY))
                 {
-                    // Game crashes once the game starts and update happens, because CreateGameBoard isn't sufficient.
-                    // This needs to be sent to the actual Program.cs, since that is where all the initialization happens.
-                    // Dunno how to do that atm.
+                    // 1. Stop the game loop timer immediately
+                    _gameLoopTimer.Stop();
+
+                    // 2. Clear out disposable resources managed by the Controller/View
                     View?.Dispose();
-                    //CreateGameBoard();
-                    //StartGame();
+
+                    // 3. Signal the main application to handle the cleanup and re-initialization
+                    GameRestartRequested?.Invoke();
+
+                    // Optional: Set state back to Uninitialized
+                    CurrentState = GameState.Uninitialized;
+
+                    // NO MORE CODE after the Invoke! The controller is now effectively done.
+                    return;
                 }
             }
             Input?.EndFrame();

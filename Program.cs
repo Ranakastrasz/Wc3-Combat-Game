@@ -13,6 +13,8 @@ namespace Wc3_Combat_Game
 {
     internal static class Program
     {
+        private static GameController? _activeController;
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -61,7 +63,7 @@ namespace Wc3_Combat_Game
             game.CreateGameView();
             AssertUtil.NotNull(game.View);
 
-            game.Board.InitMap(GetDefaultMap(), 32f);
+            game.Board.InitMap(Data.MapData.GetDefaultMap(), 32f);
 
             game.Board.InitWaves();
 
@@ -86,6 +88,49 @@ namespace Wc3_Combat_Game
             // Might need other cleanup later. Dunno.
 
         }
+
+        public static void StartNewGame()
+        {
+            // 1. Cleanup old resources (if any)
+            if(_activeController != null)
+            {
+                // The controller already disposed of the View, but it's good practice
+                // to ensure all resources are released.
+                // (The GameBoard Dispose is usually called inside View.Dispose or is handled implicitly
+                // when the GC collects the board/controller, but for clarity you might want explicit disposal).
+            }
+
+            // 2. Create the new central objects
+            GameController controller = new GameController();
+            GameBoard board = controller.CreateGameBoard();
+            GameView view = controller.CreateGameView(); // Needs to initialize the view/window
+
+            // 3. Set up the game content
+            board.InitMap(Data.MapData.GetDefaultMap()); // Example
+            board.InitPlayer();
+            board.InitWaves();
+
+            // 4. SUBSCRIBE to the restart event
+            controller.GameRestartRequested += HandleRestartRequest;
+
+            // 5. Start the game loop
+            controller.StartGame();
+            controller.StartTimer();
+
+            _activeController = controller;
+
+            // Start the main loop to keep the application running (e.g., Application.Run(view.WindowForm))
+            // ...
+        }
+
+        private static void HandleRestartRequest()
+        {
+            Console.WriteLine("Restart requested by GameController.");
+            // We are now in the application context, safely outside the GameController's update loop.
+            // Recursive call is fine here as it's the top-level app manager.
+            StartNewGame();
+        }
+
         public static void ListClasses()
         {
             var oString = new StringBuilder();
@@ -186,64 +231,6 @@ namespace Wc3_Combat_Game
             {
                 Console.Error.WriteLine($"Error writing file: {ex.Message}");
             }
-        }
-        private static string[] GetDefaultMap()
-        {
-            // This is an overly complex map for testing purposes.
-            // It has a lot of walls, portals, and shops, and is close to a real game map.
-
-            return [
-            "################################",
-            "#......_.._.........._.._......#",
-            "#......_.._.........._.._......#",
-            "#..SS..####..##..##..####..SS..#",
-            "#..SS..#PP#..##..##..#PP#..SS..#",
-            "#......#..#..........#..#......#",
-            "#......#..#..........#..#......#",
-            "#__#####__##__####__##__#####__#",
-            "#..#P.._................_..P#..#",
-            "#..#P.._................_..P#..#",
-            "#__#####..##........##..#####__#",
-            "#......#..#..........#..#......#",
-            "#......_....__####__...._......#",
-            "#..##.._...._......_...._..##..#",
-            "#..##..#....#......#....#..##..#",
-            "#......#....#..FF..#....#......#",
-            "#......#....#..FF..#....#......#",
-            "#..##..#....#......#....#..##..#",
-            "#..##.._...._......_...._..##..#",
-            "#......_....__####__...._......#",
-            "#......#..#..........#..#......#",
-            "#__#####..##........##..#####__#",
-            "#..#P.._................_..P#..#",
-            "#..#P.._................_..P#..#",
-            "#__#####__##__####__##__#####__#",
-            "#......#..#..........#..#......#",
-            "#......#..#..##..##..#..#......#",
-            "#..SS..#PP#..##..##..#PP#..SS..#",
-            "#..SS..####..........####..SS..#",
-            "#......_.._.........._.._......#",
-            "#......_.._.........._.._......#",
-            "################################"];
-        }
-
-        private static string[] GetDebugMap()
-        {
-            return [
-            "################################",
-            "#..............................#",
-            "#__#####..##........##..#####__#",
-            "#..#P.._................_..P#..#",
-            "#..#P.._................_..P#..#",
-            "#__#####__##__####__##__#####__#",
-            "#.........#..........#..#......#",
-            "#.........#..##..##..#..#......#",
-            "#..SS..#PP#..##..##..#PP#..SS..#",
-            "#..SS..####..........####..SS..#",
-            "#......_.._.........._.._......#",
-            "#......_.._.........._.._......#",
-            "################################"];
-
         }
     }
 }
