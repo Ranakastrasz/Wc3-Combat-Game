@@ -222,7 +222,7 @@ namespace Wc3_Combat_Game.Core
 
             UnitPrototype playerUnit = PlayerBuilder.BuildPlayer();
             PlayerUnit = Unit.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
-
+            PlayerUnit.DespawnDelay = float.MaxValue; // Player should never despawn.
             AddUnit(PlayerUnit);
         }
 
@@ -230,7 +230,7 @@ namespace Wc3_Combat_Game.Core
         private bool CheckGameOverCondition(IBoardContext context)
         {
             AssertUtil.NotNull(PlayerUnit);
-            if(PlayerUnit.IsExpired(context))
+            if(TimeUtils.HasElapsed(context.CurrentTime, PlayerUnit.LastDied, 3f))
             {
                 AssertUtil.NotNull(Controller);
                 Controller.OnDefeat();

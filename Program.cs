@@ -4,6 +4,8 @@ using System.Text;
 
 using AssertUtils;
 
+using Microsoft.Xna.Framework;
+
 using nkast.Aether.Physics2D.Dynamics;
 
 using Wc3_Combat_Game.Core;
@@ -54,38 +56,8 @@ namespace Wc3_Combat_Game
                     break;
             }
 
+            StartNewGame();
 
-            // otherwise continue with the game
-
-            game.CreateGameBoard();
-            AssertUtil.NotNull(game.Board);
-
-            game.CreateGameView();
-            AssertUtil.NotNull(game.View);
-
-            game.Board.InitMap(Data.MapData.GetDefaultMap(), 32f);
-
-            game.Board.InitWaves();
-
-            game.Board.InitPlayer();
-            AssertUtil.NotNull(game.Board.PlayerUnit);
-            game.View.RegisterPlayer(game.Board.PlayerUnit);
-
-            if(game.View != null)
-            {
-
-
-                game.StartGame();
-
-                game.StartTimer();
-                Application.Run(game.View);
-
-                // When this finishes, GameOver/Victory. Probably need to handle here.
-                // and, Allow restarting the game.
-            }
-
-            game.Board.Dispose(); // Cleanup.
-            // Might need other cleanup later. Dunno.
 
         }
 
@@ -106,9 +78,12 @@ namespace Wc3_Combat_Game
             GameView view = controller.CreateGameView(); // Needs to initialize the view/window
 
             // 3. Set up the game content
-            board.InitMap(Data.MapData.GetDefaultMap()); // Example
+            board.InitMap(Data.MapData.GetDefaultMap(), 32f); // Example
             board.InitPlayer();
             board.InitWaves();
+
+
+            view.RegisterPlayer(board.PlayerUnit);
 
             // 4. SUBSCRIBE to the restart event
             controller.GameRestartRequested += HandleRestartRequest;
@@ -119,8 +94,9 @@ namespace Wc3_Combat_Game
 
             _activeController = controller;
 
-            // Start the main loop to keep the application running (e.g., Application.Run(view.WindowForm))
-            // ...
+            Application.Run(view);
+
+            controller.Board.Dispose(); // Cleanup.
         }
 
         private static void HandleRestartRequest()

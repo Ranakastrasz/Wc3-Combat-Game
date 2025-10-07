@@ -33,7 +33,7 @@ namespace Wc3_Combat_Game.Entities
 
         public Vector2 Position { get => _physicsBody.Position; set => _physicsBody.Position = value; }
         private bool _isAlive = true;
-        float _lastKilled = float.NegativeInfinity;
+        protected float _lastDied = float.PositiveInfinity;
         protected float _despawnDelay = GameConstants.FIXED_DELTA_TIME;
 
         public Team Team;
@@ -50,7 +50,7 @@ namespace Wc3_Combat_Game.Entities
         public IDrawable? Drawer { get => _drawer; protected set => _drawer = value; }
         public PhysicsBodyComponent PhysicsBody { get => _physicsBody; protected set => _physicsBody = value; }
 
-        public bool IsExpired(IBoardContext context) => !_isAlive && context.CurrentTime > _lastKilled + _despawnDelay;
+        public bool IsExpired(IBoardContext context) => !_isAlive && context.CurrentTime > _lastDied + _despawnDelay;
 
         public Entity(float radius, Vector2 position, IBoardContext context)
         {
@@ -92,7 +92,7 @@ namespace Wc3_Combat_Game.Entities
             if(!IsAlive) return;
 
             _isAlive = false;
-            _lastKilled = context.CurrentTime;
+            _lastDied = context.CurrentTime;
         }
 
         public bool Intersects(Entity other)

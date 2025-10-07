@@ -64,6 +64,8 @@ namespace Wc3_Combat_Game.Entities.Units
         public float MoveSpeed(IContext context) => BaseMoveSpeed * (Buffs as Buffable)?.GetFullSpeedModifier(context) ?? BaseMoveSpeed;
 
         public float BaseMoveSpeed { get; private set; }
+        public float DespawnDelay { get => _despawnDelay; set => _despawnDelay = value; }
+        public float LastDied { get => _lastDied; set => _lastDied = value; }
 
         //public new IMoveable Mover { get;}
 
