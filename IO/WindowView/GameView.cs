@@ -210,12 +210,12 @@ namespace Wc3_Combat_Game
             DrawContext?.Entities?.ForEach(p => p.Draw(g, DrawContext));
 
 
-            if(_controller.CurrentState == GameState.GameOver || _controller.CurrentState == GameState.Victory)
+            if(_controller.CurrentState == GameState.GameEnded)
             {
                 g.ResetTransform();
 
                 using var gameOverFont = new Font("Arial", 24, FontStyle.Bold);
-                string message = _controller.CurrentState == GameState.GameOver ? "Game Over" : "Victory!";
+                string message = _controller.VictoryState == GameEndState.Victory ? "Victory!" : "Game Over";
                 SizeF textSize = g.MeasureString(message, gameOverFont);
 
                 float x = (ClientSize.Width - textSize.Width) / 2;

@@ -8,20 +8,19 @@ using AStar.Options;
 
 using nkast.Aether.Physics2D.Dynamics;
 
-using Wc3_Combat_Game.Actions;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Core.Event;
 using Wc3_Combat_Game.Core.Event.Wc3_Combat_Game.Core.Event;
-using Wc3_Combat_Game.Data;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.EntityTypes;
 using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.Entities.Units.Controllers;
 using Wc3_Combat_Game.Entities.Units.Prototypes;
+using Wc3_Combat_Game.GameEngine.Data;
+using Wc3_Combat_Game.GameEngine.Terrain;
+using Wc3_Combat_Game.GameEngine.Waves;
 using Wc3_Combat_Game.IO;
-using Wc3_Combat_Game.Terrain;
 using Wc3_Combat_Game.Util;
-using Wc3_Combat_Game.Waves;
 
 using static Wc3_Combat_Game.Core.GameConstants;
 //using Wc3_Combat_Game.IO.Load.GameSchema;

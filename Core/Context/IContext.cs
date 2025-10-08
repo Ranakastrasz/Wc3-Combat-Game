@@ -1,4 +1,4 @@
-﻿using Wc3_Combat_Game.Terrain;
+﻿using Wc3_Combat_Game.GameEngine.Terrain;
 
 namespace Wc3_Combat_Game.Core.Context
 {

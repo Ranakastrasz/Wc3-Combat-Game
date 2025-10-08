@@ -13,15 +13,22 @@ namespace Wc3_Combat_Game.Core
 
         public enum GameState
         {
-            Uninitialized,
-            Playing,
-            Paused,
-            GameOver,
+            Uninitialized, // Created, But board and/or view not yet created/set.
+            Initialized, // Board and View created, but not started.
+            Playing, // Game is running.
+            Paused, // Game is paused. Also used when debug menu is open, and enables console.
+            GameEnded, // Game is over, waiting for restart.
+        }
+
+        public enum GameEndState
+        {
+            None,
+            Defeat,
             Victory
         }
 
         public GameState CurrentState;
-
+        public GameEndState VictoryState = GameEndState.None;
         public GameBoard Board
         {
             get
@@ -87,14 +94,16 @@ namespace Wc3_Combat_Game.Core
         public void OnVictory()
         {
             // handle game over
-            CurrentState = GameState.Victory;
+            CurrentState = GameState.GameEnded;
+            VictoryState = GameEndState.Victory;
             _gameOverTime = GlobalTime;
         }
 
         internal void OnDefeat()
         {
             // handle Victory
-            CurrentState = GameState.GameOver;
+            CurrentState = GameState.GameEnded;
+            VictoryState = GameEndState.Defeat;
             _gameOverTime = GlobalTime;
         }
         private void GameLoopTimer_Tick(object? sender, EventArgs e)
@@ -132,7 +141,7 @@ namespace Wc3_Combat_Game.Core
                     View.Update(DrawDeltaTime); // May need to pass both in later. 
                 }
             }
-            else if(CurrentState == GameState.GameOver || CurrentState == GameState.Victory)
+            else if(CurrentState == GameState.GameEnded)
             {
                 if(TimeUtils.HasElapsed(GlobalTime, _gameOverTime, GameConstants.GAME_RESTART_DELAY))
                 {

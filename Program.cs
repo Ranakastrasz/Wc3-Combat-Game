@@ -2,13 +2,8 @@ using System.Numerics;
 using System.Reflection;
 using System.Text;
 
-using AssertUtils;
-
-using Microsoft.Xna.Framework;
-
-using nkast.Aether.Physics2D.Dynamics;
-
 using Wc3_Combat_Game.Core;
+using Wc3_Combat_Game.GameEngine.Data;
 using Wc3_Combat_Game.Util.UnitConversion;
 
 namespace Wc3_Combat_Game
@@ -78,12 +73,14 @@ namespace Wc3_Combat_Game
             GameView view = controller.CreateGameView(); // Needs to initialize the view/window
 
             // 3. Set up the game content
-            board.InitMap(Data.MapData.GetDefaultMap(), 32f); // Example
+            board.InitMap(MapData.GetDefaultMap(), 32f); // Example
             board.InitPlayer();
             board.InitWaves();
 
 
-            view.RegisterPlayer(board.PlayerUnit);
+#pragma warning disable CS8604 // Possible null reference argument.
+            view.RegisterPlayer(board.PlayerUnit); // Not really sure if Controller or board should handle this. Well, controller should tell board to create the player, instead of program, and then controller should tell view to register it. But this is close enough for now.
+#pragma warning restore CS8604 // Possible null reference argument.
 
             // 4. SUBSCRIBE to the restart event
             controller.GameRestartRequested += HandleRestartRequest;

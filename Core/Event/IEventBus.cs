@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Wc3_Combat_Game.Events;
-
 namespace Wc3_Combat_Game.Core.Event
 {
     public interface IEventBus
