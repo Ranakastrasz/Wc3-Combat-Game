@@ -22,12 +22,12 @@ namespace Wc3_Combat_Game.GameEngine.Data
                     new ProjectileAction(new ProjectilePrototype(2.5f, 150f, 4f,
                         new DamageAction(10f), int.MaxValue, Color.DarkMagenta)), null,
                     1.5f,
-                    150f,10f);
+                    150f,10f).ID;
             var rangedWeaponLight = new AbilityPrototype("light_ranged_weapon","Basic Arrow",
                     new ProjectileAction(new ProjectilePrototype(1.5f, 225f, 4f,
                         new DamageAction(5f), 2, Color.White)), null,
                     1.5f,
-                    150f,10f);
+                    150f,10f).ID;
 
             var heavyProjectile = new ProjectilePrototype(4f, 250f, int.MaxValue,
                         new DamageAction(45f), int.MaxValue, Color.DarkMagenta);
@@ -35,7 +35,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
             var rangedWeaponHeavy = new AbilityPrototype("heavy_ranged_weapon","Death Bolt",
                     new ProjectileAction(heavyProjectile), null,
                     2f,
-                    225f,10f);
+                    225f,10f).ID;
 
             var spreadHeavyAction = new ProjectileAction(heavyProjectile)
             {
@@ -46,23 +46,23 @@ namespace Wc3_Combat_Game.GameEngine.Data
             var rangedWeaponHeavyFan = new AbilityPrototype("heavy_ranged_weapon_fan","Death Bolt (Fan)",
                     spreadHeavyAction, null,
                     5f,
-                    200f,10f);
+                    200f,10f).ID;
 
             var rangedWeaponSnare = new AbilityPrototype("snare_ranged_weapon","Shockwave (Snare)",
                     new ProjectileAction(new ProjectilePrototype(2.5f, 225, 16f,
                         new BuffAction(IBuffable.BuffType.Slow,0.5f,1f),int.MaxValue, Color.Cyan)), null,
                     0.5f,
-                    150f,5f);
+                    150f,5f).ID;
 
 
 
             UnitPrototype unit;
             PrototypeManager.RegisterUnit(new UnitPrototype("basic_enemy", "Basic", 15f, 2f, 4f, 50f, Color.Brown, 6)
-            .AddAbility(AbilityFactory.CreateInstantWeapon(5f, 1, 20, 0.25f, 0.5f)));
+            .AddAbility(AbilityFactory.CreateInstantWeapon(5f, 1, 20, 0.25f, 0.5f).ID));
 
 
             unit = new UnitPrototype("blitz_enemy","Blitz",10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
-            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(10f, 1, 20, 0.25f, 0.5f));
+            unit = unit.AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(10f, 1, 20, 0.25f, 0.5f));
             PrototypeManager.RegisterUnit(unit);
 
             unit = new UnitPrototype("blaster_enemy","Blaster",30f, 0.0f, 5f, 40f, Color.Orange, 5);
@@ -70,16 +70,16 @@ namespace Wc3_Combat_Game.GameEngine.Data
             PrototypeManager.RegisterUnit(unit);
 
             unit = new UnitPrototype("brute_enemy","Brute",80f, 2f, 10f, 50f, Color.Brown, 6);
-            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(25f, 1, 20, 0.25f, 0.5f));
+            unit = unit.AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(25f, 1, 20, 0.25f, 0.5f));
             PrototypeManager.RegisterUnit(unit);
 
             unit = new UnitPrototype("boss_enemy","Boss",400f, 0f, 15f, 100f, Color.DarkRed, 4);
-            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(90f, 2, 20, 0.25f, 0.5f));
+            unit = unit.AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(90f, 2, 20, 0.25f, 0.5f));
             unit = unit.AddAbility(rangedWeaponSnare);
             PrototypeManager.RegisterUnit(unit);
 
             unit = new UnitPrototype("swarmer_enemy","Swarmer",10f, 0.0f, 3f, 40f, Color.OrangeRed, int.MaxValue);
-            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(5f, 1, 20, 0.25f, 0.5f));
+            unit = unit.AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(5f, 1, 20, 0.25f, 0.5f));
             PrototypeManager.RegisterUnit(unit);
 
             unit = new UnitPrototype("light_blaster_enemy","Light Blaster",15f, 0.0f, 3.5f, 30f, Color.SaddleBrown, 5);
@@ -87,7 +87,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
             PrototypeManager.RegisterUnit(unit);
 
             unit = new UnitPrototype("elite_brute_enemy","Elite Brute",100f, 3f, 10f, 60f, Color.Maroon, 6);
-            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(30f, 1, 20, 0.25f, 0.5f));
+            unit = unit.AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(30f, 1, 20, 0.25f, 0.5f));
             unit = unit.AddAbility(rangedWeaponSnare);
             PrototypeManager.RegisterUnit(unit);
 

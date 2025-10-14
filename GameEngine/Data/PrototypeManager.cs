@@ -46,42 +46,47 @@ namespace Wc3_Combat_Game.GameEngine.Data
         //public void RegisterProjectile(ProjectilePrototype prototype)
         //{
         //    if(ProjectilePrototypes.ContainsKey(prototype.ID))
-        //        throw new ArgumentException($"A ProjectilePrototype with the ID '{prototype.Id}' is already registered.");
+        //        throw new ArgumentException($"A ProjectilePrototype with the ID '{prototype.ID}' is already registered.");
         //    ProjectilePrototypes[prototype.ID] = prototype;
         //}
-
-        internal static UnitPrototype GetUnit(string v)
-        {
-            if (UnitPrototypes.TryGetValue(v, out var prototype))
-                return prototype;
-            throw new KeyNotFoundException($"No UnitPrototype found with ID '{v}'.");
-        }
-
-        internal static AbilityPrototype GetAbility(string v)
-        {
-            if (AbilityPrototypes.TryGetValue(v, out var prototype))
-                return prototype;
-            throw new KeyNotFoundException($"No AbilityPrototype found with ID '{v}'.");
-        }
-
-        internal static ProjectilePrototype GetProjectile(string v)
-        {
-            if (ProjectilePrototypes.TryGetValue(v, out var prototype))
-                return prototype;
-            throw new KeyNotFoundException($"No ProjectilePrototype found with ID '{v}'.");
-        }
-        internal static IGameplayAction GetGameplayAction(string v)
-        {
-            if (GameplayActions.TryGetValue(v, out var action))
-                return action;
-            throw new KeyNotFoundException($"No GameplayAction found with ID '{v}'.");
-        }
         //public void RegisterGameplayAction(IGameplayAction action)
         //{
         //    if (GameplayActions.ContainsKey(action.Id))
         //        throw new ArgumentException($"A GameplayAction with the ID '{action.Id}' is already registered.");
         //    GameplayActions[action.Id] = action;
         //}
+
+        internal static UnitPrototype TryGetUnit(string v)
+        {
+            if (UnitPrototypes.TryGetValue(v, out var prototype))
+                return prototype;
+            throw new KeyNotFoundException($"No UnitPrototype found with ID '{v}'.");
+        }
+
+        internal static bool TryGetAbility(string v, out AbilityPrototype? abilityPrototype)
+
+        {
+            if (AbilityPrototypes.TryGetValue(v, out var prototype))
+            {
+                abilityPrototype = prototype;
+                return true;
+            }
+            abilityPrototype = null;
+            return false;
+        }
+
+        internal static ProjectilePrototype TryGetProjectile(string v)
+        {
+            if (ProjectilePrototypes.TryGetValue(v, out var prototype))
+                return prototype;
+            throw new KeyNotFoundException($"No ProjectilePrototype found with ID '{v}'.");
+        }
+        internal static IGameplayAction TryGetGameplayAction(string v)
+        {
+            if (GameplayActions.TryGetValue(v, out var action))
+                return action;
+            throw new KeyNotFoundException($"No GameplayAction found with ID '{v}'.");
+        }
 
     }
 }

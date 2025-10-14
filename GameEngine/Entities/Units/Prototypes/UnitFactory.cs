@@ -10,6 +10,7 @@ using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Units.Abilities;
+using Wc3_Combat_Game.GameEngine.Data;
 
 namespace Wc3_Combat_Game.Entities.Units.Prototypes
 {
@@ -28,13 +29,16 @@ namespace Wc3_Combat_Game.Entities.Units.Prototypes
 
             // We need a more elegant way to get and set damage.
             // Let's assume a better Prototype and Ability structure.
-            var eliteAbilities = ImmutableArray.CreateBuilder<AbilityPrototype>();
+            var eliteAbilities = ImmutableArray.CreateBuilder<string>();
             foreach(var ability in elitePrototype.Abilities)
             {
                 // This part assumes you've refactored AbilityPrototype to not use a switch
                 // A better way would be for the ability itself to have a "WithIncreasedDamage" method.
-                var modifiedAbility = ability.WithIncreasedDamage(4);
-                eliteAbilities.Add(modifiedAbility);
+                var modifiedAbility = PrototypeManager.TryGetAbility(ability, out var abilityPrototype) && abilityPrototype != null
+                    ? abilityPrototype.WithIncreasedDamage(2)
+                    : throw new ArgumentException($"No AbilityPrototype found with ID '{ability}'.");
+
+                eliteAbilities.Add(modifiedAbility.ID);
             }
 
             return elitePrototype with { Abilities = eliteAbilities.ToImmutable() };

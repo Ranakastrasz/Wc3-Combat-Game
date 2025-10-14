@@ -11,6 +11,7 @@ using Wc3_Combat_Game.Entities.Units.Abilities;
 using Wc3_Combat_Game.Entities.Units.Buffs;
 using Wc3_Combat_Game.Entities.Units.Controllers;
 using Wc3_Combat_Game.Entities.Units.Prototypes;
+using Wc3_Combat_Game.GameEngine.Data;
 using Wc3_Combat_Game.Util;
 
 
@@ -78,9 +79,13 @@ namespace Wc3_Combat_Game.Entities.Units
 
             for(int x = 0; x < _prototype.Abilities.Length; x++)
             {
-                if(prototype.Abilities[x] is AbilityPrototype basic)
+                if(PrototypeManager.TryGetAbility(prototype.Abilities[x], out var abilityPrototype))
                 {
-                    Abilities.Add(new Ability(basic));
+                    Abilities.Add(new Ability(abilityPrototype!));
+                }
+                else
+                { 
+                    throw new ArgumentException($"No AbilityPrototype found with ID '{prototype.Abilities[x]}'.");
                 }
             }
             _despawnDelay = 1f;

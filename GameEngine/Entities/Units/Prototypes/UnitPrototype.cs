@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 
 using Wc3_Combat_Game.Entities.Units.Abilities;
+using Wc3_Combat_Game.GameEngine.Data;
 
 namespace Wc3_Combat_Game.Entities.Units.Prototypes
 {
@@ -24,10 +25,18 @@ namespace Wc3_Combat_Game.Entities.Units.Prototypes
         public float PushPriority { get; init; } = Radius * Radius;
         public Color DamagedColor { get; init; } = Color.White;
         public Color DeadColor { get; init; } = Color.Gray;
-        public ImmutableArray<AbilityPrototype> Abilities { get; init; } = ImmutableArray<AbilityPrototype>.Empty;
+        public ImmutableArray<string> Abilities { get; init; } = ImmutableArray<string>.Empty;
 
         // Method to add an ability, returning a new record instance
-        public UnitPrototype AddAbility(AbilityPrototype weapon) =>
-            this with { Abilities = Abilities.Add(weapon) };
+        public UnitPrototype AddAbility(string ability) =>
+            this with { Abilities = Abilities.Add(ability) };
+        public UnitPrototype AddWeaponAndRegister(AbilityPrototype ability)
+        {
+            if (!PrototypeManager.TryGetAbility(ability.ID, out var existingAbility))
+            {
+                PrototypeManager.RegisterAbility(ability);
+            }
+            return AddAbility(ability.ID);
+        }
     }
 }

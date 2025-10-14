@@ -11,14 +11,14 @@ namespace Wc3_Combat_Game.GameEngine.Data
         private static AbilityPrototype BuildManabolt()
         {
             AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(3f,0.5f,0.5f,600f,10f,0f,int.MaxValue,0.2f,2.5f,3,Color.Orange);
-            weapon = weapon with { ID = "mana_bolt", Name = "Mana bolt" };
+            weapon = weapon with { ID = "manabolt", Name = "Mana bolt" };
             return weapon;
         }
 
         private static AbilityPrototype BuildManabomb()
         {
             AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(20f,0.5f,1f,450f,30f,32f,int.MaxValue,1f,5f,int.MaxValue,Color.Orange);
-            weapon = weapon with { ID = "mana_bomb", Name = "Mana bomb" };
+            weapon = weapon with { ID = "manabomb", Name = "Mana bomb" };
             return weapon;
         }
 
@@ -40,6 +40,10 @@ namespace Wc3_Combat_Game.GameEngine.Data
             AbilityPrototype manabomb = BuildManabomb();
             AbilityPrototype sprint = BuildSprint();
 
+            PrototypeManager.RegisterAbility(manabolt);
+            PrototypeManager.RegisterAbility(manabomb);
+            PrototypeManager.RegisterAbility(sprint);
+
 
             // Temperary unsafe crap til I have proper builder.
 
@@ -48,9 +52,9 @@ namespace Wc3_Combat_Game.GameEngine.Data
             //weapon = weapon with { TargetEffect = targetEffect };
 
             UnitPrototype playerUnit = new("player","Player", 100f,  3f, 5f, 150f, Color.Green, 0);
-            playerUnit = playerUnit.AddAbility(manabolt);
-            playerUnit = playerUnit.AddAbility(manabomb);
-            playerUnit = playerUnit.AddAbility(sprint);
+            playerUnit = playerUnit.AddAbility("manabolt");
+            playerUnit = playerUnit.AddAbility("manabomb");
+            playerUnit = playerUnit.AddAbility("sprint");
 
             playerUnit = playerUnit with { MaxMana = 100, ManaRegen = 3f };
 

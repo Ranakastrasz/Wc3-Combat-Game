@@ -5,6 +5,7 @@ using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
 using Wc3_Combat_Game.Entities.Units.Buffs;
 using Wc3_Combat_Game.GameEngine.Actions;
 using Wc3_Combat_Game.GameEngine.Actions.Interface;
+using Wc3_Combat_Game.GameEngine.Data;
 using Wc3_Combat_Game.Util.UnitConversion;
 
 namespace Wc3_Combat_Game.Entities.Units.Abilities
@@ -87,6 +88,10 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
         public static AbilityPrototype CreateInstantWeapon(float damage, float cooldown, float range, float? recoilFactor = null, float recoilDuration = 0f)
         {
             string id = $"instant_weapon_{damage}_{cooldown}_{range}_{recoilFactor}_{recoilDuration}";
+            if(PrototypeManager.TryGetAbility(id, out AbilityPrototype? existingPrototype))
+            {
+                return existingPrototype!;
+            }
             AbilityPrototype prototype = new AbilityPrototype(id,id,null, null, 1f, 20f).WithDamage(damage);
             
             if (recoilFactor != null && recoilDuration != 0f)
