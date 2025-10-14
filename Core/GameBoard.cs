@@ -219,7 +219,7 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(Controller);
             AssertUtil.NotNull(Controller.Input);
 
-            UnitPrototype playerUnit = PlayerBuilder.BuildPlayer();
+            UnitPrototype playerUnit = PrototypeManager.GetUnit("player");
             PlayerUnit = Unit.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
             PlayerUnit.DespawnDelay = float.MaxValue; // Player should never despawn.
             AddUnit(PlayerUnit);

@@ -38,7 +38,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             AbilityPrototype _prototype;
             public AbilityBuilder(float cooldown, float range)
             {
-                _prototype = new AbilityPrototype(null, null, cooldown, range);
+                _prototype = new AbilityPrototype("","",null, null, cooldown, range);
             }
 
             public AbilityBuilder WithTargetEffect(IGameplayAction effect)
@@ -86,8 +86,8 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
          */
         public static AbilityPrototype CreateInstantWeapon(float damage, float cooldown, float range, float? recoilFactor = null, float recoilDuration = 0f)
         {
-            
-            AbilityPrototype prototype = new AbilityPrototype(null, null, 1f, 20f).WithDamage(damage);
+            string id = $"instant_weapon_{damage}_{cooldown}_{range}_{recoilFactor}_{recoilDuration}";
+            AbilityPrototype prototype = new AbilityPrototype(id,id,null, null, 1f, 20f).WithDamage(damage);
             
             if (recoilFactor != null && recoilDuration != 0f)
             {
@@ -99,7 +99,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
 
         public static AbilityPrototype CreateRangedWeapon(float manaCost, float recoilFactor, float recoilDuration, float speed, float damage, float aoe, float range, float cooldown, float radius, int vertexes, Color color)
         {
-
+            string id = $"ranged_weapon_{manaCost}_{recoilFactor}_{recoilDuration}_{speed}_{damage}_{aoe}_{range}_{cooldown}_{radius}_{vertexes}_{color.ToArgb()}";
             IGameplayAction damageAction = aoe > 0f ? new AoeDamageAction(damage,damage*0.5f,aoe.World()) : new DamageAction(damage);
 
 
@@ -113,7 +113,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             ProjectileAction projectile = new ProjectileAction(weaponProjectile);
             IGameplayAction? recoilAction = recoilDuration > 0f ? CreateRecoilAction(recoilFactor, recoilDuration) : null;
 
-            return new AbilityPrototype(projectile, recoilAction, cooldown, range, manaCost);
+            return new AbilityPrototype(id,id,projectile, recoilAction, cooldown, range, manaCost);
         }
 
 

@@ -6,14 +6,18 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
 {
     public record AbilityPrototype
     {
-        public IGameplayAction? TargetEffect { get; init; }
-        public IGameplayAction? CasterEffect { get; init; }
-        public float Cooldown { get; init; }
-        public float CastRange { get; init; }
-        public float ManaCost { get; init; }
+        public string ID;
+        public string Name;
+        public IGameplayAction? TargetEffect;
+        public IGameplayAction? CasterEffect;
+        public float Cooldown;
+        public float CastRange;
+        public float ManaCost;
 
-        public AbilityPrototype(IGameplayAction? targetEffect, IGameplayAction? casterEffect, float cooldown, float castRange, float manaCost = 0f)
+        public AbilityPrototype(string id, string name, IGameplayAction? targetEffect, IGameplayAction? casterEffect, float cooldown, float castRange, float manaCost = 0f)
         {
+            ID = id;
+            Name = name;
             TargetEffect = targetEffect;
             CasterEffect = casterEffect;
             Cooldown = cooldown;
@@ -47,7 +51,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
                     newEffect = TargetEffect; // fallback, or throw
                     break;
             }
-            return new AbilityPrototype(newEffect, CasterEffect, Cooldown, CastRange);
+            return new AbilityPrototype(ID,Name, newEffect, CasterEffect, Cooldown, CastRange);
         }
 
         internal float GetDamage()

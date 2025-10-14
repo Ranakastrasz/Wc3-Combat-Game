@@ -22,33 +22,60 @@ namespace Wc3_Combat_Game.GameEngine.Data
 {
     public class PrototypeManager
     {
-        public static PrototypeManager Instance { get; } = new PrototypeManager();
+        //public static PrototypeManager Instance { get; } = new PrototypeManager();
 
-        public Dictionary<string, UnitPrototype> UnitPrototypes { get; } = new();
-        public Dictionary<string, AbilityPrototype> AbilityPrototypes { get; } = new();
-        public Dictionary<string, ProjectilePrototype> ProjectilePrototypes { get; } = new();
-        public Dictionary<string, IGameplayAction> GameplayActions { get; } = new();
+        private static Dictionary<string, UnitPrototype> UnitPrototypes { get; } = new();
+        private static Dictionary<string, AbilityPrototype> AbilityPrototypes { get; } = new();
+        private static Dictionary<string, ProjectilePrototype> ProjectilePrototypes { get; } = new();
+        private static Dictionary<string, IGameplayAction> GameplayActions { get; } = new();
 
         private PrototypeManager() { }
 
-        public void RegisterUnit(UnitPrototype prototype)
+        public static void RegisterUnit(UnitPrototype prototype)
         {
-            if (UnitPrototypes.ContainsKey(prototype.Id))
-                throw new ArgumentException($"A UnitPrototype with the ID '{prototype.Id}' is already registered.");
-            UnitPrototypes[prototype.Id] = prototype;
+            if (UnitPrototypes.ContainsKey(prototype.ID))
+                throw new ArgumentException($"A UnitPrototype with the ID '{prototype.ID}' is already registered.");
+            UnitPrototypes[prototype.ID] = prototype;
         }
-        //public void RegisterAbility(AbilityPrototype prototype)
-        //{
-        //    if (AbilityPrototypes.ContainsKey(prototype.Id))
-        //        throw new ArgumentException($"An AbilityPrototype with the ID '{prototype.Id}' is already registered.");
-        //    AbilityPrototypes[prototype.Id] = prototype;
-        //}
+        public static void RegisterAbility(AbilityPrototype prototype)
+        {
+            if (AbilityPrototypes.ContainsKey(prototype.ID))
+                throw new ArgumentException($"An AbilityPrototype with the ID '{prototype.ID}' is already registered.");
+            AbilityPrototypes[prototype.ID] = prototype;
+        }
         //public void RegisterProjectile(ProjectilePrototype prototype)
         //{
-        //    if (ProjectilePrototypes.ContainsKey(prototype.Id))
+        //    if(ProjectilePrototypes.ContainsKey(prototype.ID))
         //        throw new ArgumentException($"A ProjectilePrototype with the ID '{prototype.Id}' is already registered.");
-        //    ProjectilePrototypes[prototype.Id] = prototype;
+        //    ProjectilePrototypes[prototype.ID] = prototype;
         //}
+
+        internal static UnitPrototype GetUnit(string v)
+        {
+            if (UnitPrototypes.TryGetValue(v, out var prototype))
+                return prototype;
+            throw new KeyNotFoundException($"No UnitPrototype found with ID '{v}'.");
+        }
+
+        internal static AbilityPrototype GetAbility(string v)
+        {
+            if (AbilityPrototypes.TryGetValue(v, out var prototype))
+                return prototype;
+            throw new KeyNotFoundException($"No AbilityPrototype found with ID '{v}'.");
+        }
+
+        internal static ProjectilePrototype GetProjectile(string v)
+        {
+            if (ProjectilePrototypes.TryGetValue(v, out var prototype))
+                return prototype;
+            throw new KeyNotFoundException($"No ProjectilePrototype found with ID '{v}'.");
+        }
+        internal static IGameplayAction GetGameplayAction(string v)
+        {
+            if (GameplayActions.TryGetValue(v, out var action))
+                return action;
+            throw new KeyNotFoundException($"No GameplayAction found with ID '{v}'.");
+        }
         //public void RegisterGameplayAction(IGameplayAction action)
         //{
         //    if (GameplayActions.ContainsKey(action.Id))

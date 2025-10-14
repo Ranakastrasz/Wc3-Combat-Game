@@ -51,9 +51,16 @@ namespace Wc3_Combat_Game
                     break;
             }
 
+            BuildData();
             StartNewGame();
 
 
+        }
+
+        private static void BuildData()
+        {
+            UnitBuilder.BuildUnits();
+            PlayerBuilder.BuildPlayer();
         }
 
         public static void StartNewGame()

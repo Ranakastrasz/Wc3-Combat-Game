@@ -11,18 +11,20 @@ namespace Wc3_Combat_Game.GameEngine.Data
         private static AbilityPrototype BuildManabolt()
         {
             AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(3f,0.5f,0.5f,600f,10f,0f,int.MaxValue,0.2f,2.5f,3,Color.Orange);
+            weapon = weapon with { ID = "mana_bolt", Name = "Mana bolt" };
             return weapon;
         }
 
         private static AbilityPrototype BuildManabomb()
         {
             AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(20f,0.5f,1f,450f,30f,32f,int.MaxValue,1f,5f,int.MaxValue,Color.Orange);
+            weapon = weapon with { ID = "mana_bomb", Name = "Mana bomb" };
             return weapon;
         }
 
         private static AbilityPrototype BuildSprint()
         { 
-            AbilityPrototype sprint = new AbilityPrototype(
+            AbilityPrototype sprint = new AbilityPrototype("sprint","Sprint",
                 null,
                 new BuffAction(IBuffable.BuffType.Speed, 3f, 0.25f),
                 3f,
@@ -31,7 +33,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
             return sprint;
         }
 
-        public static UnitPrototype BuildPlayer()
+        public static void BuildPlayer()
         {
 
             AbilityPrototype manabolt = BuildManabolt();
@@ -49,15 +51,12 @@ namespace Wc3_Combat_Game.GameEngine.Data
             playerUnit = playerUnit.AddAbility(manabolt);
             playerUnit = playerUnit.AddAbility(manabomb);
             playerUnit = playerUnit.AddAbility(sprint);
-            PrototypeManager.Instance.RegisterUnit(playerUnit);
-            //
-            //
-            //
 
-            
             playerUnit = playerUnit with { MaxMana = 100, ManaRegen = 3f };
 
-            return playerUnit;
+            PrototypeManager.RegisterUnit(playerUnit);
+
+
         }
 
         public static void RegisterHotkeys()

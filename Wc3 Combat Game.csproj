@@ -28,7 +28,6 @@
   <ItemGroup>
     <None Include="C:\Users\Corwin Slater\source\repos\Wc3 Combat Game\.editorconfig" />
     <None Include="GameEngine\Entities\Components\Drawable\PolygonDrawable.cs" />
-    <None Include="GameEngine\Entities\Components\Prototype\EntityPrototyper.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,10 +42,6 @@
   <ItemGroup>
     <ProjectReference Include="..\AssertUtils\AssertUtils\AssertUtils.csproj" />
     <ProjectReference Include="..\AStar\AStar\AStar.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="GameEngine\Entities\Components\Prototype\PrototypeFactory\" />
   </ItemGroup>
 
 </Project>

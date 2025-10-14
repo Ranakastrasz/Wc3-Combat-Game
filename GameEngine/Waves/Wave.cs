@@ -9,7 +9,7 @@ namespace Wc3_Combat_Game.GameEngine.Waves
     {
         public ImmutableList<Tuple<string, int>> UnitAndCount { get; }
 
-        public UnitPrototype Unit => PrototypeManager.Instance.UnitPrototypes[UnitAndCount[0].Item1];
+        public UnitPrototype Unit => PrototypeManager.GetUnit(UnitAndCount[0].Item1);
         public int CountToSpawn => UnitAndCount[0].Item2;
 
         private Wave(ImmutableList<Tuple<string, int>> unitAndCount)
