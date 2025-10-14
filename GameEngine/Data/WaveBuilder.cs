@@ -52,11 +52,11 @@ namespace Wc3_Combat_Game.GameEngine.Data
 
 
 
-            var unit = new UnitPrototype("basic_enemy","Basic",15f, 2f, 4f, 50f, Color.Brown, 6);
-            unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(5f,1,20,0.25f,0.5f));
-            prototypes.RegisterUnit(unit);
+            UnitPrototype unit;
+            prototypes.RegisterUnit(new UnitPrototype("basic_enemy", "Basic", 15f, 2f, 4f, 50f, Color.Brown, 6)
+                .AddAbility(AbilityFactory.CreateInstantWeapon(5f, 1, 20, 0.25f, 0.5f)));
 
-        
+
             unit = new UnitPrototype("blitz_enemy","Blitz",10f, 0.0f, 4f, 75f, Color.DarkGoldenrod, 3);
             unit = unit.AddAbility(AbilityFactory.CreateInstantWeapon(10f, 1, 20, 0.25f, 0.5f));
             prototypes.RegisterUnit(unit);

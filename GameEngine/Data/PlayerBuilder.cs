@@ -24,7 +24,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
         { 
             AbilityPrototype sprint = new AbilityPrototype(
                 null,
-                new BuffAction(IBuffable.BuffType.Speed,3f,0.25f),
+                new BuffAction(IBuffable.BuffType.Speed, 3f, 0.25f),
                 3f,
                 0f,
                 15f);
