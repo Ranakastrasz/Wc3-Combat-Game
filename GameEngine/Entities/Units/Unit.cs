@@ -248,7 +248,7 @@ namespace Wc3_Combat_Game.Entities.Units
                     BoundingBox.Width,
                     barHeight);
 
-                g.FillRectangle(Brushes.DarkGray, healthBarBackgroundRect);
+                g.FillRectangle(Brushes.Black, healthBarBackgroundRect);
 
                 float healthRatio = (float)Life / MaxLife;
                 int healthFillWidth = (int)(BoundingBox.Width * healthRatio);
@@ -276,7 +276,7 @@ namespace Wc3_Combat_Game.Entities.Units
                         BoundingBox.Width,
                         barHeight);
 
-                    g.FillRectangle(Brushes.DarkGray, manaBarBackgroundRect);
+                    g.FillRectangle(Brushes.Black, manaBarBackgroundRect);
 
                     float manaRatio;
 

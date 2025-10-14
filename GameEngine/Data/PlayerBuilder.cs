@@ -17,7 +17,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
 
         private static AbilityPrototype BuildManabomb()
         {
-            AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(20f,0.5f,1f,450f,30f,32f,int.MaxValue,1f,5f,int.MaxValue,Color.Orange);
+            AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(15f,0.5f,1f,450f,30f,32f,int.MaxValue,1f,5f,int.MaxValue,Color.Orange);
             weapon = weapon with { ID = "manabomb", Name = "Mana bomb" };
             return weapon;
         }
@@ -56,7 +56,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
             playerUnit = playerUnit.AddAbility("manabomb");
             playerUnit = playerUnit.AddAbility("sprint");
 
-            playerUnit = playerUnit with { MaxMana = 100, ManaRegen = 3f };
+            playerUnit = playerUnit with { MaxMana = 200, ManaRegen = 6f };
 
             PrototypeManager.RegisterUnit(playerUnit);
 
