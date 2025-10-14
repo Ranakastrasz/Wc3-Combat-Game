@@ -12,26 +12,40 @@ namespace Wc3_Combat_Game.GameEngine.Data
         {
 
             PrototypeManager.RegisterAbility(
-                AbilityFactory.CreateRangedWeapon (3f,0.5f,0.5f,600f,10f,0f,int.MaxValue,0.2f,2f,3,Color.Orange)
+                AbilityFactory.CreateRangedWeapon(
+                    manaCost: 3f, cooldown: 0.2f,
+                    damage: 10f, aoe: 0f,
+                    range: int.MaxValue, speed: 600f, radius: 2f,
+                    recoilFactor: 0.5f, recoilDuration: 0.5f,
+                    polygonCount: 3, color: Color.Orange)
                 with { ID = "manabolt", Name = "Mana bolt" }
             );
 
             PrototypeManager.RegisterAbility(
-            AbilityFactory.CreateRangedWeapon(15f,0.5f,1f,450f,30f,32f,int.MaxValue,1f,3f,int.MaxValue,Color.Orange)
+            AbilityFactory.CreateRangedWeapon(
+                manaCost: 15f, cooldown: 1f,
+                damage: 30f, aoe: 32f,
+                range: int.MaxValue, speed: 450f, radius: 3f,
+                recoilFactor: 0.5f, recoilDuration: 1f,
+                polygonCount: int.MaxValue, color: Color.Orange)
                 with { ID = "manabomb", Name = "Mana bomb" }
             );
 
             PrototypeManager.RegisterAbility(
-                new AbilityPrototype("sprint", "Sprint",
-                null,
-                new BuffAction(IBuffable.BuffType.Speed, 3f, 0.25f),
-                3f,
-                0f,
-                15f)
+                new AbilityPrototype(
+                    id: "sprint", name: "Sprint",
+                manaCost: 15f,
+                cooldown: 3f,
+                castRange: 0f,
+                targetEffect: null,
+                casterEffect: new BuffAction(IBuffable.BuffType.Speed, factor: 3f, duration: 0.25f))
             );
 
             PrototypeManager.RegisterUnit(
-                new UnitPrototype("player", "Player", 100f, 3f, 5f, 150f, Color.Green, 0)
+                new UnitPrototype(id: "player", name: "Player",
+                MaxLife: 100f, LifeRegen: 3f,
+                Radius: 5f, Speed: 150f,
+                Color: Color.Green, PolygonCount: 0)
                 .AddAbility("manabolt")
                 .AddAbility("manabomb")
                 .AddAbility("sprint")

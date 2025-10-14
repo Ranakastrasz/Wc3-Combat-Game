@@ -18,24 +18,29 @@ namespace Wc3_Combat_Game.GameEngine.Data
         public static void BuildUnits()
         {
 
-            PrototypeManager.RegisterAbility(new AbilityPrototype("ranged_weapon","Light Death Bolt",
-                    new ProjectileAction(new ProjectilePrototype(2.5f, 150f, 4f,
-                        new DamageAction(10f), int.MaxValue, Color.DarkMagenta)), null,
-                    1.5f,
-                    150f,10f));
-            PrototypeManager.RegisterAbility(new AbilityPrototype("ranged_weapon_light","Basic Arrow",
-                    new ProjectileAction(new ProjectilePrototype(1.5f, 225f, 4f,
-                        new DamageAction(5f), 2, Color.White)), null,
-                    1.5f,
-                    150f,10f));
+            PrototypeManager.RegisterAbility(new AbilityPrototype(
+                id: "ranged_weapon", name: "Light Death Bolt",
+                    manaCost: 10f, cooldown: 1.5f,
+                    castRange: 150f,
+                    targetEffect: new ProjectileAction( new ProjectilePrototype(
+                        radius: 2.5f, speed: 150f, lifespan: 4f,
+                        impactAction: new DamageAction(10f),
+                        polygonCount: int.MaxValue, color: Color.DarkMagenta)),
+                    casterEffect: null));
 
-            var heavyProjectile = new ProjectilePrototype(4f, 250f, int.MaxValue,
-                        new DamageAction(45f), int.MaxValue, Color.DarkMagenta);
+            PrototypeManager.RegisterAbility(new AbilityPrototype(
+                id: "ranged_weapon_light", name: "Basic Arrow",
+                manaCost: 0f, cooldown: 1.5f,
+                castRange: 150f,
+                targetEffect: new ProjectileAction(new ProjectilePrototype(
+                    radius: 1.5f, speed: 225f, lifespan: 4f,
+                    impactAction: new DamageAction(5f),
+                    polygonCount: 2, color: Color.White)),
+                casterEffect: null));
 
-            PrototypeManager.RegisterAbility(new AbilityPrototype("ranged_weapon_heavy","Death Bolt",
-                    new ProjectileAction(heavyProjectile), null,
-                    2f,
-                    225f,10f));
+            var heavyProjectile = new ProjectilePrototype(
+                radius: 4f, speed: 250f, lifespan: int.MaxValue,
+                impactAction: new DamageAction(45f), polygonCount: int.MaxValue, color: Color.DarkMagenta);
 
             var spreadHeavyAction = new ProjectileAction(heavyProjectile)
             {
@@ -43,68 +48,114 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 FullSpreadAngleDeg = 60f
             };
 
-            PrototypeManager.RegisterAbility(new AbilityPrototype("ranged_weapon_heavy_fan","Death Bolt (Fan)",
-                    spreadHeavyAction, null,
-                    5f,
-                    200f,10f));
-
-            PrototypeManager.RegisterAbility(new AbilityPrototype("ranged_weapon_snare","Shockwave (Snare)",
-                    new ProjectileAction(new ProjectilePrototype(2.5f, 225, 16f,
-                        new BuffAction(IBuffable.BuffType.Slow,0.5f,1f),int.MaxValue, Color.Goldenrod)), null,
-                    0.5f,
-                    150f,5f));
-
-            PrototypeManager.RegisterAbility(new AbilityPrototype("enemy_sprint","Sprint",
-                null,
-                new BuffAction(IBuffable.BuffType.Speed, 6f, 0.25f),
-                3f,
-                225f));
+            PrototypeManager.RegisterAbility(new AbilityPrototype(
+                id: "ranged_weapon_heavy", name: "Death Bolt",
+                manaCost: 0f, cooldown: 2f,
+                castRange: 225f,
+                targetEffect: new ProjectileAction(heavyProjectile), casterEffect: null));
 
 
+            PrototypeManager.RegisterAbility(new AbilityPrototype(
+                id: "ranged_weapon_heavy_fan", name: "Death Bolt (Fan)",
+                manaCost: 0f, cooldown: 5f,
+                castRange: 200f,
+                targetEffect: spreadHeavyAction,
+                casterEffect: null));
 
-            PrototypeManager.RegisterUnit(
-                new UnitPrototype("basic_enemy", "Basic", 15f, 2f, 4f, 50f, Color.Brown, 6)
-                .AddAbility(AbilityFactory.CreateInstantWeapon(5f, 1, 20, 0.25f, 0.5f).ID));
+            PrototypeManager.RegisterAbility(new AbilityPrototype(
+                id: "ranged_weapon_snare", name: "Shockwave (Snare)",
+                manaCost: 0f, cooldown: 0.5f,
+                castRange: 150f,
+                targetEffect: new ProjectileAction(new ProjectilePrototype(
+                    radius: 2.5f, speed: 225f, lifespan: 16f,
+                    impactAction: new BuffAction(IBuffable.BuffType.Slow, 0.5f, 1f),
+                    polygonCount: int.MaxValue, color: Color.Goldenrod)),
+                casterEffect: null));
 
-            PrototypeManager.RegisterUnit(
-                new UnitPrototype("blitz_enemy", "Blitz", 10f, 0.0f, 4f, 50f, Color.DarkGoldenrod, 3)
-                .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(10f, 1, 20, 0.25f, 0.5f))
+            PrototypeManager.RegisterAbility(new AbilityPrototype(
+                id: "enemy_sprint", name: "Sprint",
+                manaCost: 0f,
+                cooldown: 3f,
+                castRange: 225f,
+                targetEffect: null,
+                casterEffect: new BuffAction(
+                    type: IBuffable.BuffType.Speed, factor: 6f, duration: 0.25f)));
+
+
+
+            PrototypeManager.RegisterUnit(new UnitPrototype(
+                id: "basic_enemy", name: "Basic",
+                MaxLife: 15f, LifeRegen: 2f,
+                Radius: 4f, Speed: 50f,
+                Color: Color.Brown, PolygonCount: 6)
+                .AddAbility(AbilityFactory.CreateInstantWeapon(damage: 5f, cooldown: 1f, range: 20, recoilFactor: 0.25f, recoilDuration: 0.5f).ID));
+
+            PrototypeManager.RegisterUnit(new UnitPrototype(
+                id: "blitz_enemy", name: "Blitz",
+                MaxLife: 10f, LifeRegen: 0.0f,
+                Radius: 4f, Speed: 50f,
+                Color: Color.DarkGoldenrod, PolygonCount: 3)
+                .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(damage: 10f, cooldown: 1f, range: 20, recoilFactor: 0.25f, recoilDuration: 0.5f))
                 .AddAbility("enemy_sprint"));
 
             PrototypeManager.RegisterUnit(
-                new UnitPrototype("blaster_enemy","Blaster",30f, 0.0f, 5f, 40f, Color.Orange, 5)
+                new UnitPrototype(id: "blaster_enemy", name: "Blaster",
+                MaxLife: 30f, LifeRegen: 0.0f,
+                Radius: 5f, Speed: 40f,
+                Color: Color.Orange, PolygonCount: 5)
                 .AddAbility("ranged_weapon"));
 
             PrototypeManager.RegisterUnit(
-                new UnitPrototype("brute_enemy","Brute",80f, 2f, 10f, 50f, Color.Brown, 6)
-                .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(25f, 1, 20, 0.25f, 0.5f)));
+                new UnitPrototype(id: "brute_enemy", name: "Brute",
+                MaxLife: 80f, LifeRegen: 2f,
+                Radius: 10f, Speed: 50f,
+                Color: Color.Brown, PolygonCount: 6)
+                .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(damage: 25f, cooldown: 1f, range: 20, recoilFactor: 0.25f, recoilDuration: 0.5f)));
 
             PrototypeManager.RegisterUnit(
-                new UnitPrototype("boss_enemy","Boss",400f, 0f, 15f, 80f, Color.DarkRed, 4)
-                .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(90f, 2, 20, 0.25f, 0.5f))
+                new UnitPrototype(id: "boss_enemy", name: "Boss",
+                MaxLife: 400f, LifeRegen: 0f,
+                Radius: 15f, Speed: 80f,
+                Color: Color.DarkRed, PolygonCount: 4)
+                .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(damage: 90f, cooldown: 2f, range: 20, recoilFactor: 0.25f, recoilDuration: 0.5f))
                 .AddAbility("enemy_sprint"));
 
             PrototypeManager.RegisterUnit(
-                new UnitPrototype("swarmer_enemy","Swarmer",10f, 0.0f, 3f, 25f, Color.OrangeRed, int.MaxValue)
-                .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(5f, 1, 20, 0.25f, 0.5f))
+                new UnitPrototype(id: "swarmer_enemy", name: "Swarmer",
+                MaxLife: 10f, LifeRegen: 0.0f,
+                Radius: 3f, Speed: 25f,
+                Color: Color.OrangeRed, PolygonCount: int.MaxValue)
+                .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(damage: 5f, cooldown: 1f, range: 20, recoilFactor: 0.25f, recoilDuration: 0.5f))
                 .AddAbility("enemy_sprint"));
 
             PrototypeManager.RegisterUnit(
-                new UnitPrototype("light_blaster_enemy","Light Blaster",15f, 0.0f, 3.5f, 30f, Color.SaddleBrown, 5)
+                new UnitPrototype(id: "light_blaster_enemy", name: "Light Blaster",
+                MaxLife: 15f, LifeRegen: 0.0f,
+                Radius: 3.5f, Speed: 30f,
+                Color: Color.SaddleBrown, PolygonCount: 5)
                 .AddAbility("ranged_weapon_light"));
 
             PrototypeManager.RegisterUnit(
-                new UnitPrototype("elite_brute_enemy","Elite Brute",100f, 3f, 10f, 60f, Color.Maroon, 6)
-                .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(30f, 1, 20, 0.25f, 0.5f))
+                new UnitPrototype(id: "elite_brute_enemy", name: "Elite Brute",
+                MaxLife: 100f, LifeRegen: 3f,
+                Radius: 10f, Speed: 60f,
+                Color: Color.Maroon, PolygonCount: 6)
+                .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(damage: 30f, cooldown: 1f, range: 20, recoilFactor: 0.25f, recoilDuration: 0.5f))
                 .AddAbility("ranged_weapon_snare"));
 
             PrototypeManager.RegisterUnit(
-                new UnitPrototype("elite_blaster_enemy","Elite Blaster",320f, 0f, 6f, 50f, Color.Purple, 5)
+                new UnitPrototype(id: "elite_blaster_enemy", name: "Elite Blaster",
+                MaxLife: 320f, LifeRegen: 0f,
+                Radius: 6f, Speed: 50f,
+                Color: Color.Purple, PolygonCount: 5)
                 .AddAbility("ranged_weapon_heavy")
                 .AddAbility("ranged_weapon_snare"));
 
             PrototypeManager.RegisterUnit(
-                new UnitPrototype("elite_boss_enemy","Elite Boss",500f, 0f, 15f, 75f, Color.DarkMagenta, 4)
+                new UnitPrototype(id: "elite_boss_enemy", name: "Elite Boss",
+                MaxLife: 500f, LifeRegen: 0f,
+                Radius: 15f, Speed: 75f,
+                Color: Color.DarkMagenta, PolygonCount: 4)
                 .AddAbility("ranged_weapon_heavy_fan")
                 .AddAbility("ranged_weapon_heavy")
                 .AddAbility("ranged_weapon_snare"));

@@ -39,7 +39,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             AbilityPrototype _prototype;
             public AbilityBuilder(float cooldown, float range)
             {
-                _prototype = new AbilityPrototype("","",null, null, cooldown, range);
+                _prototype = new AbilityPrototype("<id>", "<name>", manaCost: 0f, cooldown: cooldown, castRange: range, targetEffect: null, casterEffect: null);
             }
 
             public AbilityBuilder WithTargetEffect(IGameplayAction effect)
@@ -92,7 +92,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             {
                 return existingPrototype!;
             }
-            AbilityPrototype prototype = new AbilityPrototype(id,id,null, null, 1f, 20f).WithDamage(damage);
+            AbilityPrototype prototype = new AbilityPrototype(id,id,manaCost: 0f, cooldown: 1f, castRange: 20f, targetEffect: null, casterEffect: null).WithDamage(damage);
             
             if (recoilFactor != null && recoilDuration != 0f)
             {
@@ -102,9 +102,9 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             return prototype;
         }
 
-        public static AbilityPrototype CreateRangedWeapon(float manaCost, float recoilFactor, float recoilDuration, float speed, float damage, float aoe, float range, float cooldown, float radius, int vertexes, Color color)
+        public static AbilityPrototype CreateRangedWeapon(float manaCost, float cooldown, float damage, float aoe, float range, float speed, float radius, float recoilFactor, float recoilDuration, int polygonCount, Color color)
         {
-            string id = $"ranged_weapon_{manaCost}_{recoilFactor}_{recoilDuration}_{speed}_{damage}_{aoe}_{range}_{cooldown}_{radius}_{vertexes}_{color.ToArgb()}";
+            string id = $"ranged_weapon_{manaCost}_{recoilFactor}_{recoilDuration}_{speed}_{damage}_{aoe}_{range}_{cooldown}_{radius}_{polygonCount}_{color.ToArgb()}";
             IGameplayAction damageAction = aoe > 0f ? new AoeDamageAction(damage,damage*0.5f,aoe.World()) : new DamageAction(damage);
 
 
@@ -113,12 +113,12 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
                 speed,
                 range*1.1f/speed, // Add a bit of slop. 
                 damageAction,
-                vertexes,
+                polygonCount,
                 color);
             ProjectileAction projectile = new ProjectileAction(weaponProjectile);
             IGameplayAction? recoilAction = recoilDuration > 0f ? CreateRecoilAction(recoilFactor, recoilDuration) : null;
 
-            return new AbilityPrototype(id,id,projectile, recoilAction, cooldown, range, manaCost);
+            return new AbilityPrototype(id, id, manaCost, cooldown, range, projectile, recoilAction);
         }
 
 

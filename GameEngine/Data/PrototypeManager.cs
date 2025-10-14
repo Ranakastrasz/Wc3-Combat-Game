@@ -33,9 +33,9 @@ namespace Wc3_Combat_Game.GameEngine.Data
 
         public static void RegisterUnit(UnitPrototype prototype)
         {
-            if (UnitPrototypes.ContainsKey(prototype.ID))
-                throw new ArgumentException($"A UnitPrototype with the ID '{prototype.ID}' is already registered.");
-            UnitPrototypes[prototype.ID] = prototype;
+            if (UnitPrototypes.ContainsKey(prototype.id))
+                throw new ArgumentException($"A UnitPrototype with the ID '{prototype.id}' is already registered.");
+            UnitPrototypes[prototype.id] = prototype;
         }
         public static void RegisterAbility(AbilityPrototype prototype)
         {

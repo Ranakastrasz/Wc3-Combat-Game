@@ -28,7 +28,7 @@ namespace Wc3_Combat_Game.Entities.Projectiles.Prototypes
             Color = color;
         }
 
-        public ProjectilePrototype(float radius, float speed, float lifespan, IGameplayAction? impactAction, int vertextCount, Color color)
+        public ProjectilePrototype(float radius, float speed, float lifespan, IGameplayAction? impactAction, int polygonCount, Color color)
             : this(radius, speed, lifespan,
                   impactAction != null ? ImmutableArray.Create(impactAction) : ImmutableArray<IGameplayAction>.Empty,
                   color)
