@@ -8,57 +8,35 @@ namespace Wc3_Combat_Game.GameEngine.Data
     public static class PlayerBuilder
     {
 
-        private static AbilityPrototype BuildManabolt()
+        public static void BuildPlayer()
         {
-            AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(3f,0.5f,0.5f,600f,10f,0f,int.MaxValue,0.2f,2.5f,3,Color.Orange);
-            weapon = weapon with { ID = "manabolt", Name = "Mana bolt" };
-            return weapon;
-        }
 
-        private static AbilityPrototype BuildManabomb()
-        {
-            AbilityPrototype weapon = AbilityFactory.CreateRangedWeapon(15f,0.5f,1f,450f,30f,32f,int.MaxValue,1f,5f,int.MaxValue,Color.Orange);
-            weapon = weapon with { ID = "manabomb", Name = "Mana bomb" };
-            return weapon;
-        }
+            PrototypeManager.RegisterAbility(
+                AbilityFactory.CreateRangedWeapon (3f,0.5f,0.5f,600f,10f,0f,int.MaxValue,0.2f,2f,3,Color.Orange)
+                with { ID = "manabolt", Name = "Mana bolt" }
+            );
 
-        private static AbilityPrototype BuildSprint()
-        { 
-            AbilityPrototype sprint = new AbilityPrototype("sprint","Sprint",
+            PrototypeManager.RegisterAbility(
+            AbilityFactory.CreateRangedWeapon(15f,0.5f,1f,450f,30f,32f,int.MaxValue,1f,3f,int.MaxValue,Color.Orange)
+                with { ID = "manabomb", Name = "Mana bomb" }
+            );
+
+            PrototypeManager.RegisterAbility(
+                new AbilityPrototype("sprint", "Sprint",
                 null,
                 new BuffAction(IBuffable.BuffType.Speed, 3f, 0.25f),
                 3f,
                 0f,
-                15f);
-            return sprint;
-        }
+                15f)
+            );
 
-        public static void BuildPlayer()
-        {
-
-            AbilityPrototype manabolt = BuildManabolt();
-            AbilityPrototype manabomb = BuildManabomb();
-            AbilityPrototype sprint = BuildSprint();
-
-            PrototypeManager.RegisterAbility(manabolt);
-            PrototypeManager.RegisterAbility(manabomb);
-            PrototypeManager.RegisterAbility(sprint);
-
-
-            // Temperary unsafe crap til I have proper builder.
-
-            //ProjectileAction targetEffect = weapon.TargetEffect as ProjectileAction;
-            //targetEffect = targetEffect with { ProjectileCount = 3, FullSpreadAngleDeg = 15f };
-            //weapon = weapon with { TargetEffect = targetEffect };
-
-            UnitPrototype playerUnit = new("player","Player", 100f,  3f, 5f, 150f, Color.Green, 0);
-            playerUnit = playerUnit.AddAbility("manabolt");
-            playerUnit = playerUnit.AddAbility("manabomb");
-            playerUnit = playerUnit.AddAbility("sprint");
-
-            playerUnit = playerUnit with { MaxMana = 200, ManaRegen = 6f };
-
-            PrototypeManager.RegisterUnit(playerUnit);
+            PrototypeManager.RegisterUnit(
+                new UnitPrototype("player", "Player", 100f, 3f, 5f, 150f, Color.Green, 0)
+                .AddAbility("manabolt")
+                .AddAbility("manabomb")
+                .AddAbility("sprint")
+                with { MaxMana = 200f, ManaRegen = 6f }
+            );
 
 
         }
