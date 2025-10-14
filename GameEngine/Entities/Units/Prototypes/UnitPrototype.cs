@@ -8,6 +8,7 @@ namespace Wc3_Combat_Game.Entities.Units.Prototypes
     /// Represents a Prefab for a living or interactive game unit with health and actions.
     /// </summary>
     public record UnitPrototype(
+        string Id,
         string Name,
         float MaxLife,
         float LifeRegen,

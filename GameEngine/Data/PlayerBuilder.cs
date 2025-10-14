@@ -45,11 +45,11 @@ namespace Wc3_Combat_Game.GameEngine.Data
             //targetEffect = targetEffect with { ProjectileCount = 3, FullSpreadAngleDeg = 15f };
             //weapon = weapon with { TargetEffect = targetEffect };
 
-            UnitPrototype playerUnit = new("Player", 100f,  3f, 5f, 150f, Color.Green, 0);
+            UnitPrototype playerUnit = new("player","Player", 100f,  3f, 5f, 150f, Color.Green, 0);
             playerUnit = playerUnit.AddAbility(manabolt);
             playerUnit = playerUnit.AddAbility(manabomb);
             playerUnit = playerUnit.AddAbility(sprint);
-
+            PrototypeManager.Instance.RegisterUnit(playerUnit);
             //
             //
             //
