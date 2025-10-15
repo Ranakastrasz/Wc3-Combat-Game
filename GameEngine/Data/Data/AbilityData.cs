@@ -1,10 +1,9 @@
-﻿using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
-using Wc3_Combat_Game.GameEngine.Actions;
+﻿using Wc3_Combat_Game.GameEngine.Actions;
 using Wc3_Combat_Game.GameEngine.Actions.Interface;
 
-namespace Wc3_Combat_Game.Entities.Units.Abilities
+namespace Wc3_Combat_Game.GameEngine.Data.Data
 {
-    public record AbilityPrototype
+    public record AbilityData
     {
         public string ID;
         public string Name;
@@ -14,7 +13,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
         public float CastRange;
         public float ManaCost;
 
-        public AbilityPrototype(string id, string name, float manaCost, float cooldown, float castRange, IGameplayAction? targetEffect, IGameplayAction? casterEffect)
+        public AbilityData(string id, string name, float manaCost, float cooldown, float castRange, IGameplayAction? targetEffect, IGameplayAction? casterEffect)
         {
             ID = id;
             Name = name;
@@ -25,14 +24,14 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             ManaCost = manaCost;
         }
 
-        public AbilityPrototype WithDamage(float damage)
+        public AbilityData WithDamage(float damage)
         {
             IGameplayAction? newEffect;
             switch(TargetEffect) // Very messy but works for now.
             {
                 case ProjectileAction projectileAction: // Created a projectile. That projectile deals damage.
                     var oldProjectile = projectileAction.Prototype;
-                    var newProjectile = new ProjectilePrototype(
+                    var newProjectile = new ProjectileData(
                         oldProjectile.Radius,
                         oldProjectile.Speed,
                         oldProjectile.Lifespan,
@@ -51,7 +50,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
                     newEffect = TargetEffect; // fallback, or throw
                     break;
             }
-            return new AbilityPrototype(id: ID, name: Name, manaCost: ManaCost, cooldown: Cooldown, castRange: CastRange, targetEffect: newEffect, casterEffect: CasterEffect);
+            return new AbilityData(id: ID, name: Name, manaCost: ManaCost, cooldown: Cooldown, castRange: CastRange, targetEffect: newEffect, casterEffect: CasterEffect);
         }
 
         internal float GetDamage()
@@ -76,7 +75,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             return damageValue;
         }
 
-        internal AbilityPrototype WithIncreasedDamage(float multiplier)
+        internal AbilityData WithIncreasedDamage(float multiplier)
         {
             return WithDamage(GetDamage() * multiplier);
         }

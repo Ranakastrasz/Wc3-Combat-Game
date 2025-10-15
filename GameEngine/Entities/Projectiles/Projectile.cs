@@ -10,8 +10,8 @@ using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Core.Event.Wc3_Combat_Game.Core.Event;
 using Wc3_Combat_Game.Entities.Components.Drawable;
-using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
 using Wc3_Combat_Game.GameEngine.Actions.Interface;
+using Wc3_Combat_Game.GameEngine.Data.Data;
 using Wc3_Combat_Game.GameEngine.Terrain;
 using Wc3_Combat_Game.Util;
 using Wc3_Combat_Game.Util.UnitConversion;
@@ -31,7 +31,7 @@ namespace Wc3_Combat_Game.Entities.EntityTypes
     {
         //private Vector2 _velocity;
         private float _timeToLive;
-        private ProjectilePrototype _prototype;
+        private ProjectileData _prototype;
         public ImmutableArray<IGameplayAction> ImpactEffects => _prototype.ImpactActions;
         public Entity? Caster;
         private Team _team;
@@ -44,7 +44,7 @@ namespace Wc3_Combat_Game.Entities.EntityTypes
         private OnCollisionEventHandler _onCollisionHandler;
         private AfterCollisionEventHandler _afterCollisionHandler;
 
-        public Projectile(ProjectilePrototype prototype, Entity? caster, Vector2 position, Vector2 direction, IBoardContext context) : base(prototype.Radius, position, context)
+        public Projectile(ProjectileData prototype, Entity? caster, Vector2 position, Vector2 direction, IBoardContext context) : base(prototype.Radius, position, context)
         {
             _prototype = prototype;
             Caster = caster;

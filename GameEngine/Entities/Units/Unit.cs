@@ -10,8 +10,8 @@ using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Units.Abilities;
 using Wc3_Combat_Game.Entities.Units.Buffs;
 using Wc3_Combat_Game.Entities.Units.Controllers;
-using Wc3_Combat_Game.Entities.Units.Prototypes;
 using Wc3_Combat_Game.GameEngine.Data;
+using Wc3_Combat_Game.GameEngine.Data.Data;
 using Wc3_Combat_Game.Util;
 
 
@@ -23,7 +23,7 @@ namespace Wc3_Combat_Game.Entities.Units
     /// </summary>
     public class Unit: Entity
     {
-        protected UnitPrototype _prototype;
+        protected UnitData _prototype;
 
         public IUnitController? Controller = null;
         public Unit? TargetUnit { get; set; }
@@ -70,7 +70,7 @@ namespace Wc3_Combat_Game.Entities.Units
 
         //public new IMoveable Mover { get;}
 
-        public Unit(UnitPrototype prototype, Vector2 position, IBoardContext context) : base(prototype.Radius, position, context)
+        public Unit(UnitData prototype, Vector2 position, IBoardContext context) : base(prototype.Radius, position, context)
         {
             _prototype = prototype;
             Life = prototype.MaxLife;
@@ -79,7 +79,7 @@ namespace Wc3_Combat_Game.Entities.Units
 
             for(int x = 0; x < _prototype.Abilities.Length; x++)
             {
-                if(PrototypeManager.TryGetAbility(prototype.Abilities[x], out var abilityPrototype))
+                if(DataManager.TryGetAbility(prototype.Abilities[x], out var abilityPrototype))
                 {
                     Abilities.Add(new Ability(abilityPrototype!));
                 }
@@ -358,7 +358,7 @@ namespace Wc3_Combat_Game.Entities.Units
             }
         }
 
-        public static Unit SpawnUnit(UnitPrototype prototype, Vector2 position, IUnitController controller, Team team, IBoardContext context)
+        public static Unit SpawnUnit(UnitData prototype, Vector2 position, IUnitController controller, Team team, IBoardContext context)
         {
             Unit unit = new Unit(prototype, position, context)
             {

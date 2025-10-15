@@ -15,8 +15,8 @@ using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.EntityTypes;
 using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.Entities.Units.Controllers;
-using Wc3_Combat_Game.Entities.Units.Prototypes;
 using Wc3_Combat_Game.GameEngine.Data;
+using Wc3_Combat_Game.GameEngine.Data.Data;
 using Wc3_Combat_Game.GameEngine.Terrain;
 using Wc3_Combat_Game.GameEngine.Waves;
 using Wc3_Combat_Game.IO;
@@ -219,7 +219,7 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(Controller);
             AssertUtil.NotNull(Controller.Input);
 
-            UnitPrototype playerUnit = PrototypeManager.TryGetUnit("player");
+            UnitData playerUnit = DataManager.TryGetUnit("player");
             PlayerUnit = Unit.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
             PlayerUnit.DespawnDelay = float.MaxValue; // Player should never despawn.
             AddUnit(PlayerUnit);

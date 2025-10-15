@@ -4,6 +4,7 @@ using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.GameEngine.Actions.Interface;
+using Wc3_Combat_Game.GameEngine.Data.Data;
 using Wc3_Combat_Game.Util;
 using Wc3_Combat_Game.Util.UnitConversion;
 
@@ -24,11 +25,11 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
         protected IGameplayAction? _targetEffect;
         protected IGameplayAction? _casterEffect;
 
-        protected readonly AbilityPrototype _prototype;
+        protected readonly AbilityData _prototype;
 
 
 
-        public Ability(AbilityPrototype prototype)
+        public Ability(AbilityData prototype)
         {
             _prototype = prototype;
             _targetEffect = prototype.TargetEffect;
@@ -43,7 +44,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             if(!TimeUtils.HasElapsed(context.CurrentTime, _lastShotTime, _cooldown))
                 return false;
 
-            if(_prototype is AbilityPrototype basic) // This is hidious, and needs to be encapsulated better.
+            if(_prototype is AbilityData basic) // This is hidious, and needs to be encapsulated better.
             {
                 if(basic.ManaCost > 0)
                 {
@@ -77,7 +78,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
         public float GetTimeSinceLastUse(IContext context) => context.CurrentTime - _lastShotTime;
 
 
-        public AbilityPrototype? GetPrototype()
+        public AbilityData? GetPrototype()
         {
             return _prototype;
         }

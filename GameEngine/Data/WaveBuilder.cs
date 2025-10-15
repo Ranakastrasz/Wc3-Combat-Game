@@ -1,8 +1,4 @@
-﻿using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
-using Wc3_Combat_Game.Entities.Units.Abilities;
-using Wc3_Combat_Game.Entities.Units.Buffs;
-using Wc3_Combat_Game.Entities.Units.Prototypes;
-using Wc3_Combat_Game.GameEngine.Actions;
+﻿
 using Wc3_Combat_Game.GameEngine.Waves;
 
 namespace Wc3_Combat_Game.GameEngine.Data

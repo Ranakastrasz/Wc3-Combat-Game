@@ -3,8 +3,8 @@
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.EntityTypes;
-using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
 using Wc3_Combat_Game.GameEngine.Actions.Interface;
+using Wc3_Combat_Game.GameEngine.Data.Data;
 using Wc3_Combat_Game.Util.UnitConversion;
 
 
@@ -19,9 +19,9 @@ namespace Wc3_Combat_Game.GameEngine.Actions
         public float FullSpreadAngleRad => MathF.PI * FullSpreadAngleDeg / 180f;
 
 
-        public ProjectilePrototype Prototype { get; init; }
+        public ProjectileData Prototype { get; init; }
 
-        public ProjectileAction(ProjectilePrototype prototype)
+        public ProjectileAction(ProjectileData prototype)
         {
             Prototype = prototype;
         }

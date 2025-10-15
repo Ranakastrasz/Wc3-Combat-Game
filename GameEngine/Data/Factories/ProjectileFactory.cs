@@ -10,7 +10,7 @@ using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
 
-namespace Wc3_Combat_Game.Entities.Projectiles.Prototypes
+namespace Wc3_Combat_Game.GameEngine.Data.Factories
 {
     public static class ProjectileFactory
     {

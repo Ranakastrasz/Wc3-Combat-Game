@@ -1,14 +1,11 @@
 ﻿using System.Collections.Immutable;
 
-using Wc3_Combat_Game.Entities.Units.Abilities;
-using Wc3_Combat_Game.GameEngine.Data;
-
-namespace Wc3_Combat_Game.Entities.Units.Prototypes
+namespace Wc3_Combat_Game.GameEngine.Data.Data
 {
     /// <summary>
     /// Represents a Prefab for a living or interactive game unit with health and actions.
     /// </summary>
-    public record UnitPrototype(
+    public record UnitData(
         string id,
         string name,
         float MaxLife,
@@ -28,13 +25,13 @@ namespace Wc3_Combat_Game.Entities.Units.Prototypes
         public ImmutableArray<string> Abilities { get; init; } = ImmutableArray<string>.Empty;
 
         // Method to add an ability, returning a new record instance
-        public UnitPrototype AddAbility(string ability) =>
+        public UnitData AddAbility(string ability) =>
             this with { Abilities = Abilities.Add(ability) };
-        public UnitPrototype AddWeaponAndRegister(AbilityPrototype ability)
+        public UnitData AddWeaponAndRegister(AbilityData ability)
         {
-            if (!PrototypeManager.TryGetAbility(ability.ID, out var existingAbility))
+            if (!DataManager.TryGetAbility(ability.ID, out var existingAbility))
             {
-                PrototypeManager.RegisterAbility(ability);
+                DataManager.RegisterAbility(ability);
             }
             return AddAbility(ability.ID);
         }

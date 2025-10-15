@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 
-using Wc3_Combat_Game.Entities.Units.Prototypes;
 using Wc3_Combat_Game.GameEngine.Data;
+using Wc3_Combat_Game.GameEngine.Data.Data;
 
 namespace Wc3_Combat_Game.GameEngine.Waves
 {
@@ -9,7 +9,7 @@ namespace Wc3_Combat_Game.GameEngine.Waves
     {
         public ImmutableList<Tuple<string, int>> UnitAndCount { get; }
 
-        public UnitPrototype Unit => PrototypeManager.TryGetUnit(UnitAndCount[0].Item1);
+        public UnitData Unit => DataManager.TryGetUnit(UnitAndCount[0].Item1);
         public int CountToSpawn => UnitAndCount[0].Item2;
 
         private Wave(ImmutableList<Tuple<string, int>> unitAndCount)

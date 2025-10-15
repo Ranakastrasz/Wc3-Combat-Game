@@ -5,9 +5,9 @@ using AssertUtils;
 using Wc3_Combat_Game.Effects;
 using Wc3_Combat_Game.GameEngine.Actions.Interface;
 
-namespace Wc3_Combat_Game.Entities.Projectiles.Prototypes
+namespace Wc3_Combat_Game.GameEngine.Data.Data
 {
-    public struct ProjectilePrototype
+    public struct ProjectileData
     {
 
         public float Radius;
@@ -19,7 +19,7 @@ namespace Wc3_Combat_Game.Entities.Projectiles.Prototypes
         public Color Color;
 
 
-        private ProjectilePrototype(float radius, float speed, float lifespan, ImmutableArray<IGameplayAction> impactActions, Color color)
+        private ProjectileData(float radius, float speed, float lifespan, ImmutableArray<IGameplayAction> impactActions, Color color)
         {
             Radius = radius;
             Speed = speed;
@@ -28,14 +28,14 @@ namespace Wc3_Combat_Game.Entities.Projectiles.Prototypes
             Color = color;
         }
 
-        public ProjectilePrototype(float radius, float speed, float lifespan, IGameplayAction? impactAction, int polygonCount, Color color)
+        public ProjectileData(float radius, float speed, float lifespan, IGameplayAction? impactAction, int polygonCount, Color color)
             : this(radius, speed, lifespan,
                   impactAction != null ? ImmutableArray.Create(impactAction) : ImmutableArray<IGameplayAction>.Empty,
                   color)
         {
         }
 
-        public ProjectilePrototype() 
+        public ProjectileData() 
         {
             Radius = 0;
             Speed = 0;
@@ -44,9 +44,9 @@ namespace Wc3_Combat_Game.Entities.Projectiles.Prototypes
             Color = Color.White;
         }
 
-        public ProjectilePrototype AddImpactAction(IGameplayAction impactAction)
+        public ProjectileData AddImpactAction(IGameplayAction impactAction)
         {
-            return new ProjectilePrototype(Radius, Speed, Lifespan, ImpactActions.Add(impactAction), Color);
+            return new ProjectileData(Radius, Speed, Lifespan, ImpactActions.Add(impactAction), Color);
         }
     }
     

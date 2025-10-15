@@ -1,14 +1,13 @@
 ﻿using AssertUtils;
 
 using Wc3_Combat_Game.Entities.Components.Drawable;
-using Wc3_Combat_Game.Entities.Projectiles.Prototypes;
 using Wc3_Combat_Game.Entities.Units.Buffs;
 using Wc3_Combat_Game.GameEngine.Actions;
 using Wc3_Combat_Game.GameEngine.Actions.Interface;
-using Wc3_Combat_Game.GameEngine.Data;
+using Wc3_Combat_Game.GameEngine.Data.Data;
 using Wc3_Combat_Game.Util.UnitConversion;
 
-namespace Wc3_Combat_Game.Entities.Units.Abilities
+namespace Wc3_Combat_Game.GameEngine.Data.Factories
 {
     // Factory for weapon varients, I think.
     //
@@ -27,8 +26,8 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
 
     public class AbilityFactory
     {
-        public static readonly Dictionary<string, AbilityPrototype> RegisteredAbilities = new Dictionary<string, AbilityPrototype>();
-        public static void RegisterAbility(AbilityPrototype prototype, string id)
+        public static readonly Dictionary<string, AbilityData> RegisteredAbilities = new Dictionary<string, AbilityData>();
+        public static void RegisterAbility(AbilityData prototype, string id)
         {
             AssertUtil.Assert(!RegisteredAbilities.ContainsKey(id), $"Ability with id {id} is already registered.");
             RegisteredAbilities[id] = prototype;
@@ -36,10 +35,10 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
 
         public class AbilityBuilder
         {
-            AbilityPrototype _prototype;
+            AbilityData _prototype;
             public AbilityBuilder(float cooldown, float range)
             {
-                _prototype = new AbilityPrototype("<id>", "<name>", manaCost: 0f, cooldown: cooldown, castRange: range, targetEffect: null, casterEffect: null);
+                _prototype = new AbilityData("<id>", "<name>", manaCost: 0f, cooldown: cooldown, castRange: range, targetEffect: null, casterEffect: null);
             }
 
             public AbilityBuilder WithTargetEffect(IGameplayAction effect)
@@ -58,7 +57,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
                 return this;
             }
 
-            public AbilityPrototype Build() => _prototype;
+            public AbilityData Build() => _prototype;
 
         }
 
@@ -85,14 +84,14 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
          * RecoilFactor: The factor by which the caster is slowed after attacking. (e.g. 0.5 means the caster is slowed to 50% speed)
          * RecoilDuration: The duration of the recoil effect.
          */
-        public static AbilityPrototype CreateInstantWeapon(float damage, float cooldown, float range, float? recoilFactor = null, float recoilDuration = 0f)
+        public static AbilityData CreateInstantWeapon(float damage, float cooldown, float range, float? recoilFactor = null, float recoilDuration = 0f)
         {
             string id = $"instant_weapon_{damage}_{cooldown}_{range}_{recoilFactor}_{recoilDuration}";
-            if(PrototypeManager.TryGetAbility(id, out AbilityPrototype? existingPrototype))
+            if(DataManager.TryGetAbility(id, out AbilityData? existingPrototype))
             {
                 return existingPrototype!;
             }
-            AbilityPrototype prototype = new AbilityPrototype(id,id,manaCost: 0f, cooldown: 1f, castRange: 20f, targetEffect: null, casterEffect: null).WithDamage(damage);
+            AbilityData prototype = new AbilityData(id,id,manaCost: 0f, cooldown: 1f, castRange: 20f, targetEffect: null, casterEffect: null).WithDamage(damage);
             
             if (recoilFactor != null && recoilDuration != 0f)
             {
@@ -102,13 +101,13 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             return prototype;
         }
 
-        public static AbilityPrototype CreateRangedWeapon(float manaCost, float cooldown, float damage, float aoe, float range, float speed, float radius, float recoilFactor, float recoilDuration, int polygonCount, Color color)
+        public static AbilityData CreateRangedWeapon(float manaCost, float cooldown, float damage, float aoe, float range, float speed, float radius, float recoilFactor, float recoilDuration, int polygonCount, Color color)
         {
             string id = $"ranged_weapon_{manaCost}_{recoilFactor}_{recoilDuration}_{speed}_{damage}_{aoe}_{range}_{cooldown}_{radius}_{polygonCount}_{color.ToArgb()}";
             IGameplayAction damageAction = aoe > 0f ? new AoeDamageAction(damage,damage*0.5f,aoe.World()) : new DamageAction(damage);
 
 
-            ProjectilePrototype weaponProjectile = new ProjectilePrototype(
+            ProjectileData weaponProjectile = new ProjectileData(
                 radius,
                 speed,
                 range*1.1f/speed, // Add a bit of slop. 
@@ -118,7 +117,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             ProjectileAction projectile = new ProjectileAction(weaponProjectile);
             IGameplayAction? recoilAction = recoilDuration > 0f ? CreateRecoilAction(recoilFactor, recoilDuration) : null;
 
-            return new AbilityPrototype(id, id, manaCost, cooldown, range, projectile, recoilAction);
+            return new AbilityData(id, id, manaCost, cooldown, range, projectile, recoilAction);
         }
 
 

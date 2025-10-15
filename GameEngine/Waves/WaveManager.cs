@@ -6,8 +6,9 @@ using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities;
 using Wc3_Combat_Game.Entities.Units;
 using Wc3_Combat_Game.Entities.Units.Controllers;
-using Wc3_Combat_Game.Entities.Units.Prototypes;
 using Wc3_Combat_Game.GameEngine.Data;
+using Wc3_Combat_Game.GameEngine.Data.Data;
+using Wc3_Combat_Game.GameEngine.Data.Factories;
 using Wc3_Combat_Game.Util;
 
 using static Wc3_Combat_Game.Core.GameConstants;
@@ -93,7 +94,7 @@ namespace Wc3_Combat_Game.GameEngine.Waves
                 if(_waveSpawnsRemaining > 0)
                 {
                     Vector2 spawnPoint = _spawnPoints[RandomUtils.RandomIntBelow(_spawnPoints.Count)];
-                    UnitPrototype unitPrototype = _waves[_currentWave].Unit;
+                    UnitData unitPrototype = _waves[_currentWave].Unit;
 
                     // Check for the last unit of the wave.
                     if(_waveSpawnsRemaining == _waves[_currentWave].CountToSpawn && _waves[_currentWave].CountToSpawn > 1)

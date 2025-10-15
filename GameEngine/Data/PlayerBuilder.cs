@@ -1,7 +1,7 @@
-﻿using Wc3_Combat_Game.Entities.Units.Abilities;
-using Wc3_Combat_Game.Entities.Units.Buffs;
-using Wc3_Combat_Game.Entities.Units.Prototypes;
+﻿using Wc3_Combat_Game.Entities.Units.Buffs;
 using Wc3_Combat_Game.GameEngine.Actions;
+using Wc3_Combat_Game.GameEngine.Data.Data;
+using Wc3_Combat_Game.GameEngine.Data.Factories;
 
 namespace Wc3_Combat_Game.GameEngine.Data
 {
@@ -11,7 +11,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
         public static void BuildPlayer()
         {
 
-            PrototypeManager.RegisterAbility(
+            DataManager.RegisterAbility(
                 AbilityFactory.CreateRangedWeapon(
                     manaCost: 3f, cooldown: 0.2f,
                     damage: 10f, aoe: 0f,
@@ -21,7 +21,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 with { ID = "manabolt", Name = "Mana bolt" }
             );
 
-            PrototypeManager.RegisterAbility(
+            DataManager.RegisterAbility(
             AbilityFactory.CreateRangedWeapon(
                 manaCost: 15f, cooldown: 1f,
                 damage: 30f, aoe: 32f,
@@ -31,8 +31,8 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 with { ID = "manabomb", Name = "Mana bomb" }
             );
 
-            PrototypeManager.RegisterAbility(
-                new AbilityPrototype(
+            DataManager.RegisterAbility(
+                new AbilityData(
                     id: "sprint", name: "Sprint",
                 manaCost: 15f,
                 cooldown: 3f,
@@ -41,8 +41,8 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 casterEffect: new BuffAction(IBuffable.BuffType.Speed, factor: 3f, duration: 0.25f))
             );
 
-            PrototypeManager.RegisterUnit(
-                new UnitPrototype(id: "player", name: "Player",
+            DataManager.RegisterUnit(
+                new UnitData(id: "player", name: "Player",
                 MaxLife: 100f, LifeRegen: 3f,
                 Radius: 5f, Speed: 150f,
                 Color: Color.Green, PolygonCount: 0)

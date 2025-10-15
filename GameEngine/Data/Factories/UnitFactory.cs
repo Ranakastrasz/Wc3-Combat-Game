@@ -10,14 +10,14 @@ using Wc3_Combat_Game.Core;
 using Wc3_Combat_Game.Core.Context;
 using Wc3_Combat_Game.Entities.Components.Interface;
 using Wc3_Combat_Game.Entities.Units.Abilities;
-using Wc3_Combat_Game.GameEngine.Data;
+using Wc3_Combat_Game.GameEngine.Data.Data;
 
-namespace Wc3_Combat_Game.Entities.Units.Prototypes
+namespace Wc3_Combat_Game.GameEngine.Data.Factories
 {
     public static class UnitFactory
     {
 
-        public static UnitPrototype CreateEliteUnit(UnitPrototype baseUnit)
+        public static UnitData CreateEliteUnit(UnitData baseUnit)
         {
             var elitePrototype = baseUnit with
             {
@@ -34,7 +34,7 @@ namespace Wc3_Combat_Game.Entities.Units.Prototypes
             {
                 // This part assumes you've refactored AbilityPrototype to not use a switch
                 // A better way would be for the ability itself to have a "WithIncreasedDamage" method.
-                var modifiedAbility = PrototypeManager.TryGetAbility(ability, out var abilityPrototype) && abilityPrototype != null
+                var modifiedAbility = DataManager.TryGetAbility(ability, out var abilityPrototype) && abilityPrototype != null
                     ? abilityPrototype.WithIncreasedDamage(2)
                     : throw new ArgumentException($"No AbilityPrototype found with ID '{ability}'.");
 
