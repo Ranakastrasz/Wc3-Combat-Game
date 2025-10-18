@@ -12,12 +12,15 @@ namespace Wc3_Combat_Game.GameEngine.Actions
 {
     public record AoeAction: IGameplayAction
     {
+        public string ID { get; init; }
         public IGameplayAction? Action { get; init; }
         public WorldLength Radius { get; init; }
         public bool OnTargetOnly { get; init; }
 
-        public AoeAction(WorldLength radius, IGameplayAction? action, bool onTargetOnly)
+        public AoeAction(string id, WorldLength radius, IGameplayAction? action, bool onTargetOnly)
         {
+
+            ID = id;
             Radius = radius;
             Action = action;
             OnTargetOnly = onTargetOnly;

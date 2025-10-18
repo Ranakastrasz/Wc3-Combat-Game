@@ -14,13 +14,15 @@ namespace Wc3_Combat_Game.GameEngine.Actions
 {
     public record AoeDamageAction: IGameplayAction
     {
+        public string ID { get; init; }
         public float DamageMax { get; init; }
         public float DamageMin { get; init; }
         public WorldLength Radius { get; init; }
         public bool OnTargetOnly { get; init; }
 
-        public AoeDamageAction(float damageMax, float damageMin, WorldLength radius, bool onTargetOnly = false)
+        public AoeDamageAction(string id, float damageMax, float damageMin, WorldLength radius, bool onTargetOnly = false)
         {
+            ID = id;
             DamageMax = damageMax;
             DamageMin = damageMin;
             Radius = radius;

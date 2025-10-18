@@ -12,6 +12,7 @@ namespace Wc3_Combat_Game.GameEngine.Actions
 {
     internal record ProjectileAction: IGameplayAction
     {
+        public string ID { get; init; }
         //public float Randomness; // 0 = perfect spread, 1 = full random. 0.5, each is randomized up to 50% from ideal position.
         public int ProjectileCount { get; init; } = 1;
         public float FullSpreadAngleDeg { get; init; } = 0f;
@@ -21,8 +22,9 @@ namespace Wc3_Combat_Game.GameEngine.Actions
 
         public ProjectileData Prototype { get; init; }
 
-        public ProjectileAction(ProjectileData prototype)
+        public ProjectileAction(string id, ProjectileData prototype)
         {
+            ID = id;
             Prototype = prototype;
         }
 

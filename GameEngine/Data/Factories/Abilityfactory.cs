@@ -70,7 +70,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Factories
             AssertUtil.NotNegative(recoilFactor);
             AssertUtil.Positive(recoilDuration);
 
-            return new BuffAction(IBuffable.BuffType.Slow, recoilFactor, recoilDuration);
+            return new BuffAction("", IBuffable.BuffType.Slow, recoilFactor, recoilDuration);
             
         }
 
@@ -104,7 +104,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Factories
         public static AbilityData CreateRangedWeapon(float manaCost, float cooldown, float damage, float aoe, float range, float speed, float radius, float recoilFactor, float recoilDuration, int polygonCount, Color color)
         {
             string id = $"ranged_weapon_{manaCost}_{recoilFactor}_{recoilDuration}_{speed}_{damage}_{aoe}_{range}_{cooldown}_{radius}_{polygonCount}_{color.ToArgb()}";
-            IGameplayAction damageAction = aoe > 0f ? new AoeDamageAction(damage,damage*0.5f,aoe.World()) : new DamageAction(damage);
+            IGameplayAction damageAction = aoe > 0f ? new AoeDamageAction("",damage,damage*0.5f,aoe.World()) : new DamageAction("",damage);
 
 
             ProjectileData weaponProjectile = new ProjectileData(
@@ -114,7 +114,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Factories
                 damageAction,
                 polygonCount,
                 color);
-            ProjectileAction projectile = new ProjectileAction(weaponProjectile);
+            ProjectileAction projectile = new ProjectileAction("",weaponProjectile);
             IGameplayAction? recoilAction = recoilDuration > 0f ? CreateRecoilAction(recoilFactor, recoilDuration) : null;
 
             return new AbilityData(id, id, manaCost, cooldown, range, projectile, recoilAction);

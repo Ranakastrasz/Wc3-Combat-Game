@@ -10,11 +10,12 @@ namespace Wc3_Combat_Game.GameEngine.Actions
 {
     internal record DamageAction: IGameplayAction
     {
-
+        public string ID { get; init; }
         public float Damage { get; init; }
 
-        internal DamageAction(float damage)
+        internal DamageAction(string id, float damage)
         {
+            ID = id;
             Damage = damage;
         }
 

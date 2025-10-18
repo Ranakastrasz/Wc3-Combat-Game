@@ -21,9 +21,9 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 id: "ranged_weapon", name: "Light Death Bolt",
                     manaCost: 10f, cooldown: 1.5f,
                     castRange: 150f,
-                    targetEffect: new ProjectileAction( new ProjectileData(
+                    targetEffect: new ProjectileAction("", new ProjectileData(
                         radius: 2.5f, speed: 150f, lifespan: 4f,
-                        impactAction: new DamageAction(10f),
+                        impactAction: new DamageAction("", 10f),
                         polygonCount: int.MaxValue, color: Color.DarkMagenta)),
                     casterEffect: null));
 
@@ -31,17 +31,17 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 id: "ranged_weapon_light", name: "Basic Arrow",
                 manaCost: 0f, cooldown: 1.5f,
                 castRange: 150f,
-                targetEffect: new ProjectileAction(new ProjectileData(
+                targetEffect: new ProjectileAction("", new ProjectileData(
                     radius: 1.5f, speed: 225f, lifespan: 4f,
-                    impactAction: new DamageAction(5f),
+                    impactAction: new DamageAction("", 5f),
                     polygonCount: 2, color: Color.White)),
                 casterEffect: null));
 
             var heavyProjectile = new ProjectileData(
                 radius: 4f, speed: 250f, lifespan: int.MaxValue,
-                impactAction: new DamageAction(45f), polygonCount: int.MaxValue, color: Color.DarkMagenta);
+                impactAction: new DamageAction("",45f), polygonCount: int.MaxValue, color: Color.DarkMagenta);
 
-            var spreadHeavyAction = new ProjectileAction(heavyProjectile)
+            var spreadHeavyAction = new ProjectileAction("",heavyProjectile)
             {
                 ProjectileCount = 5,
                 FullSpreadAngleDeg = 60f
@@ -51,7 +51,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 id: "ranged_weapon_heavy", name: "Death Bolt",
                 manaCost: 0f, cooldown: 2f,
                 castRange: 225f,
-                targetEffect: new ProjectileAction(heavyProjectile), casterEffect: null));
+                targetEffect: new ProjectileAction("", heavyProjectile), casterEffect: null));
 
 
             DataManager.RegisterAbility(new AbilityData(
@@ -65,9 +65,9 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 id: "ranged_weapon_snare", name: "Shockwave (Snare)",
                 manaCost: 0f, cooldown: 0.5f,
                 castRange: 150f,
-                targetEffect: new ProjectileAction(new ProjectileData(
+                targetEffect: new ProjectileAction("", new ProjectileData(
                     radius: 2.5f, speed: 225f, lifespan: 16f,
-                    impactAction: new BuffAction(IBuffable.BuffType.Slow, 0.5f, 1f),
+                    impactAction: new BuffAction("", IBuffable.BuffType.Slow, 0.5f, 1f),
                     polygonCount: int.MaxValue, color: Color.Goldenrod)),
                 casterEffect: null));
 
@@ -77,7 +77,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 cooldown: 3f,
                 castRange: 225f,
                 targetEffect: null,
-                casterEffect: new BuffAction(
+                casterEffect: new BuffAction("",
                     type: IBuffable.BuffType.Speed, factor: 6f, duration: 0.25f)));
 
 

@@ -38,7 +38,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 cooldown: 3f,
                 castRange: 0f,
                 targetEffect: null,
-                casterEffect: new BuffAction(IBuffable.BuffType.Speed, factor: 3f, duration: 0.25f))
+                casterEffect: new BuffAction("", IBuffable.BuffType.Speed, factor: 3f, duration: 0.25f))
             );
 
             DataManager.RegisterUnit(

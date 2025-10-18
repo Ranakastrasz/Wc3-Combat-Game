@@ -35,16 +35,16 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
                         oldProjectile.Radius,
                         oldProjectile.Speed,
                         oldProjectile.Lifespan,
-                        new DamageAction(damage),
+                        new DamageAction("",damage),
                         int.MaxValue,
                         oldProjectile.Color);
-                    newEffect = new ProjectileAction(newProjectile);
+                    newEffect = new ProjectileAction("", newProjectile);
                     break;
                 case DamageAction : // Already did Damage.
-                    newEffect = new DamageAction(damage);
+                    newEffect = new DamageAction("", damage);
                     break;
                 case null : // Null effect.
-                    newEffect = new DamageAction(damage);
+                    newEffect = new DamageAction("", damage);
                     break;
                 default:
                     newEffect = TargetEffect; // fallback, or throw
