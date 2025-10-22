@@ -22,6 +22,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                     manaCost: 10f, cooldown: 1.5f,
                     castRange: 150f,
                     targetEffect: new ProjectileAction("", new ProjectileData(
+                        id: "light_death_bolt_projectile",
                         radius: 2.5f, speed: 150f, lifespan: 4f,
                         impactAction: new DamageAction("", 10f),
                         polygonCount: int.MaxValue, color: Color.DarkMagenta)),
@@ -32,12 +33,14 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 manaCost: 0f, cooldown: 1.5f,
                 castRange: 150f,
                 targetEffect: new ProjectileAction("", new ProjectileData(
+                    id: "basic_arrow_projectile",
                     radius: 1.5f, speed: 225f, lifespan: 4f,
                     impactAction: new DamageAction("", 5f),
                     polygonCount: 2, color: Color.White)),
                 casterEffect: null));
 
             var heavyProjectile = new ProjectileData(
+                id: "heavy_projectile",
                 radius: 4f, speed: 250f, lifespan: int.MaxValue,
                 impactAction: new DamageAction("",45f), polygonCount: int.MaxValue, color: Color.DarkMagenta);
 
@@ -66,6 +69,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 manaCost: 0f, cooldown: 0.5f,
                 castRange: 150f,
                 targetEffect: new ProjectileAction("", new ProjectileData(
+                    id: "snare_projectile",
                     radius: 2.5f, speed: 225f, lifespan: 16f,
                     impactAction: new BuffAction("", IBuffable.BuffType.Slow, 0.5f, 1f),
                     polygonCount: int.MaxValue, color: Color.Goldenrod)),
@@ -83,14 +87,14 @@ namespace Wc3_Combat_Game.GameEngine.Data
 
 
             DataManager.RegisterUnit(new UnitData(
-                id: "basic_enemy", name: "Basic",
+                ID: "basic_enemy", name: "Basic",
                 MaxLife: 15f, LifeRegen: 2f,
                 Radius: 4f, Speed: 50f,
                 Color: Color.Brown, PolygonCount: 6)
                 .AddAbility(AbilityFactory.CreateInstantWeapon(damage: 5f, cooldown: 1f, range: 20, recoilFactor: 0.25f, recoilDuration: 0.5f).ID));
 
             DataManager.RegisterUnit(new UnitData(
-                id: "blitz_enemy", name: "Blitz",
+                ID: "blitz_enemy", name: "Blitz",
                 MaxLife: 10f, LifeRegen: 0.0f,
                 Radius: 4f, Speed: 50f,
                 Color: Color.DarkGoldenrod, PolygonCount: 3)
@@ -98,21 +102,21 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 .AddAbility("enemy_sprint"));
 
             DataManager.RegisterUnit(
-                new UnitData(id: "blaster_enemy", name: "Blaster",
+                new UnitData(ID: "blaster_enemy", name: "Blaster",
                 MaxLife: 30f, LifeRegen: 0.0f,
                 Radius: 5f, Speed: 40f,
                 Color: Color.Orange, PolygonCount: 5)
                 .AddAbility("ranged_weapon"));
 
             DataManager.RegisterUnit(
-                new UnitData(id: "brute_enemy", name: "Brute",
+                new UnitData(ID: "brute_enemy", name: "Brute",
                 MaxLife: 80f, LifeRegen: 2f,
                 Radius: 10f, Speed: 50f,
                 Color: Color.Brown, PolygonCount: 6)
                 .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(damage: 25f, cooldown: 1f, range: 20, recoilFactor: 0.25f, recoilDuration: 0.5f)));
 
             DataManager.RegisterUnit(
-                new UnitData(id: "boss_enemy", name: "Boss",
+                new UnitData(ID: "boss_enemy", name: "Boss",
                 MaxLife: 400f, LifeRegen: 0f,
                 Radius: 15f, Speed: 80f,
                 Color: Color.DarkRed, PolygonCount: 4)
@@ -120,7 +124,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 .AddAbility("enemy_sprint"));
 
             DataManager.RegisterUnit(
-                new UnitData(id: "swarmer_enemy", name: "Swarmer",
+                new UnitData(ID: "swarmer_enemy", name: "Swarmer",
                 MaxLife: 10f, LifeRegen: 0.0f,
                 Radius: 3f, Speed: 25f,
                 Color: Color.OrangeRed, PolygonCount: int.MaxValue)
@@ -128,14 +132,14 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 .AddAbility("enemy_sprint"));
 
             DataManager.RegisterUnit(
-                new UnitData(id: "light_blaster_enemy", name: "Light Blaster",
+                new UnitData(ID: "light_blaster_enemy", name: "Light Blaster",
                 MaxLife: 15f, LifeRegen: 0.0f,
                 Radius: 3.5f, Speed: 30f,
                 Color: Color.SaddleBrown, PolygonCount: 5)
                 .AddAbility("ranged_weapon_light"));
 
             DataManager.RegisterUnit(
-                new UnitData(id: "elite_brute_enemy", name: "Elite Brute",
+                new UnitData(ID: "elite_brute_enemy", name: "Elite Brute",
                 MaxLife: 100f, LifeRegen: 3f,
                 Radius: 10f, Speed: 60f,
                 Color: Color.Maroon, PolygonCount: 6)
@@ -143,7 +147,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 .AddAbility("ranged_weapon_snare"));
 
             DataManager.RegisterUnit(
-                new UnitData(id: "elite_blaster_enemy", name: "Elite Blaster",
+                new UnitData(ID: "elite_blaster_enemy", name: "Elite Blaster",
                 MaxLife: 320f, LifeRegen: 0f,
                 Radius: 6f, Speed: 50f,
                 Color: Color.Purple, PolygonCount: 5)
@@ -151,7 +155,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 .AddAbility("ranged_weapon_snare"));
 
             DataManager.RegisterUnit(
-                new UnitData(id: "elite_boss_enemy", name: "Elite Boss",
+                new UnitData(ID: "elite_boss_enemy", name: "Elite Boss",
                 MaxLife: 500f, LifeRegen: 0f,
                 Radius: 15f, Speed: 75f,
                 Color: Color.DarkMagenta, PolygonCount: 4)

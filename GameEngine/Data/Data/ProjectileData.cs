@@ -9,6 +9,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
 {
     public struct ProjectileData
     {
+        public string ID;
 
         public float Radius;
         public float Speed;
@@ -19,8 +20,9 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
         public Color Color;
 
 
-        private ProjectileData(float radius, float speed, float lifespan, ImmutableArray<IGameplayAction> impactActions, Color color)
+        private ProjectileData(string id, float radius, float speed, float lifespan, ImmutableArray<IGameplayAction> impactActions, Color color)
         {
+            ID = id;
             Radius = radius;
             Speed = speed;
             Lifespan = lifespan;
@@ -28,8 +30,8 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
             Color = color;
         }
 
-        public ProjectileData(float radius, float speed, float lifespan, IGameplayAction? impactAction, int polygonCount, Color color)
-            : this(radius, speed, lifespan,
+        public ProjectileData(string id, float radius, float speed, float lifespan, IGameplayAction? impactAction, int polygonCount, Color color)
+            : this(id, radius, speed, lifespan,
                   impactAction != null ? ImmutableArray.Create(impactAction) : ImmutableArray<IGameplayAction>.Empty,
                   color)
         {
@@ -37,6 +39,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
 
         public ProjectileData() 
         {
+            ID = "";
             Radius = 0;
             Speed = 0;
             Lifespan = 0;
@@ -46,7 +49,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
 
         public ProjectileData AddImpactAction(IGameplayAction impactAction)
         {
-            return new ProjectileData(Radius, Speed, Lifespan, ImpactActions.Add(impactAction), Color);
+            return new ProjectileData(ID, Radius, Speed, Lifespan, ImpactActions.Add(impactAction), Color);
         }
     }
     

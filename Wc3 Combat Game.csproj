@@ -44,8 +44,4 @@
     <ProjectReference Include="..\AStar\AStar\AStar.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="GameEngine\Entities\Units\Prototypes\" />
-  </ItemGroup>
-
 </Project>

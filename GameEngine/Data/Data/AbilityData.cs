@@ -31,7 +31,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
             {
                 case ProjectileAction projectileAction: // Created a projectile. That projectile deals damage.
                     var oldProjectile = projectileAction.Prototype;
-                    var newProjectile = new ProjectileData(
+                    var newProjectile = new ProjectileData(ID,
                         oldProjectile.Radius,
                         oldProjectile.Speed,
                         oldProjectile.Lifespan,

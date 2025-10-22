@@ -22,9 +22,9 @@ namespace Wc3_Combat_Game.GameEngine.Data
 
         public static void RegisterUnit(UnitData prototype)
         {
-            if (_unitData.ContainsKey(prototype.id))
-                throw new ArgumentException($"A UnitData with the ID '{prototype.id}' is already registered.");
-            _unitData[prototype.id] = prototype;
+            if (_unitData.ContainsKey(prototype.ID))
+                throw new ArgumentException($"A UnitData with the ID '{prototype.ID}' is already registered.");
+            _unitData[prototype.ID] = prototype;
         }
         public static void RegisterAbility(AbilityData prototype)
         {
@@ -32,18 +32,18 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 throw new ArgumentException($"An AbilityData with the ID '{prototype.ID}' is already registered.");
             _abilityData[prototype.ID] = prototype;
         }
-        //public void RegisterProjectile(ProjectilePrototype prototype)
-        //{
-        //    if(ProjectilePrototypes.ContainsKey(prototype.ID))
-        //        throw new ArgumentException($"A ProjectileData with the ID '{prototype.ID}' is already registered.");
-        //    ProjectilePrototypes[prototype.ID] = prototype;
-        //}
-        //public void RegisterGameplayAction(IGameplayAction action)
-        //{
-        //    if (GameplayActions.ContainsKey(action.Id))
-        //        throw new ArgumentException($"A GameplayAction with the ID '{action.Id}' is already registered.");
-        //    GameplayActions[action.Id] = action;
-        //}
+        public static void RegisterProjectile(ProjectileData prototype)
+        {
+            if (_projectileData.ContainsKey(prototype.ID))
+                throw new ArgumentException($"A ProjectileData with the ID '{prototype.ID}' is already registered.");
+            _projectileData[prototype.ID] = prototype;
+        }
+        public static void RegisterGameplayAction(IGameplayAction action)
+        {
+            if (_actionData.ContainsKey(action.ID))
+                throw new ArgumentException($"A GameplayAction with the ID '{action.ID}' is already registered.");
+            _actionData[action.ID] = action;
+        }
 
         internal static UnitData TryGetUnit(string v)
         {

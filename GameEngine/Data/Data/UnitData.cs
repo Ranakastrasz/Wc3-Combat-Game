@@ -6,7 +6,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
     /// Represents a Prefab for a living or interactive game unit with health and actions.
     /// </summary>
     public record UnitData(
-        string id,
+        string ID,
         string name,
         float MaxLife,
         float LifeRegen,

@@ -1,4 +1,6 @@
-﻿using AssertUtils;
+﻿using System.Buffers.Text;
+
+using AssertUtils;
 
 using Wc3_Combat_Game.Entities.Components.Drawable;
 using Wc3_Combat_Game.Entities.Units.Buffs;
@@ -103,21 +105,34 @@ namespace Wc3_Combat_Game.GameEngine.Data.Factories
 
         public static AbilityData CreateRangedWeapon(float manaCost, float cooldown, float damage, float aoe, float range, float speed, float radius, float recoilFactor, float recoilDuration, int polygonCount, Color color)
         {
-            string id = $"ranged_weapon_{manaCost}_{recoilFactor}_{recoilDuration}_{speed}_{damage}_{aoe}_{range}_{cooldown}_{radius}_{polygonCount}_{color.ToArgb()}";
-            IGameplayAction damageAction = aoe > 0f ? new AoeDamageAction("",damage,damage*0.5f,aoe.World()) : new DamageAction("",damage);
+            string baseId = $"ranged_weapon_{manaCost}_{recoilFactor}_{recoilDuration}_{speed}_{damage}_{aoe}_{range}_{cooldown}_{radius}_{polygonCount}_{color.ToArgb()}";
+            if(DataManager.TryGetAbility(baseId, out AbilityData? existingPrototype))
+            {
+                return existingPrototype!;
+            }
+            string impactActionId = $"{baseId}_impact_action";
 
+            IGameplayAction damageAction = aoe > 0f
+                ? new AoeDamageAction(impactActionId,damage,damage*0.5f,aoe.World())
+                : new DamageAction(impactActionId,damage);
 
+            DataManager.RegisterGameplayAction(damageAction);
+
+            string projectileID = $"{baseId}_projectile";
             ProjectileData weaponProjectile = new ProjectileData(
+                projectileID,
                 radius,
                 speed,
                 range*1.1f/speed, // Add a bit of slop. 
                 damageAction,
                 polygonCount,
-                color);
-            ProjectileAction projectile = new ProjectileAction("",weaponProjectile);
+                color) with { ID = projectileID };
+            ProjectileAction projectile = new ProjectileAction("", weaponProjectile);
             IGameplayAction? recoilAction = recoilDuration > 0f ? CreateRecoilAction(recoilFactor, recoilDuration) : null;
 
-            return new AbilityData(id, id, manaCost, cooldown, range, projectile, recoilAction);
+            DataManager.RegisterProjectile(weaponProjectile);
+
+            return new AbilityData(baseId, baseId, manaCost, cooldown, range, projectile, recoilAction);
         }
 
 
