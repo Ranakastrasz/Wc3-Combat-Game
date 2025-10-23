@@ -28,12 +28,6 @@ namespace Wc3_Combat_Game.GameEngine.Data.Factories
 
     public class AbilityFactory
     {
-        public static readonly Dictionary<string, AbilityData> RegisteredAbilities = new Dictionary<string, AbilityData>();
-        public static void RegisterAbility(AbilityData prototype, string id)
-        {
-            AssertUtil.Assert(!RegisteredAbilities.ContainsKey(id), $"Ability with id {id} is already registered.");
-            RegisteredAbilities[id] = prototype;
-        }
 
         public class AbilityBuilder
         {
@@ -88,7 +82,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Factories
          */
         public static AbilityData CreateInstantWeapon(float damage, float cooldown, float range, float? recoilFactor = null, float recoilDuration = 0f)
         {
-            string id = $"instant_weapon_{damage}_{cooldown}_{range}_{recoilFactor}_{recoilDuration}";
+            string id = $"instant_weapon_{damage}_{cooldown}_{(range == float.PositiveInfinity ? "infinite" : range.ToString())}_{recoilFactor}_{recoilDuration}";
             if(DataManager.TryGetAbility(id, out AbilityData? existingPrototype))
             {
                 return existingPrototype!;
@@ -105,7 +99,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Factories
 
         public static AbilityData CreateRangedWeapon(float manaCost, float cooldown, float damage, float aoe, float range, float speed, float radius, float recoilFactor, float recoilDuration, int polygonCount, Color color)
         {
-            string baseId = $"ranged_weapon_{manaCost}_{recoilFactor}_{recoilDuration}_{speed}_{damage}_{aoe}_{range}_{cooldown}_{radius}_{polygonCount}_{color.ToArgb()}";
+            string baseId = $"ranged_weapon_{manaCost}_{recoilFactor}_{recoilDuration}_{speed}_{damage}_{aoe}_{(range == float.PositiveInfinity ? "infinite" : range.ToString())}_{cooldown}_{radius}_{polygonCount}_{color.R}-{color.G}-{color.B}-{color.A}";
             if(DataManager.TryGetAbility(baseId, out AbilityData? existingPrototype))
             {
                 return existingPrototype!;

@@ -15,7 +15,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 AbilityFactory.CreateRangedWeapon(
                     manaCost: 3f, cooldown: 0.2f,
                     damage: 10f, aoe: 0f,
-                    range: int.MaxValue, speed: 600f, radius: 2f,
+                    range: float.PositiveInfinity, speed: 600f, radius: 2f,
                     recoilFactor: 0.5f, recoilDuration: 0.5f,
                     polygonCount: 3, color: Color.Orange)
                 with { ID = "manabolt", Name = "Mana bolt" }
@@ -25,7 +25,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
             AbilityFactory.CreateRangedWeapon(
                 manaCost: 15f, cooldown: 1f,
                 damage: 30f, aoe: 32f,
-                range: int.MaxValue, speed: 450f, radius: 3f,
+                range: float.PositiveInfinity, speed: 450f, radius: 3f,
                 recoilFactor: 0.5f, recoilDuration: 1f,
                 polygonCount: int.MaxValue, color: Color.Orange)
                 with { ID = "manabomb", Name = "Mana bomb" }

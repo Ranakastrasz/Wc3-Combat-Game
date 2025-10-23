@@ -41,7 +41,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
 
             var heavyProjectile = new ProjectileData(
                 id: "heavy_projectile",
-                radius: 4f, speed: 250f, lifespan: int.MaxValue,
+                radius: 4f, speed: 250f, lifespan: float.PositiveInfinity,
                 impactAction: new DamageAction("",45f), polygonCount: int.MaxValue, color: Color.DarkMagenta);
 
             var spreadHeavyAction = new ProjectileAction("",heavyProjectile)
