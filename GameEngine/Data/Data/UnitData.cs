@@ -7,7 +7,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
     /// </summary>
     public record UnitData(
         string ID,
-        string name,
+        string Name,
         float MaxLife,
         float LifeRegen,
         float Radius,

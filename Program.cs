@@ -33,6 +33,7 @@ namespace Wc3_Combat_Game
             stringBuilder.Append("Press Enter to start the game!\n");
             stringBuilder.Append("Type 'listclasses' to list all classes and properties in the assembly.\n");
             stringBuilder.Append("Type 'scaledemo' to run the scale demonstration.\n");
+            stringBuilder.Append("Type 'listdata' to list all registered data prototypes.\n");
 
 
             Console.WriteLine(stringBuilder);
@@ -46,7 +47,10 @@ namespace Wc3_Combat_Game
                 case "scaledemo":
                     ScaleDemonstration.Run(); // Uncomment if you want to run the scale demonstration
                     return;
-
+                case "listdata":
+                    BuildData();
+                    Console.WriteLine(DataManager.Draw());
+                    return;
                 default:
                     break;
             }

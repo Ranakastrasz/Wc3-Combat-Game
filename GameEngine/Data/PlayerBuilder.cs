@@ -42,7 +42,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
             );
 
             DataManager.RegisterUnit(
-                new UnitData(ID: "player", name: "Player",
+                new UnitData(ID: "player", Name: "Player",
                 MaxLife: 100f, LifeRegen: 3f,
                 Radius: 5f, Speed: 150f,
                 Color: Color.Green, PolygonCount: 0)

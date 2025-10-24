@@ -7,17 +7,17 @@ using Wc3_Combat_Game.GameEngine.Actions.Interface;
 
 namespace Wc3_Combat_Game.GameEngine.Data.Data
 {
-    public struct ProjectileData
+    public record ProjectileData
     {
-        public string ID;
+        public string ID { get; init; }
 
-        public float Radius;
-        public float Speed;
-        public float Lifespan;
-        public bool PierceUnits; // May need terrain vs unit piercing later.
+        public float Radius { get; init; }
+        public float Speed { get; init; }
+        public float Lifespan { get; init; }
+        public bool PierceUnits { get; init; } // May need terrain vs unit piercing later.
 
-        public ImmutableArray<IGameplayAction> ImpactActions;
-        public Color Color;
+        public ImmutableArray<IGameplayAction> ImpactActions { get; init; }
+        public Color Color { get; init; }
 
 
         private ProjectileData(string id, float radius, float speed, float lifespan, ImmutableArray<IGameplayAction> impactActions, Color color)

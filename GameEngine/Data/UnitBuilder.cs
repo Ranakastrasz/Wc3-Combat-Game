@@ -87,14 +87,14 @@ namespace Wc3_Combat_Game.GameEngine.Data
 
 
             DataManager.RegisterUnit(new UnitData(
-                ID: "basic_enemy", name: "Basic",
+                ID: "basic_enemy", Name: "Basic",
                 MaxLife: 15f, LifeRegen: 2f,
                 Radius: 4f, Speed: 50f,
                 Color: Color.Brown, PolygonCount: 6)
                 .AddAbility(AbilityFactory.CreateInstantWeapon(damage: 5f, cooldown: 1f, range: 20, recoilFactor: 0.25f, recoilDuration: 0.5f).ID));
 
             DataManager.RegisterUnit(new UnitData(
-                ID: "blitz_enemy", name: "Blitz",
+                ID: "blitz_enemy", Name: "Blitz",
                 MaxLife: 10f, LifeRegen: 0.0f,
                 Radius: 4f, Speed: 50f,
                 Color: Color.DarkGoldenrod, PolygonCount: 3)
@@ -102,21 +102,21 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 .AddAbility("enemy_sprint"));
 
             DataManager.RegisterUnit(
-                new UnitData(ID: "blaster_enemy", name: "Blaster",
+                new UnitData(ID: "blaster_enemy", Name: "Blaster",
                 MaxLife: 30f, LifeRegen: 0.0f,
                 Radius: 5f, Speed: 40f,
                 Color: Color.Orange, PolygonCount: 5)
                 .AddAbility("ranged_weapon"));
 
             DataManager.RegisterUnit(
-                new UnitData(ID: "brute_enemy", name: "Brute",
+                new UnitData(ID: "brute_enemy", Name: "Brute",
                 MaxLife: 80f, LifeRegen: 2f,
                 Radius: 10f, Speed: 50f,
                 Color: Color.Brown, PolygonCount: 6)
                 .AddWeaponAndRegister(AbilityFactory.CreateInstantWeapon(damage: 25f, cooldown: 1f, range: 20, recoilFactor: 0.25f, recoilDuration: 0.5f)));
 
             DataManager.RegisterUnit(
-                new UnitData(ID: "boss_enemy", name: "Boss",
+                new UnitData(ID: "boss_enemy", Name: "Boss",
                 MaxLife: 400f, LifeRegen: 0f,
                 Radius: 15f, Speed: 80f,
                 Color: Color.DarkRed, PolygonCount: 4)
@@ -124,7 +124,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 .AddAbility("enemy_sprint"));
 
             DataManager.RegisterUnit(
-                new UnitData(ID: "swarmer_enemy", name: "Swarmer",
+                new UnitData(ID: "swarmer_enemy", Name: "Swarmer",
                 MaxLife: 10f, LifeRegen: 0.0f,
                 Radius: 3f, Speed: 25f,
                 Color: Color.OrangeRed, PolygonCount: int.MaxValue)
@@ -132,14 +132,14 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 .AddAbility("enemy_sprint"));
 
             DataManager.RegisterUnit(
-                new UnitData(ID: "light_blaster_enemy", name: "Light Blaster",
+                new UnitData(ID: "light_blaster_enemy", Name: "Light Blaster",
                 MaxLife: 15f, LifeRegen: 0.0f,
                 Radius: 3.5f, Speed: 30f,
                 Color: Color.SaddleBrown, PolygonCount: 5)
                 .AddAbility("ranged_weapon_light"));
 
             DataManager.RegisterUnit(
-                new UnitData(ID: "elite_brute_enemy", name: "Elite Brute",
+                new UnitData(ID: "elite_brute_enemy", Name: "Elite Brute",
                 MaxLife: 100f, LifeRegen: 3f,
                 Radius: 10f, Speed: 60f,
                 Color: Color.Maroon, PolygonCount: 6)
@@ -147,7 +147,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 .AddAbility("ranged_weapon_snare"));
 
             DataManager.RegisterUnit(
-                new UnitData(ID: "elite_blaster_enemy", name: "Elite Blaster",
+                new UnitData(ID: "elite_blaster_enemy", Name: "Elite Blaster",
                 MaxLife: 320f, LifeRegen: 0f,
                 Radius: 6f, Speed: 50f,
                 Color: Color.Purple, PolygonCount: 5)
@@ -155,7 +155,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 .AddAbility("ranged_weapon_snare"));
 
             DataManager.RegisterUnit(
-                new UnitData(ID: "elite_boss_enemy", name: "Elite Boss",
+                new UnitData(ID: "elite_boss_enemy", Name: "Elite Boss",
                 MaxLife: 500f, LifeRegen: 0f,
                 Radius: 15f, Speed: 75f,
                 Color: Color.DarkMagenta, PolygonCount: 4)

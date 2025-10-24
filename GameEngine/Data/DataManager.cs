@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,60 +23,87 @@ namespace Wc3_Combat_Game.GameEngine.Data
 
         public static void RegisterUnit(UnitData prototype)
         {
-            if (_unitData.ContainsKey(prototype.ID))
+            if(_unitData.ContainsKey(prototype.ID))
                 throw new ArgumentException($"A UnitData with the ID '{prototype.ID}' is already registered.");
             _unitData[prototype.ID] = prototype;
         }
         public static void RegisterAbility(AbilityData prototype)
         {
-            if (_abilityData.ContainsKey(prototype.ID))
+            if(_abilityData.ContainsKey(prototype.ID))
                 throw new ArgumentException($"An AbilityData with the ID '{prototype.ID}' is already registered.");
             _abilityData[prototype.ID] = prototype;
         }
         public static void RegisterProjectile(ProjectileData prototype)
         {
-            if (_projectileData.ContainsKey(prototype.ID))
+            if(_projectileData.ContainsKey(prototype.ID))
                 throw new ArgumentException($"A ProjectileData with the ID '{prototype.ID}' is already registered.");
             _projectileData[prototype.ID] = prototype;
         }
         public static void RegisterGameplayAction(IGameplayAction action)
         {
-            if (_actionData.ContainsKey(action.ID))
+            if(_actionData.ContainsKey(action.ID))
                 throw new ArgumentException($"A GameplayAction with the ID '{action.ID}' is already registered.");
             _actionData[action.ID] = action;
         }
 
-        internal static UnitData TryGetUnit(string v)
+        internal static bool TryGetUnit(string v, [NotNullWhen(true)] out UnitData? unit)
         {
-            if (_unitData.TryGetValue(v, out var prototype))
-                return prototype;
-            throw new KeyNotFoundException($"No UnitData found with ID '{v}'.");
+            return _unitData.TryGetValue(v, out unit);
         }
 
-        internal static bool TryGetAbility(string v, out AbilityData? ability)
-
+        internal static bool TryGetAbility(string v, [NotNullWhen(true)] out AbilityData? ability)
         {
-            if (_abilityData.TryGetValue(v, out var prototype))
+            return _abilityData.TryGetValue(v, out ability);
+        }
+
+        internal static bool TryGetProjectile(string v, [NotNullWhen(true)] out ProjectileData? projectile)
+        {
+            return _projectileData.TryGetValue(v, out projectile); // Errors out for no fucking reason.
+            //if(_projectileData.TryGetValue(v, out ProjectileData data))
+            //{
+            //    projectile = data;
+            //    return true;
+            //}
+            //projectile = null;
+            //return false;
+        }
+        internal static bool TryGetGameplayAction(string v, [NotNullWhen(true)] out IGameplayAction? action)
+        {
+            return _actionData.TryGetValue(v, out action);
+        }
+
+        public static StringBuilder Draw()
+        {
+            StringBuilder oString = new StringBuilder();
+            oString.AppendLine("=== Registered Units ===");
+            foreach(var unit in _unitData.Values)
             {
-                ability = prototype;
-                return true;
+                oString.AppendLine($"- {unit.ID}: {unit.Name}");
             }
-            ability = null;
-            return false;
+            oString.AppendLine("=== Registered Abilities ===");
+            foreach(var ability in _abilityData.Values)
+            {
+                oString.AppendLine($"- {ability.ID}: {ability.Name}");
+            }
+            oString.AppendLine("=== Registered Projectiles ===");
+            foreach(var projectile in _projectileData.Values)
+            {
+                oString.AppendLine($"- {projectile.ID}: Projectile");
+            }
+            oString.AppendLine("=== Registered Actions ===");
+            foreach(var action in _actionData.Values)
+            {
+                oString.AppendLine($"- {action.ID}: Action");
+            }
+            return oString;
         }
 
-        internal static ProjectileData TryGetProjectile(string v)
+        public static void Flush()
         {
-            if (_projectileData.TryGetValue(v, out var prototype))
-                return prototype;
-            throw new KeyNotFoundException($"No ProjectileData found with ID '{v}'.");
+            _unitData.Clear();
+            _abilityData.Clear();
+            _projectileData.Clear();
+            _actionData.Clear();
         }
-        internal static IGameplayAction TryGetGameplayAction(string v)
-        {
-            if (_actionData.TryGetValue(v, out var action))
-                return action;
-            throw new KeyNotFoundException($"No GameplayAction found with ID '{v}'.");
-        }
-
     }
 }

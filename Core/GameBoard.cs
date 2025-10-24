@@ -219,7 +219,9 @@ namespace Wc3_Combat_Game.Core
             AssertUtil.NotNull(Controller);
             AssertUtil.NotNull(Controller.Input);
 
-            UnitData playerUnit = DataManager.TryGetUnit("player");
+            if(!DataManager.TryGetUnit("player", out UnitData? playerUnit))
+                throw new InvalidOperationException("Player unit data not found.");
+
             PlayerUnit = Unit.SpawnUnit(playerUnit, Map.GetPlayerSpawn(), new PlayerController(Controller.Input), Team.Ally, this);
             PlayerUnit.DespawnDelay = float.MaxValue; // Player should never despawn.
             AddUnit(PlayerUnit);
