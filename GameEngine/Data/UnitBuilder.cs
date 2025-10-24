@@ -16,53 +16,41 @@ namespace Wc3_Combat_Game.GameEngine.Data
 
         public static void BuildUnits()
         {
+            DataManager.RegisterAbility(AbilityFactory.CreateRangedWeapon(
+                manaCost: 10f, cooldown: 1.5f,
+                damage: 10f, aoe: 0f,
+                range: 300f, speed: 150f, radius: 2.5f,
+                recoilFactor: 0f, recoilDuration: 0f,
+                polygonCount: int.MaxValue, color: Color.DarkMagenta)
+                with { ID = "ranged_weapon", Name = "Light Death Bolt" });
 
-            DataManager.RegisterAbility(new AbilityData(
-                id: "ranged_weapon", name: "Light Death Bolt",
-                    manaCost: 10f, cooldown: 1.5f,
-                    castRange: 150f,
-                    targetEffect: new ProjectileAction("", new ProjectileData(
-                        id: "light_death_bolt_projectile",
-                        radius: 2.5f, speed: 150f, lifespan: 4f,
-                        impactAction: new DamageAction("", 10f),
-                        polygonCount: int.MaxValue, color: Color.DarkMagenta)),
-                    casterEffect: null));
+            DataManager.RegisterAbility(AbilityFactory.CreateRangedWeapon(
+                manaCost: 0f, cooldown:1.5f,
+                damage:5f, aoe:0f,
+                range:150f, speed:225f, radius:1.5f,
+                recoilFactor:0f, recoilDuration:0f,
+                polygonCount:2, color:Color.White)
+                with { ID = "ranged_weapon_light", Name = "Basic Arrow" });
 
-            DataManager.RegisterAbility(new AbilityData(
-                id: "ranged_weapon_light", name: "Basic Arrow",
-                manaCost: 0f, cooldown: 1.5f,
-                castRange: 150f,
-                targetEffect: new ProjectileAction("", new ProjectileData(
-                    id: "basic_arrow_projectile",
-                    radius: 1.5f, speed: 225f, lifespan: 4f,
-                    impactAction: new DamageAction("", 5f),
-                    polygonCount: 2, color: Color.White)),
-                casterEffect: null));
-
-            var heavyProjectile = new ProjectileData(
-                id: "heavy_projectile",
-                radius: 4f, speed: 250f, lifespan: float.PositiveInfinity,
-                impactAction: new DamageAction("",45f), polygonCount: int.MaxValue, color: Color.DarkMagenta);
-
-            var spreadHeavyAction = new ProjectileAction("",heavyProjectile)
-            {
-                ProjectileCount = 5,
-                FullSpreadAngleDeg = 60f
-            };
-
-            DataManager.RegisterAbility(new AbilityData(
-                id: "ranged_weapon_heavy", name: "Death Bolt",
+            DataManager.RegisterAbility(AbilityFactory.CreateRangedWeapon(
                 manaCost: 0f, cooldown: 2f,
-                castRange: 225f,
-                targetEffect: new ProjectileAction("", heavyProjectile), casterEffect: null));
+                damage: 45f, aoe: 0f,
+                range: 225f, speed: 250f, radius: 4f,
+                recoilFactor: 0f, recoilDuration: 0f,
+                polygonCount: int.MaxValue, color: Color.Purple)
+                with
+            { ID = "ranged_weapon_heavy", Name = "Death Coil" });
 
-
-            DataManager.RegisterAbility(new AbilityData(
-                id: "ranged_weapon_heavy_fan", name: "Death Bolt (Fan)",
+            DataManager.RegisterAbility(AbilityFactory.CreateRangedWeapon(
                 manaCost: 0f, cooldown: 5f,
-                castRange: 200f,
-                targetEffect: spreadHeavyAction,
-                casterEffect: null));
+                damage: 45f, aoe: 0f,
+                range: 225f, speed: 250f, radius: 4f,
+                recoilFactor: 0f, recoilDuration: 0f,
+                polygonCount: int.MaxValue, color: Color.Purple)
+                .WithFan(5, 60f)
+                .WithID("ranged_weapon_heavy_fan", "Death Coil Fan")
+                with
+            { CastRange = 200 });
 
             DataManager.RegisterAbility(new AbilityData(
                 id: "ranged_weapon_snare", name: "Shockwave (Snare)",
@@ -83,8 +71,6 @@ namespace Wc3_Combat_Game.GameEngine.Data
                 targetEffect: null,
                 casterEffect: new BuffAction("",
                     type: IBuffable.BuffType.Speed, factor: 6f, duration: 0.25f)));
-
-
 
             DataManager.RegisterUnit(new UnitData(
                 ID: "basic_enemy", Name: "Basic",

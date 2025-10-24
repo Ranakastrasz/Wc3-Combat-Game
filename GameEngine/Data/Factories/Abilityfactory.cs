@@ -26,7 +26,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Factories
     // Or, its, create ability, attach projectile, attach effect to projectile.
 
 
-    public class AbilityFactory
+    public static class AbilityFactory
     {
 
         public class AbilityBuilder
@@ -129,8 +129,29 @@ namespace Wc3_Combat_Game.GameEngine.Data.Factories
             return new AbilityData(baseId, baseId, manaCost, cooldown, range, projectile, recoilAction);
         }
 
+        public static AbilityData WithFan(this AbilityData abilityData, int projectileCount, float fullSpreadAngleDeg)
+        {
+            ProjectileAction? action;
+            if((action = abilityData.TargetEffect as ProjectileAction) != null)
+            {
+                action = action with { ProjectileCount = projectileCount, FullSpreadAngleDeg = fullSpreadAngleDeg };
+                abilityData = abilityData with { TargetEffect = action };
+            }
+            else
+            {
+                throw new InvalidOperationException("AbilityData does not have a ProjectileAction as its TargetEffect.");
+            }
 
-        
+            return abilityData;
+        }
+
+        public static AbilityData WithID(this AbilityData abilityData, string id, string name)
+        {
+            return abilityData with { ID = id, Name = name };
+        }
+
+
+
         //public static AbilityPrototype CreateSnareWeapon()
         //{
         //    ProjectileAction projectile = new ProjectileAction(new ProjectilePrototype("Snare Projectile", 2.5f, /225, /16f,
