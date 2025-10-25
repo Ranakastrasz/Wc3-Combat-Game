@@ -10,7 +10,7 @@ using Wc3_Combat_Game.Util.UnitConversion;
 
 namespace Wc3_Combat_Game.GameEngine.Actions
 {
-    internal record ProjectileAction: IGameplayAction
+    public record ProjectileAction: IGameplayAction
     {
         public string ID { get; init; }
         //public float Randomness; // 0 = perfect spread, 1 = full random. 0.5, each is randomized up to 50% from ideal position.

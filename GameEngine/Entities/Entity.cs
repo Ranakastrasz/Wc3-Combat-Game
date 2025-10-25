@@ -69,7 +69,7 @@ namespace Wc3_Combat_Game.Entities
             DrawDebug(g, context);
 
         }
-        internal virtual void DrawDebug(Graphics g, IDrawContext context)
+        public virtual void DrawDebug(Graphics g, IDrawContext context)
         {
             Drawer?.DrawDebug(g, context);
             _physicsBody.DrawDebug(g, context);

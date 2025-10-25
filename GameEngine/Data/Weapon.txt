@@ -1,0 +1,11 @@
+﻿Self burst, Self implode, explode. Target implode.
+Fan. Spray fan, Homing, Homing with delay. 2 stage homing.
+Point defense/Deflection. Charge, deflect while charge.
+Scatter projectiles. Semi-random rotation.
+Periodic retarget.
+Ground damage. Damage trail. Projectile trail
+Delayed effect.
+Boomerang.
+Arcing.
+Preset psudo-homing arc.
+Random in AOE, other randoms.

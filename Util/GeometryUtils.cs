@@ -294,7 +294,7 @@ namespace Wc3_Combat_Game.Util
         public static float DegToRad(this float degrees) =>
             degrees * (MathF.PI / 180f);
 
-        internal static bool CollidesCircleWithCircle(Vector2 positionA, Vector2 positionB, float radiusA, float radiusB)
+        public static bool CollidesCircleWithCircle(Vector2 positionA, Vector2 positionB, float radiusA, float radiusB)
         {
             // Calculate the squared distance between the two circle centers
             float distanceSquared = (positionB - positionA).LengthSquared();
@@ -306,7 +306,7 @@ namespace Wc3_Combat_Game.Util
             return distanceSquared <= (sumOfRadii * sumOfRadii);
         }
 
-        internal static Vector2 GetCircleCircleSeperationVector(Vector2 positionA, Vector2 positionB, float radiusA, float radiusB)
+        public static Vector2 GetCircleCircleSeperationVector(Vector2 positionA, Vector2 positionB, float radiusA, float radiusB)
         {
             Vector2 distanceVector = positionB - positionA;
             float distance = distanceVector.Length();

@@ -19,7 +19,7 @@ namespace Wc3_Combat_Game.GameEngine.Terrain
 
         private float _tileSize;
         public float TileSize { get => _tileSize; set => _tileSize = value; }
-        public RectangleF WorldBounds { get; internal set; }
+        public RectangleF WorldBounds { get; public set; }
 
         public int Width; // X, 0
         public int Height; // Y, 1 
@@ -95,7 +95,7 @@ namespace Wc3_Combat_Game.GameEngine.Terrain
             return newMap;
         }
 
-        internal List<Point> GetTilesMatching(char chr)
+        public List<Point> GetTilesMatching(char chr)
         {
             List<Point> matchingTiles = new();
             for(int y = 0; y < Height; y++)
@@ -291,7 +291,7 @@ namespace Wc3_Combat_Game.GameEngine.Terrain
             return GetAdjacentTiles(index.X, index.Y);
         }
 
-        internal List<Tile> GetWalkableNeighbors(Tile p)
+        public List<Tile> GetWalkableNeighbors(Tile p)
         {
             //GetAdjacentTiles(p.Position)
             return new List<Tile>();
@@ -346,7 +346,7 @@ namespace Wc3_Combat_Game.GameEngine.Terrain
             }
         }
 
-        internal Vector2 GetPlayerSpawn()
+        public Vector2 GetPlayerSpawn()
         {
             var spawnTile = GetTilesMatching('F').FirstOrDefault();
             if(spawnTile != default)
@@ -356,7 +356,7 @@ namespace Wc3_Combat_Game.GameEngine.Terrain
             throw new InvalidOperationException("No player spawn point found in the map.");
         }
 
-        internal void DrawDebugLineOfSight(Graphics g, IDrawContext context, Vector2 position, Vector2 nextPointWorld, float size)
+        public void DrawDebugLineOfSight(Graphics g, IDrawContext context, Vector2 position, Vector2 nextPointWorld, float size)
         {
             // Initialize the lists for debugCheckedTiles and debugBlockingTiles  
             List<Point> checkedTiles = new();
@@ -414,7 +414,7 @@ namespace Wc3_Combat_Game.GameEngine.Terrain
             }
         }
 
-        internal void InitCollision(GameBoard gameBoard)
+        public void InitCollision(GameBoard gameBoard)
         {
             foreach(var tile in TileMap)
             {

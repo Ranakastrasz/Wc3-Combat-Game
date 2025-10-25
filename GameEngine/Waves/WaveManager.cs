@@ -15,7 +15,7 @@ using static Wc3_Combat_Game.Core.GameConstants;
 
 namespace Wc3_Combat_Game.GameEngine.Waves
 {
-    internal class WaveManager
+    public class WaveManager
     {
         public List<Wave> Waves { get => _waves; }
         private List<Wave> _waves = new();

@@ -3,11 +3,11 @@
     /// <summary>
     /// Wrapper to workaround flickering issues with Panel controls by enabling double buffering.
     /// </summary>
-    internal class DoubleBufferedPanel: Panel
+    public class DoubleBufferedPanel: Panel
     {
         public DoubleBufferedPanel()
         {
-            // This sets the internal styles to enable double buffering.
+            // This sets the public styles to enable double buffering.
             // UserPaint: Indicates the control will paint itself.
             // AllPaintingInWmPaint: Prevents flickering by ensuring all painting occurs in WM_PAINT.
             // OptimizedDoubleBuffer: Uses an off-screen buffer for painting.

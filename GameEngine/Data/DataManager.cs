@@ -46,17 +46,17 @@ namespace Wc3_Combat_Game.GameEngine.Data
             _actionData[action.ID] = action;
         }
 
-        internal static bool TryGetUnit(string v, [NotNullWhen(true)] out UnitData? unit)
+        public static bool TryGetUnit(string v, [NotNullWhen(true)] out UnitData? unit)
         {
             return _unitData.TryGetValue(v, out unit);
         }
 
-        internal static bool TryGetAbility(string v, [NotNullWhen(true)] out AbilityData? ability)
+        public static bool TryGetAbility(string v, [NotNullWhen(true)] out AbilityData? ability)
         {
             return _abilityData.TryGetValue(v, out ability);
         }
 
-        internal static bool TryGetProjectile(string v, [NotNullWhen(true)] out ProjectileData? projectile)
+        public static bool TryGetProjectile(string v, [NotNullWhen(true)] out ProjectileData? projectile)
         {
             return _projectileData.TryGetValue(v, out projectile); // Errors out for no fucking reason.
             //if(_projectileData.TryGetValue(v, out ProjectileData data))
@@ -67,7 +67,7 @@ namespace Wc3_Combat_Game.GameEngine.Data
             //projectile = null;
             //return false;
         }
-        internal static bool TryGetGameplayAction(string v, [NotNullWhen(true)] out IGameplayAction? action)
+        public static bool TryGetGameplayAction(string v, [NotNullWhen(true)] out IGameplayAction? action)
         {
             return _actionData.TryGetValue(v, out action);
         }

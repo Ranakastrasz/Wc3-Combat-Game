@@ -18,15 +18,15 @@ namespace Wc3_Combat_Game.GameEngine.Actions
         public float DamageMax { get; init; }
         public float DamageMin { get; init; }
         public WorldLength Radius { get; init; }
-        public bool OnTargetOnly { get; init; }
+        public bool CenterOnTarget { get; init; }
 
-        public AoeDamageAction(string id, float damageMax, float damageMin, WorldLength radius, bool onTargetOnly = false)
+        public AoeDamageAction(string id, float damageMax, float damageMin, WorldLength radius, bool centerOnTarget = false)
         {
             ID = id;
             DamageMax = damageMax;
             DamageMin = damageMin;
             Radius = radius;
-            OnTargetOnly = onTargetOnly;
+            CenterOnTarget = centerOnTarget;
         }
 
         public void ExecuteOnEntity(Entity? Caster, Entity? Emitter, Entity Target, IBoardContext context)
@@ -43,7 +43,7 @@ namespace Wc3_Combat_Game.GameEngine.Actions
                 {
                     if(Caster.Team.IsHostileTo(targetCandidate.Team))
                     {
-                        WorldPoint origin = OnTargetOnly ? TargetPoint : Emitter?.Position.World() ?? TargetPoint;
+                        WorldPoint origin = CenterOnTarget ? TargetPoint : Emitter?.Position.World() ?? TargetPoint;
                         WorldLength distance = GeometryUtils.DistanceTo(origin, targetCandidate.Position.World());
                         if(distance < Radius)
                         {

@@ -126,7 +126,7 @@
             return Get(setting);
         }
 
-        internal string[] ToArray()
+        public string[] ToArray()
         {
             return DebugSettingExtensions.AllDisplayStrings();
         }

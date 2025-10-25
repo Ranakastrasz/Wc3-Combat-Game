@@ -350,7 +350,7 @@ namespace Wc3_Combat_Game.Entities.Units
             base.Die(context);
         }
 
-        internal void ApplyBuff(IBuffable.BuffType type, float duration, float factor, IBoardContext context)
+        public void ApplyBuff(IBuffable.BuffType type, float duration, float factor, IBoardContext context)
         {
             if(Buffs != null)
             {

@@ -236,7 +236,7 @@
     //
     //
     //    // Ripped from old MobileUnit. NYI
-    //    //internal new void DrawDebug(Graphics g, IDrawContext context)
+    //    //public new void DrawDebug(Graphics g, IDrawContext context)
     //    //{
     //    //    base.DrawDebug(g, context);
     //    //    if(context.DebugSettings.Get(DebugSetting.DrawEntityMovementVector))

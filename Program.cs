@@ -8,7 +8,7 @@ using Wc3_Combat_Game.Util.UnitConversion;
 
 namespace Wc3_Combat_Game
 {
-    internal static class Program
+    public static class Program
     {
         private static GameController? _activeController;
 

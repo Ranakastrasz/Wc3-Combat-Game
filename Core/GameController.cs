@@ -99,7 +99,7 @@ namespace Wc3_Combat_Game.Core
             _gameOverTime = GlobalTime;
         }
 
-        internal void OnDefeat()
+        public void OnDefeat()
         {
             // handle Victory
             CurrentState = GameState.GameEnded;
@@ -195,7 +195,7 @@ namespace Wc3_Combat_Game.Core
 
         }
 
-        internal void StartGame()
+        public void StartGame()
         {
             if(Board != null)
             {
@@ -203,13 +203,13 @@ namespace Wc3_Combat_Game.Core
             }
         }
 
-        internal void TogglePause()
+        public void TogglePause()
         {
             _paused = !_paused;
         }
 
 
-        internal bool IsPaused()
+        public bool IsPaused()
         {
             AssertUtil.NotNull(View);
             return _paused || View.DebugPanelVisible; // Manual pause, or debug menu open.

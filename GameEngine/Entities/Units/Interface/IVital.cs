@@ -4,7 +4,7 @@
     /// This is to be attached to a unit to handle the highly fluid vital stats, such as Health, shield, and Mana.
     /// 
     /// </summary>
-    internal interface IVital
+    public interface IVital
     {
         public float? Health { get; protected set; }
         public float? Shield { get; protected set; }

@@ -22,7 +22,7 @@ namespace Wc3_Combat_Game.Entities.Units.Buffs;
 
 // For now, Buffs just override the old one. no stacking, no smart-ness. I will probably have exactly
 // one stat set for each buff for the time being anyway.
-internal class Buffable: IBuffable
+public class Buffable: IBuffable
 {
     float SpeedFactor = 1.0f;
     float SlowFactor = 1.0f;

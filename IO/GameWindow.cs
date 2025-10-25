@@ -8,7 +8,7 @@ using Keys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace Wc3_Combat_Game.IO
 {
-    internal class GameWindow: Game
+    public class GameWindow: Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;

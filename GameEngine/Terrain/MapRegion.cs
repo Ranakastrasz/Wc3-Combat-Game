@@ -3,7 +3,7 @@
 //    /// <summary>
 //    /// Defines a group of Tiles that acts like a single Object
 //    /// </summary>
-//    internal class TileObject
+//    public class TileObject
 //    {
 //        public readonly int Index ;
 //        public List<TileType> Tiles { get; set; } = new List<TileType>();

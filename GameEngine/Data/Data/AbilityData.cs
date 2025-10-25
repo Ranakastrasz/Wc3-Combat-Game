@@ -53,7 +53,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
             return new AbilityData(id: ID, name: Name, manaCost: ManaCost, cooldown: Cooldown, castRange: CastRange, targetEffect: newEffect, casterEffect: CasterEffect);
         }
 
-        internal float GetDamage()
+        public float GetDamage()
         {
             float damageValue = 0f;
             switch(TargetEffect) // Very messy but works for now.
@@ -75,7 +75,7 @@ namespace Wc3_Combat_Game.GameEngine.Data.Data
             return damageValue;
         }
 
-        internal AbilityData WithIncreasedDamage(float multiplier)
+        public AbilityData WithIncreasedDamage(float multiplier)
         {
             return WithDamage(GetDamage() * multiplier);
         }

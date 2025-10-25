@@ -175,7 +175,7 @@ namespace Wc3_Combat_Game.Util
             );
         }
 
-        internal static Point Scale(Point position, float scale)
+        public static Point Scale(Point position, float scale)
         {
             return new Point(
                 (int)Math.Round(position.X * scale),
@@ -183,7 +183,7 @@ namespace Wc3_Combat_Game.Util
             ); // May have rounding issues, but should be fine for most cases.
         }
 
-        internal static void DrawCapsule(Graphics g, Vector2 pointA, Vector2 pointB, float size, Pen pen)
+        public static void DrawCapsule(Graphics g, Vector2 pointA, Vector2 pointB, float size, Pen pen)
         {
             // Draw the capsule (swept circle)
             if(size > 0f)

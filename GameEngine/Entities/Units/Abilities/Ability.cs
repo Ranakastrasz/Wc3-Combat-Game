@@ -88,7 +88,7 @@ namespace Wc3_Combat_Game.Entities.Units.Abilities
             return !TimeUtils.HasElapsed(currentTime, _lastShotTime, _cooldown);
         }
 
-        internal void TryTarget(Unit unit, Unit? targetUnit, Vector2 targetPosition, IBoardContext context)
+        public void TryTarget(Unit unit, Unit? targetUnit, Vector2 targetPosition, IBoardContext context)
         {
             if(targetUnit != null)
                 TryTargetEntity(unit, targetUnit, context);

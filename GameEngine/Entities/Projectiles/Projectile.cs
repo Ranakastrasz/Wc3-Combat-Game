@@ -252,7 +252,7 @@ namespace Wc3_Combat_Game.Entities.EntityTypes
 
         }
 
-        internal override void DrawDebug(Graphics g, IDrawContext context)
+        public override void DrawDebug(Graphics g, IDrawContext context)
         {
             base.DrawDebug(g, context);
 

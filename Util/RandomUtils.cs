@@ -1,6 +1,6 @@
 ﻿namespace Wc3_Combat_Game.Util
 {
-    internal static class RandomUtils
+    public static class RandomUtils
     {
         private static readonly Random s_Instance = new();
 
@@ -87,7 +87,7 @@
             }
         }
 
-        internal static int RandomIntBelow(int count)
+        public static int RandomIntBelow(int count)
         {
             return RandomUtils.Instance.Next(0, count);
         }

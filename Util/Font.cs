@@ -1,6 +1,6 @@
 ﻿namespace Wc3_Combat_Game.Util
 {
-    internal class FontUtils
+    public class FontUtils
     {
         public static Font FitFontToTile(Graphics g, string fontName, float tileSize, FontStyle style = FontStyle.Regular, GraphicsUnit graphicsUnit = GraphicsUnit.Pixel)
         {

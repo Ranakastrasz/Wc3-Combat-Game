@@ -141,7 +141,7 @@ namespace Wc3_Combat_Game.Entities.Components.Nebula
         }
 
 
-        internal void DrawDebug(Graphics g, IDrawContext context)
+        public void DrawDebug(Graphics g, IDrawContext context)
         {
             if(_body == null || _body.World == null)
                 return;

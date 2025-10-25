@@ -16,7 +16,7 @@ namespace Wc3_Combat_Game
 
     public partial class GameView: Form
     {
-        internal readonly GameController _controller;
+        public readonly GameController _controller;
 
         private Camera _camera;
 
@@ -79,7 +79,7 @@ namespace Wc3_Combat_Game
             return new Vector2(points[0].X, points[0].Y);
         }
 
-        internal GameView(GameController controller, IDrawContext context)
+        public GameView(GameController controller, IDrawContext context)
         {
             InitializeComponent();
 

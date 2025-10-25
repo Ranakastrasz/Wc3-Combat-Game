@@ -56,8 +56,8 @@ namespace Wc3_Combat_Game.Core
         // Entities.
         public Unit? PlayerUnit { get; private set; }
 
-        internal EntityManager<Projectile> Projectiles { get; private set; } = new();
-        internal EntityManager<Unit> Units { get; private set; } = new();
+        public EntityManager<Projectile> Projectiles { get; private set; } = new();
+        public EntityManager<Unit> Units { get; private set; } = new();
 
         public EntityManager<Entity> Entities { get; private set; } = new();
 
